@@ -1,0 +1,110 @@
+
+# hcinfer <img src="man/figures/logo.png" align="right" height="139" alt="hcinfer logo"/>
+
+`hcinfer` computes heteroskedasticity-consistent covariance estimators
+and normal Wald inference for ordinary least squares models. It
+implements HC0, HC1, HC2, HC3, HC4, HC4m, HC5, HC5m, and HCbeta.
+
+## Installation
+
+``` r
+# install.packages("hcinfer")
+
+# Development version
+remotes::install_github("prdm0/hcinfer")
+```
+
+## Basic Use
+
+``` r
+library(hcinfer)
+
+schools <- PublicSchools
+schools$income_scaled <- schools$income / 10000
+schools$income_scaled_sq <- schools$income_scaled^2
+
+fit <- lm(expenditure ~ income_scaled + income_scaled_sq, data = schools)
+
+result <- hcinfer(fit)
+```
+
+The default estimator is HCbeta. Use `tests()` and `confint()` to
+extract the main inferential quantities as tibbles.
+
+``` r
+tests(result)
+#> # A tibble: 3 × 8
+#>   term             estimate null_value std_error z_value p_value alpha reject
+#>   <chr>               <dbl>      <dbl>     <dbl>   <dbl>   <dbl> <dbl> <lgl> 
+#> 1 (Intercept)          833.          0      851.   0.979   0.328  0.05 FALSE 
+#> 2 income_scaled      -1834.          0     2309.  -0.794   0.427  0.05 FALSE 
+#> 3 income_scaled_sq    1587.          0     1547.   1.03    0.305  0.05 FALSE
+confint(result)
+#> # A tibble: 3 × 4
+#>   term             conf_low conf_high level
+#>   <chr>               <dbl>     <dbl> <dbl>
+#> 1 (Intercept)         -834.     2500.  0.95
+#> 2 income_scaled      -6359.     2691.  0.95
+#> 3 income_scaled_sq   -1446.     4620.  0.95
+```
+
+## Confidence Intervals
+
+The `plot()` method displays the robust confidence intervals and marks
+the null value used in the tests.
+
+``` r
+plot(result)
+```
+
+<img src="man/figures/README-unnamed-chunk-5-1.png" alt="Robust confidence intervals for the public-schools regression coefficients."  />
+
+## Diagnostics
+
+Use `vcov_hc()` when you only need the robust covariance matrix and its
+diagnostics. The `plot()` method for this object shows leverage values
+and HC adjustment factors.
+
+``` r
+cov_hcbeta <- vcov_hc(fit)
+plot(cov_hcbeta)
+```
+
+<img src="man/figures/README-unnamed-chunk-6-1.png" alt="HCbeta adjustment factors plotted against leverage values for the public-schools regression."  />
+
+## Main Functions
+
+``` r
+hc_methods()
+coef(result)
+vcov(result)
+```
+
+The most common workflow is:
+
+``` r
+fit <- lm(y ~ x1 + x2, data = data)
+result <- hcinfer(fit, type = "hcbeta")
+
+summary(result)
+tests(result)
+confint(result)
+plot(result)
+```
+
+## Learn More
+
+Start with `vignette("introduction", package = "hcinfer")` for a compact
+overview of the package API.
+
+## References
+
+- White, H. (1980). A heteroskedasticity-consistent covariance matrix
+  estimator and a direct test for heteroskedasticity. *Econometrica*,
+  48(4), 817-838.
+- Cribari-Neto, F. (2004). Asymptotic inference under heteroskedasticity
+  of unknown form. *Computational Statistics and Data Analysis*, 45(2),
+  215-233.
+- Marinho, P. R. D., Cribari-Neto, F., and Cunha, M. O. (2025). HCbeta:
+  A beta-distribution-based heteroskedasticity-consistent covariance
+  estimator. Working paper.

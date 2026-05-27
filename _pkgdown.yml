@@ -1,0 +1,53 @@
+url: https://prdm0.github.io/hcinfer/
+template:
+  bootstrap: 5
+  light-switch: false
+  math-rendering: katex
+
+search: false
+
+navbar:
+  structure:
+    left: [reference, articles, news]
+    right: []
+
+articles:
+  - title: Getting started
+    navbar: ~
+    contents:
+      - introduction
+  - title: Method guides
+    navbar: ~
+    contents:
+      - hcinfer-comparison
+      - hcinfer-hcbeta
+
+home:
+  title: Heteroskedasticity-consistent inference for linear models
+  description: |
+    Elegant normal Wald inference with HC covariance estimators for ordinary
+    least squares models.
+
+reference:
+  - title: Inference
+    contents:
+      - hcinfer
+      - tests.hcinfer
+      - confint.hcinfer
+      - plot.hcinfer
+      - summary.hcinfer
+  - title: Covariance estimators
+    contents:
+      - vcov_hc
+      - plot.hcinfer_vcov
+      - hc_methods
+  - title: Data
+    contents:
+      - PublicSchools
+  - title: S3 methods
+    contents:
+      - coef.hcinfer
+      - print.hcinfer
+      - print.hcinfer_vcov
+      - summary.hcinfer_vcov
+      - vcov.hcinfer

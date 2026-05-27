@@ -1,0 +1,227 @@
+---
+title: "Comparing HC Estimators"
+vignette: >
+  %\VignetteIndexEntry{Comparing HC Estimators}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+options(hcinfer.use_emoji = TRUE)
+```
+
+This vignette shows how to compare HC estimators with `hcinfer`. The focus is
+on the objects returned by the package: coefficient tables, confidence
+intervals, covariance matrices, robust weights, and leverage diagnostics.
+
+## List the available estimators
+
+Use `hc_methods()` to see the estimator names accepted by `hcinfer()` and
+`vcov_hc()`.
+
+```{r}
+library(hcinfer)
+
+hc_methods()
+```
+
+## Fit one model
+
+Comparisons should start from one fitted model. Here we use the same OLS fit for
+all methods.
+
+```{r}
+schools <- PublicSchools |>
+  dplyr::mutate(
+    income_scaled = income / 10000,
+    income_scaled_sq = income_scaled^2
+  )
+
+fit <- lm(expenditure ~ income_scaled + income_scaled_sq, data = schools)
+```
+
+## Run several methods
+
+The `type` argument selects the HC estimator. Store each result in a named list
+so that later extraction is straightforward.
+
+```{r}
+methods <- c("hc0", "hc3", "hc4", "hc4m", "hcbeta")
+
+results <- purrr::map(methods, \(method) {
+  hcinfer(fit, type = method)
+})
+names(results) <- methods
+```
+
+## Compare one coefficient
+
+Most applied comparisons focus on one or a few coefficients. The helper below
+uses `tests()` and `confint()` to extract one coefficient and adds the method
+name.
+
+```{r}
+extract_term <- function(result, method, term = "income_scaled_sq") {
+  row <- tests(result, parm = term)
+  ci <- confint(result, parm = term)
+
+  tibble::tibble(
+    method = method,
+    estimate = row$estimate,
+    std_error = row$std_error,
+    p_value = row$p_value,
+    conf_low = ci$conf_low,
+    conf_high = ci$conf_high,
+    reject = row$reject
+  )
+}
+
+comparison <- purrr::imap(results, extract_term)
+comparison <- dplyr::bind_rows(comparison)
+comparison
+```
+
+Add interval widths when the goal is to compare how conservative the estimators
+are for this coefficient.
+
+```{r}
+comparison <- comparison |>
+  dplyr::mutate(interval_width = conf_high - conf_low)
+
+comparison
+```
+
+## Plot the robust standard errors
+
+A simple plot can help show how the estimators differ for the selected
+coefficient.
+
+```{r, fig.width = 7, fig.height = 4, fig.alt = "Bar chart comparing robust standard errors for the quadratic income term across HC estimators."}
+ggplot2::ggplot(comparison, ggplot2::aes(x = method, y = std_error)) +
+  ggplot2::geom_col(fill = "#305c8a") +
+  ggplot2::labs(
+    x = "Estimator",
+    y = "Robust standard error for the quadratic income term"
+  ) +
+  ggplot2::theme_minimal(base_size = 12)
+```
+
+## Compare confidence intervals directly
+
+`confint()` returns a tibble for one result. Use the stored comparison table
+when you want intervals from several methods side by side.
+
+```{r}
+comparison |>
+  dplyr::select(method, conf_low, conf_high, interval_width)
+```
+
+## Compare covariance objects
+
+Use `vcov_hc()` when you only need the covariance matrix and diagnostics, not
+coefficient tests.
+
+```{r}
+cov_hc3 <- vcov_hc(fit, type = "hc3")
+cov_hc3
+vcov(cov_hc3)
+```
+
+Plot the adjustment factors against leverage values for a covariance object.
+
+```{r, fig.width = 7, fig.height = 4, fig.alt = "Scatterplot of HC3 adjustment factors against leverage values for the public-schools model."}
+plot(cov_hc3)
+```
+
+The covariance object also has a summary method.
+
+```{r}
+summary(cov_hc3)
+```
+
+## Compare diagnostics across methods
+
+All covariance and inference objects store robust weights and leverage values.
+The leverage values depend only on the fitted model, while the weights depend on
+the HC estimator.
+
+```{r}
+covariances <- purrr::map(methods, \(method) {
+  vcov_hc(fit, type = method)
+})
+names(covariances) <- methods
+
+diagnostic_comparison <- purrr::imap(covariances, \(cov, method) {
+  tibble::tibble(
+    method = method,
+    max_leverage = max(cov$leverage),
+    max_weight = max(cov$weights),
+    median_weight = stats::median(cov$weights)
+  )
+})
+diagnostic_comparison <- dplyr::bind_rows(diagnostic_comparison)
+diagnostic_comparison
+```
+
+The next figure mirrors the empirical display in the HCbeta paper: adjustment
+factors are plotted against leverages for HC3, HC4, HC4m, and HCbeta.
+
+```{r, fig.width = 8, fig.height = 6, fig.alt = "Faceted scatterplot of HC adjustment factors against leverage values for HC3, HC4, HC4m, and HCbeta."}
+figure_methods <- c("hc3", "hc4", "hc4m", "hcbeta")
+figure_covariances <- purrr::map(figure_methods, \(method) {
+  vcov_hc(fit, type = method)
+})
+names(figure_covariances) <- figure_methods
+
+weight_comparison <- purrr::imap(figure_covariances, \(cov, method) {
+  tibble::tibble(
+    method = cov$label,
+    leverage = cov$leverage,
+    weight = cov$weights,
+    high_leverage = cov$leverage > 3 * cov$p / cov$n
+  )
+}) |>
+  dplyr::bind_rows() |>
+  dplyr::mutate(
+    method = factor(method, levels = c("HC3", "HC4", "HC4m", "HCbeta"))
+  )
+
+ggplot2::ggplot(weight_comparison, ggplot2::aes(x = leverage, y = weight)) +
+  ggplot2::geom_point(
+    ggplot2::aes(color = high_leverage),
+    size = 1.8,
+    alpha = 0.85
+  ) +
+  ggplot2::facet_wrap(~method, scales = "free_y", ncol = 2) +
+  ggplot2::scale_color_manual(
+    values = c(`FALSE` = "#2c5f8a", `TRUE` = "#c0392b"),
+    guide = "none"
+  ) +
+  ggplot2::labs(
+    x = expression(h[t]),
+    y = expression(g[t])
+  ) +
+  ggplot2::theme_minimal(base_size = 12) +
+  ggplot2::theme(
+    strip.text = ggplot2::element_text(face = "bold"),
+    panel.grid.minor = ggplot2::element_blank()
+  )
+```
+
+## What to report
+
+A compact reporting table usually needs the estimator, estimate, robust standard
+error, p-value, and interval endpoints.
+
+```{r}
+comparison |>
+  dplyr::select(method, estimate, std_error, p_value, conf_low, conf_high)
+```
+
+Use this comparison to document how sensitive your conclusion is to the choice
+of HC estimator. Use `vignette("hcinfer-hcbeta")` for a closer look at the
+default HCbeta estimator.

@@ -1,0 +1,216 @@
+---
+title: "Introduction to hcinfer"
+vignette: >
+  %\VignetteIndexEntry{Introduction to hcinfer}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  fig.width = 7,
+  fig.height = 4.5
+)
+options(hcinfer.use_emoji = FALSE)
+```
+
+This vignette gives a compact overview of `hcinfer`. It uses only base R for
+data preparation, then shows the main functions, extraction methods, and plots.
+
+## Data and Model
+
+The examples use the `PublicSchools` data included with the package. The model
+is the quadratic income model used in the HCbeta application.
+
+```{r}
+library(hcinfer)
+
+schools <- PublicSchools
+schools$income_scaled <- schools$income / 10000
+schools$income_scaled_sq <- schools$income_scaled^2
+
+fit <- lm(expenditure ~ income_scaled + income_scaled_sq, data = schools)
+fit
+```
+
+The call to `lm()` omits observations with missing model variables.
+
+## Available Estimators
+
+Use `hc_methods()` to list the estimators and their default arguments.
+
+```{r}
+hc_methods()
+```
+
+The available types are `"hc0"`, `"hc1"`, `"hc2"`, `"hc3"`, `"hc4"`,
+`"hc4m"`, `"hc5"`, `"hc5m"`, and `"hcbeta"`.
+
+## Robust Inference
+
+Use `hcinfer()` to compute robust inference for an `lm()` object. The default
+estimator is HCbeta.
+
+```{r}
+result <- hcinfer(fit)
+result
+```
+
+Use `summary()` for a readable report with coefficient tests, confidence
+intervals, leverage diagnostics, and robust weight diagnostics.
+
+```{r}
+summary(result)
+```
+
+You can choose another estimator with `type`.
+
+```{r}
+result_hc3 <- hcinfer(fit, type = "hc3")
+result_hc3
+```
+
+## Test Extraction
+
+Use `tests()` to extract coefficient-level Wald tests as a tibble.
+
+```{r}
+tests(result)
+```
+
+Select one coefficient by name or position.
+
+```{r}
+tests(result, parm = "income_scaled_sq")
+tests(result, parm = 3)
+```
+
+Change `alpha` to update the rejection decision. The test statistic and p-value
+are not recomputed.
+
+```{r}
+tests(result, alpha = 0.10)
+```
+
+## Confidence Interval Extraction
+
+Use `confint()` to extract robust confidence intervals.
+
+```{r}
+confint(result)
+```
+
+You can select a coefficient and change the confidence level.
+
+```{r}
+confint(result, parm = "income_scaled_sq")
+confint(result, parm = "income_scaled_sq", level = 0.90)
+```
+
+## Coefficients and Covariance Matrices
+
+The `coef()` method returns the OLS estimates stored in the result.
+
+```{r}
+coef(result)
+```
+
+The `vcov()` method extracts the robust covariance matrix stored in the
+`hcinfer` object.
+
+```{r}
+robust_vcov <- vcov(result)
+robust_vcov
+```
+
+Robust standard errors are the square roots of the diagonal entries.
+
+```{r}
+sqrt(diag(robust_vcov))
+```
+
+## Covariance-Only Workflow
+
+Use `vcov_hc()` when you only need the robust covariance matrix and diagnostics.
+
+```{r}
+cov_hcbeta <- vcov_hc(fit)
+cov_hcbeta
+```
+
+The same `summary()` and `vcov()` generics work for covariance objects.
+
+```{r}
+summary(cov_hcbeta)
+vcov(cov_hcbeta)
+```
+
+You can also choose another estimator and pass its method constants.
+
+```{r}
+cov_hc5 <- vcov_hc(fit, type = "hc5", k = 0.7)
+cov_hc5
+```
+
+## Plots
+
+Use `plot()` on an `hcinfer` object to display robust confidence intervals.
+
+```{r, fig.alt = "Robust confidence intervals for the public-schools regression coefficients."}
+plot(result)
+```
+
+Select one coefficient with `parm`.
+
+```{r, fig.alt = "Robust confidence interval for the quadratic income coefficient."}
+plot(result, parm = "income_scaled_sq")
+```
+
+Use `plot()` on a `vcov_hc()` object to show leverage values and HC adjustment
+factors.
+
+```{r, fig.alt = "HCbeta adjustment factors plotted against leverage values for the public-schools regression."}
+plot(cov_hcbeta)
+```
+
+Set `label_top` to control how many observations with the largest adjustment
+factors are labeled.
+
+```{r, fig.alt = "HC3 adjustment factors plotted against leverage values with the two largest weights labeled."}
+plot(vcov_hc(fit, type = "hc3"), label_top = 2)
+```
+
+## A Small Comparison
+
+The following base R code compares HCbeta and HC3 for the quadratic income
+coefficient.
+
+```{r}
+test_hcbeta <- tests(result, parm = "income_scaled_sq")
+test_hc3 <- tests(result_hc3, parm = "income_scaled_sq")
+
+comparison <- data.frame(
+  estimator = c("HCbeta", "HC3"),
+  estimate = c(test_hcbeta$estimate, test_hc3$estimate),
+  robust_se = c(test_hcbeta$std_error, test_hc3$std_error),
+  p_value = c(test_hcbeta$p_value, test_hc3$p_value)
+)
+
+comparison
+```
+
+## Typical Workflow
+
+For routine use, the workflow is short.
+
+```{r, eval = FALSE}
+fit <- lm(y ~ x1 + x2, data = data)
+result <- hcinfer(fit, type = "hcbeta")
+
+summary(result)
+tests(result)
+confint(result)
+plot(result)
+```

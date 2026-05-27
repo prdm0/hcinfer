@@ -1,0 +1,30 @@
+set.seed(1987)
+dados <- rexp(n = 250, rate = 1.5)
+
+log_lik <- function(x, lambda){
+  -sum(log(dexp(x = x, rate = lambda)))
+}
+
+resultados <- optim(
+  par = c(5),
+  fn = \(par) log_lik(x = dados, lambda = par[1]),
+  method = "BFGS"
+)
+
+# Vendo a distribuicao verdadeira e a estimada
+hist(
+  dados, 
+  probability = TRUE, 
+  xlab = "x", 
+  ylab = "Densidade",
+  main = "Histograma dos dados"
+)
+x <- seq(0, 4, by = 0.01)
+y1 <- dexp(x = x, rate = 1.5)
+y2 <- dexp(x = x, rate = resultados$par)
+lines(x, y1, lwd = 3, lty = 1, col = "red") # Distribuicao verdadeira
+lines(x, y2, lwd = 3, lty = 2, col = "blue")
+
+
+
+

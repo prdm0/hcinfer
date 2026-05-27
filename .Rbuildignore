@@ -1,0 +1,17 @@
+^\.Rbuildignore$
+^\.DS_Store$
+^\.Rhistory$
+^\.Rproj\.user$
+^.*\.Rproj$
+^README\.Rmd$
+^README\.html$
+^Rplots\.pdf$
+^data-raw$
+^LICENSE\.md$
+^pkgdown$
+^_pkgdown\.yml$
+^docs$
+^.*\.Rproj$
+^\.Rproj\.user$
+^\.positai$
+^\.claude$
