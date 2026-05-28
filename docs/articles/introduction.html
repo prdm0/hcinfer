@@ -123,8 +123,9 @@ default arguments.</p>
 <div class="section level2">
 <h2 id="robust-inference">Robust Inference<a class="anchor" aria-label="anchor" href="#robust-inference"></a>
 </h2>
-<p>Use <code><a href="../reference/hcinfer.html">hcinfer()</a></code> to compute robust inference for an
-<code><a href="https://rdrr.io/r/stats/lm.html" class="external-link">lm()</a></code> object. The default estimator is HCbeta.</p>
+<p>Use <code><a href="../reference/hcinfer.html">hcinfer()</a></code> to perform heteroskedasticity-robust
+inference for an <code><a href="https://rdrr.io/r/stats/lm.html" class="external-link">lm()</a></code> object. The default estimator is
+HCbeta.</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">result</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/hcinfer.html">hcinfer</a></span><span class="op">(</span><span class="va">fit</span><span class="op">)</span></span>
 <span><span class="va">result</span></span>
@@ -136,9 +137,9 @@ default arguments.</p>
 <span><span class="co">#&gt; Confidence level: 95.0% | Normal critical value: 1.9600</span></span>
 <span><span class="co">#&gt; Use `summary()` for p-values, test results, confidence intervals, and</span></span>
 <span><span class="co">#&gt; diagnostics.</span></span></code></pre></div>
-<p>Use <code><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary()</a></code> for a readable report with coefficient
-tests, confidence intervals, leverage diagnostics, and robust weight
-diagnostics.</p>
+<p>Use <code><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary()</a></code> for a readable report with tests on
+regression coefficients, confidence intervals, leverage diagnostics, and
+heteroskedasticity-robust diagnostics.</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">result</span><span class="op">)</span></span>
 <span><span class="co">#&gt; </span></span>
@@ -228,7 +229,8 @@ diagnostics.</p>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;">3</span> income_scaled_sq 0          [-1446, 4620]  includes null</span></span>
 <span><span class="co">#&gt; test_result is based on p_value &lt; alpha. Do not reject H0 does not mean that H0</span></span>
 <span><span class="co">#&gt; is true.</span></span></code></pre></div>
-<p>You can choose another estimator with <code>type</code>.</p>
+<p>You can choose another covariance matrix estimator with
+<code>type</code>.</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">result_hc3</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/hcinfer.html">hcinfer</a></span><span class="op">(</span><span class="va">fit</span>, type <span class="op">=</span> <span class="st">"hc3"</span><span class="op">)</span></span>
 <span><span class="va">result_hc3</span></span>
@@ -254,7 +256,7 @@ tibble.</p>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span> (Intercept)          833.          0      851.   0.979   0.328  0.05 FALSE </span></span>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span> income_scaled      -<span style="color: #BB0000; text-decoration: underline;">1</span><span style="color: #BB0000;">834.</span>          0     <span style="text-decoration: underline;">2</span>309.  -<span style="color: #BB0000;">0.794</span>   0.427  0.05 FALSE </span></span>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;">3</span> income_scaled_sq    <span style="text-decoration: underline;">1</span>587.          0     <span style="text-decoration: underline;">1</span>547.   1.03    0.305  0.05 FALSE</span></span></code></pre></div>
-<p>Select one coefficient by name or position.</p>
+<p>Select a single coefficient by name or position.</p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/tests.html">tests</a></span><span class="op">(</span><span class="va">result</span>, parm <span class="op">=</span> <span class="st">"income_scaled_sq"</span><span class="op">)</span></span>
 <span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 1 × 8</span></span></span>
@@ -266,8 +268,9 @@ tibble.</p>
 <span><span class="co">#&gt;   term             estimate null_value std_error z_value p_value alpha reject</span></span>
 <span><span class="co">#&gt;   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>               <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>      <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;lgl&gt;</span> </span></span>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span> income_scaled_sq    <span style="text-decoration: underline;">1</span>587.          0     <span style="text-decoration: underline;">1</span>547.    1.03   0.305  0.05 FALSE</span></span></code></pre></div>
-<p>Change <code>alpha</code> to update the rejection decision. The test
-statistic and p-value are not recomputed.</p>
+<p>Change the significance level (<code>alpha</code>) to update the
+rejection decision. The test statistic and p-value are not
+recomputed.</p>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/tests.html">tests</a></span><span class="op">(</span><span class="va">result</span>, alpha <span class="op">=</span> <span class="fl">0.10</span><span class="op">)</span></span>
 <span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 3 × 8</span></span></span>
@@ -280,8 +283,8 @@ statistic and p-value are not recomputed.</p>
 <div class="section level2">
 <h2 id="confidence-interval-extraction">Confidence Interval Extraction<a class="anchor" aria-label="anchor" href="#confidence-interval-extraction"></a>
 </h2>
-<p>Use <code><a href="https://rdrr.io/r/stats/confint.html" class="external-link">confint()</a></code> to extract robust confidence
-intervals.</p>
+<p>Use <code><a href="https://rdrr.io/r/stats/confint.html" class="external-link">confint()</a></code> to extract heteroskedasticity-robust
+confidence intervals.</p>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/stats/confint.html" class="external-link">confint</a></span><span class="op">(</span><span class="va">result</span><span class="op">)</span></span>
 <span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 3 × 4</span></span></span>
@@ -307,7 +310,7 @@ intervals.</p>
 <h2 id="coefficients-and-covariance-matrices">Coefficients and Covariance Matrices<a class="anchor" aria-label="anchor" href="#coefficients-and-covariance-matrices"></a>
 </h2>
 <p>The <code><a href="https://rdrr.io/r/stats/coef.html" class="external-link">coef()</a></code> method returns the OLS estimates stored in
-the result.</p>
+<code>result</code>.</p>
 <div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/stats/coef.html" class="external-link">coef</a></span><span class="op">(</span><span class="va">result</span><span class="op">)</span></span>
 <span><span class="co">#&gt;      (Intercept)    income_scaled income_scaled_sq </span></span>
@@ -321,8 +324,8 @@ stored in the <code>hcinfer</code> object.</p>
 <span><span class="co">#&gt; (Intercept)         723617.6      -1962262          1312195</span></span>
 <span><span class="co">#&gt; income_scaled     -1962262.2       5329884         -3569755</span></span>
 <span><span class="co">#&gt; income_scaled_sq   1312195.3      -3569755          2394627</span></span></code></pre></div>
-<p>Robust standard errors are the square roots of the diagonal
-entries.</p>
+<p>Heteroskedasticity-robust standard errors are the square roots of the
+diagonal entries.</p>
 <div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/MathFun.html" class="external-link">sqrt</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/diag.html" class="external-link">diag</a></span><span class="op">(</span><span class="va">robust_vcov</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="co">#&gt;      (Intercept)    income_scaled income_scaled_sq </span></span>
@@ -331,8 +334,8 @@ entries.</p>
 <div class="section level2">
 <h2 id="covariance-only-workflow">Covariance-Only Workflow<a class="anchor" aria-label="anchor" href="#covariance-only-workflow"></a>
 </h2>
-<p>Use <code><a href="../reference/vcov_hc.html">vcov_hc()</a></code> when you only need the robust covariance
-matrix and diagnostics.</p>
+<p>Use <code><a href="../reference/vcov_hc.html">vcov_hc()</a></code> when you only need the
+heteroskedasticity-robust covariance matrix and diagnostics.</p>
 <div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">cov_hcbeta</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/vcov_hc.html">vcov_hc</a></span><span class="op">(</span><span class="va">fit</span><span class="op">)</span></span>
 <span><span class="va">cov_hcbeta</span></span>

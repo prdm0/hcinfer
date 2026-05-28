@@ -50,22 +50,23 @@ The available types are `"hc0"`, `"hc1"`, `"hc2"`, `"hc3"`, `"hc4"`,
 
 ## Robust Inference
 
-Use `hcinfer()` to compute robust inference for an `lm()` object. The default
-estimator is HCbeta.
+Use `hcinfer()` to perform heteroskedasticity-robust inference for an `lm()`
+object. The default estimator is HCbeta.
 
 ```{r}
 result <- hcinfer(fit)
 result
 ```
 
-Use `summary()` for a readable report with coefficient tests, confidence
-intervals, leverage diagnostics, and robust weight diagnostics.
+Use `summary()` for a readable report with tests on regression coefficients,
+confidence intervals, leverage diagnostics, and heteroskedasticity-robust
+diagnostics.
 
 ```{r}
 summary(result)
 ```
 
-You can choose another estimator with `type`.
+You can choose another covariance matrix estimator with `type`.
 
 ```{r}
 result_hc3 <- hcinfer(fit, type = "hc3")
@@ -80,15 +81,15 @@ Use `tests()` to extract coefficient-level Wald tests as a tibble.
 tests(result)
 ```
 
-Select one coefficient by name or position.
+Select a single coefficient by name or position.
 
 ```{r}
 tests(result, parm = "income_scaled_sq")
 tests(result, parm = 3)
 ```
 
-Change `alpha` to update the rejection decision. The test statistic and p-value
-are not recomputed.
+Change the significance level (`alpha`) to update the rejection decision. The
+test statistic and p-value are not recomputed.
 
 ```{r}
 tests(result, alpha = 0.10)
@@ -96,7 +97,7 @@ tests(result, alpha = 0.10)
 
 ## Confidence Interval Extraction
 
-Use `confint()` to extract robust confidence intervals.
+Use `confint()` to extract heteroskedasticity-robust confidence intervals.
 
 ```{r}
 confint(result)
@@ -111,7 +112,7 @@ confint(result, parm = "income_scaled_sq", level = 0.90)
 
 ## Coefficients and Covariance Matrices
 
-The `coef()` method returns the OLS estimates stored in the result.
+The `coef()` method returns the OLS estimates stored in `result`.
 
 ```{r}
 coef(result)
@@ -125,7 +126,8 @@ robust_vcov <- vcov(result)
 robust_vcov
 ```
 
-Robust standard errors are the square roots of the diagonal entries.
+Heteroskedasticity-robust standard errors are the square roots of the diagonal
+entries.
 
 ```{r}
 sqrt(diag(robust_vcov))
@@ -133,7 +135,8 @@ sqrt(diag(robust_vcov))
 
 ## Covariance-Only Workflow
 
-Use `vcov_hc()` when you only need the robust covariance matrix and diagnostics.
+Use `vcov_hc()` when you only need the heteroskedasticity-robust covariance
+matrix and diagnostics.
 
 ```{r}
 cov_hcbeta <- vcov_hc(fit)

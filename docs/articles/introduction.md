@@ -61,7 +61,7 @@ The available types are `"hc0"`, `"hc1"`, `"hc2"`, `"hc3"`, `"hc4"`,
 ## Robust Inference
 
 Use [`hcinfer()`](https://prdm0.github.io/hcinfer/reference/hcinfer.md)
-to compute robust inference for an
+to perform heteroskedasticity-robust inference for an
 [`lm()`](https://rdrr.io/r/stats/lm.html) object. The default estimator
 is HCbeta.
 
@@ -80,8 +80,8 @@ result
 ```
 
 Use [`summary()`](https://rdrr.io/r/base/summary.html) for a readable
-report with coefficient tests, confidence intervals, leverage
-diagnostics, and robust weight diagnostics.
+report with tests on regression coefficients, confidence intervals,
+leverage diagnostics, and heteroskedasticity-robust diagnostics.
 
 ``` r
 
@@ -175,7 +175,7 @@ summary(result)
 #> is true.
 ```
 
-You can choose another estimator with `type`.
+You can choose another covariance matrix estimator with `type`.
 
 ``` r
 
@@ -207,7 +207,7 @@ tests(result)
 #> 3 income_scaled_sq    1587.          0     1547.   1.03    0.305  0.05 FALSE
 ```
 
-Select one coefficient by name or position.
+Select a single coefficient by name or position.
 
 ``` r
 
@@ -223,8 +223,8 @@ tests(result, parm = 3)
 #> 1 income_scaled_sq    1587.          0     1547.    1.03   0.305  0.05 FALSE
 ```
 
-Change `alpha` to update the rejection decision. The test statistic and
-p-value are not recomputed.
+Change the significance level (`alpha`) to update the rejection
+decision. The test statistic and p-value are not recomputed.
 
 ``` r
 
@@ -240,7 +240,7 @@ tests(result, alpha = 0.10)
 ## Confidence Interval Extraction
 
 Use [`confint()`](https://rdrr.io/r/stats/confint.html) to extract
-robust confidence intervals.
+heteroskedasticity-robust confidence intervals.
 
 ``` r
 
@@ -272,7 +272,7 @@ confint(result, parm = "income_scaled_sq", level = 0.90)
 ## Coefficients and Covariance Matrices
 
 The [`coef()`](https://rdrr.io/r/stats/coef.html) method returns the OLS
-estimates stored in the result.
+estimates stored in `result`.
 
 ``` r
 
@@ -294,7 +294,8 @@ robust_vcov
 #> income_scaled_sq   1312195.3      -3569755          2394627
 ```
 
-Robust standard errors are the square roots of the diagonal entries.
+Heteroskedasticity-robust standard errors are the square roots of the
+diagonal entries.
 
 ``` r
 
@@ -306,7 +307,8 @@ sqrt(diag(robust_vcov))
 ## Covariance-Only Workflow
 
 Use [`vcov_hc()`](https://prdm0.github.io/hcinfer/reference/vcov_hc.md)
-when you only need the robust covariance matrix and diagnostics.
+when you only need the heteroskedasticity-robust covariance matrix and
+diagnostics.
 
 ``` r
 
