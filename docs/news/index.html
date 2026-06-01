@@ -40,6 +40,7 @@
 <li>
 <code><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot()</a></code> now supports <code><a href="../reference/vcov_hc.html">vcov_hc()</a></code> objects, producing leverage-versus-adjustment-factor graphics for inspecting the relationship between h_t and g_t.</li>
 <li>summary() now prints formal test results, confidence interval checks, and optional emoji markers to improve interpretation of robust inference output.</li>
+<li>summary() now keeps displayed test_result decisions consistent with numeric p-values when p-values are displayed as &lt;0.001.</li>
 <li>Added <code><a href="../reference/tests.html">tests()</a></code> as a formal extractor for coefficient-level Wald test results. The function mirrors the API of <code><a href="https://rdrr.io/r/stats/confint.html" class="external-link">confint()</a></code>: an optional <code>parm</code> argument selects coefficients by name or position, and an optional <code>alpha</code> argument recomputes the <code>reject</code> column without affecting the stored p-values or test statistics.</li>
 </ul></div>
   </main></div>

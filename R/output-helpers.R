@@ -107,15 +107,20 @@ method_params_display_table <- function(params, type) {
 }
 
 coefficient_display_table <- function(table, alpha) {
+  alpha_label <- formatC(alpha, digits = 3, format = "f")
+  test_result <- format_test_result(table$p_value, alpha)
+
   tibble::tibble(
     term = table$term,
     estimate = format_number(table$estimate),
     robust_se = format_number(table$std_error),
     z = format_number(table$z_value),
     p_value = format_p_value(table$p_value),
-    alpha = formatC(alpha, digits = 3, format = "f"),
-    test_result = format_test_result(table$p_value, alpha),
+    alpha = alpha_label,
+    test_result = test_result,
     ci = format_interval(table$conf_low, table$conf_high),
-    ci_relation = format_interval_check(table$conf_low, table$conf_high, table$null_value)
+    ci_relation = format_interval_check(
+      table$conf_low, table$conf_high, table$null_value
+    )
   )
 }

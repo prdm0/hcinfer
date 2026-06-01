@@ -28,3 +28,4 @@ Authors:
   ([ORCID](https://orcid.org/0000-0002-5909-6698))
 
 - Marina Oliveira Cunha <marina.oliveirac@ufpe.br>
+  ([ORCID](https://orcid.org/0009-0007-4938-3881))

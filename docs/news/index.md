@@ -11,6 +11,8 @@
 - summary() now prints formal test results, confidence interval checks,
   and optional emoji markers to improve interpretation of robust
   inference output.
+- summary() now keeps displayed test_result decisions consistent with
+  numeric p-values when p-values are displayed as \<0.001.
 - Added [`tests()`](https://prdm0.github.io/hcinfer/reference/tests.md)
   as a formal extractor for coefficient-level Wald test results. The
   function mirrors the API of

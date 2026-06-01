@@ -26,6 +26,29 @@ test_that("display helpers format test results and intervals", {
   )
 })
 
+test_that("coefficient display decisions use numeric p-values", {
+  old <- options(hcinfer.use_emoji = FALSE)
+  on.exit(options(old), add = TRUE)
+
+  table <- tibble::tibble(
+    term = c("(Intercept)", "hs_grad", "poverty", "single"),
+    estimate = c(-40.65, 0.2755, 0.353, 0.6642),
+    std_error = c(11.2, 0.1034, 0.1158, 0.08015),
+    z_value = c(-3.629, 2.665, 3.05, 8.286),
+    p_value = c(2.85e-4, 7.69e-3, 2.29e-3, 1.17e-16),
+    null_value = 0,
+    conf_low = c(-62.61, 0.0729, 0.1261, 0.5071),
+    conf_high = c(-18.7, 0.4781, 0.5799, 0.8213)
+  )
+
+  out <- hcinfer:::coefficient_display_table(table, alpha = 0.05)
+
+  expect_equal(out$p_value, c("<0.001", "0.008", "0.002", "<0.001"))
+  expect_equal(out$alpha, rep("0.050", 4))
+  expect_equal(out$test_result, rep("reject H0", 4))
+  expect_equal(out$ci_relation, rep("excludes null", 4))
+})
+
 capture_printed_output <- function(expr) {
   output <- NULL
   messages <- capture.output(
