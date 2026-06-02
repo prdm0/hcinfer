@@ -58,9 +58,9 @@ inferential quantities as tibbles.
 tests(result)
 #> # A tibble: 3 × 8
 #>   term             estimate null_value std_error z_value p_value alpha reject
-#>   <chr>               <dbl>      <dbl>     <dbl>   <dbl>   <dbl> <dbl> <lgl> 
-#> 1 (Intercept)          833.          0      851.   0.979   0.328  0.05 FALSE 
-#> 2 income_scaled      -1834.          0     2309.  -0.794   0.427  0.05 FALSE 
+#>   <chr>               <dbl>      <dbl>     <dbl>   <dbl>   <dbl> <dbl> <lgl>
+#> 1 (Intercept)          833.          0      851.   0.979   0.328  0.05 FALSE
+#> 2 income_scaled      -1834.          0     2309.  -0.794   0.427  0.05 FALSE
 #> 3 income_scaled_sq    1587.          0     1547.   1.03    0.305  0.05 FALSE
 confint(result)
 #> # A tibble: 3 × 4
@@ -194,6 +194,8 @@ for a compact overview of the package API.
 
 ### Method guides
 
+- [HC Estimator
+  Methodology](https://prdm0.github.io/hcinfer/articles/hcinfer-methodology.md):
 - [Comparing HC
   Estimators](https://prdm0.github.io/hcinfer/articles/hcinfer-comparison.md):
 - [Using

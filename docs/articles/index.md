@@ -7,6 +7,8 @@
 
 ### Method guides
 
+- [HC Estimator
+  Methodology](https://prdm0.github.io/hcinfer/articles/hcinfer-methodology.md):
 - [Comparing HC
   Estimators](https://prdm0.github.io/hcinfer/articles/hcinfer-comparison.md):
 - [Using

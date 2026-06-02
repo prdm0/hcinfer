@@ -19,6 +19,7 @@ articles:
   - title: Method guides
     navbar: ~
     contents:
+      - hcinfer-methodology
       - hcinfer-comparison
       - hcinfer-hcbeta
 

@@ -13,6 +13,13 @@ options(hcinfer.use_emoji = FALSE)
 
 # hcinfer <img src="man/figures/logo.png" align="right" height="139" alt="hcinfer logo"/>
 
+<!-- badges: start -->
+[![R-CMD-check](https://github.com/prdm0/hcinfer/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/prdm0/hcinfer/actions/workflows/R-CMD-check.yaml)
+[![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/prdm0/hcinfer/blob/main/hcinfer/LICENSE.md)
+[![pkgdown](https://img.shields.io/badge/docs-pkgdown-blue.svg)](https://prdm0.github.io/hcinfer/)
+[![Lifecycle: experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://lifecycle.r-lib.org/articles/stages.html#experimental)
+<!-- badges: end -->
+
 `hcinfer` computes heteroskedasticity-consistent covariance estimators
 and normal Wald inference for ordinary least squares models. The currently
 implemented covariance matrix estimators are listed below.
