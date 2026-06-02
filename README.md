@@ -5,7 +5,7 @@
 
 [![R-CMD-check](https://github.com/prdm0/hcinfer/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/prdm0/hcinfer/actions/workflows/R-CMD-check.yaml)
 [![License:
-MIT](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/prdm0/hcinfer/blob/main/hcinfer/LICENSE.md)
+MIT](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/prdm0/hcinfer/blob/main/LICENSE.md)
 [![pkgdown](https://img.shields.io/badge/docs-pkgdown-blue.svg)](https://prdm0.github.io/hcinfer/)
 [![Lifecycle:
 experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://lifecycle.r-lib.org/articles/stages.html#experimental)
