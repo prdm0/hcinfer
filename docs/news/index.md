@@ -1,5 +1,9 @@
 # Changelog
 
+## hcinfer (development version)
+
+## hcinfer 0.1.0
+
 ## hcinfer 0.0.0.9000
 
 - Added the initial development version with HC covariance estimators,
