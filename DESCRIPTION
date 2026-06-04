@@ -1,6 +1,6 @@
 Package: hcinfer
 Title: Heteroskedasticity-Consistent Inference for Linear Models
-Version: 0.1.0.9000
+Version: 0.1.0
 Authors@R: c(
     person("Pedro Rafael D.", "Marinho", email = "pedro.rafael.marinho@gmail.com",
            role = c("aut", "cre"),
@@ -11,11 +11,11 @@ Authors@R: c(
            role = "aut", comment = c(ORCID = "0009-0007-4938-3881"))
   )
 Description: Computes heteroskedasticity-consistent covariance matrix
-    estimators for linear regression models, including the classical HC
-    family and the HCbeta estimator. The package provides normal Wald tests,
-    confidence intervals, diagnostics, and polished S3 output for applied
-    inference.
-URL: https://prdm0.github.io/hcinfer, https://github.com/prdm0/hcinfer
+    estimators for linear regression models, including the classical
+    heteroskedasticity-consistent (HC) family and the HCbeta estimator. The
+    package provides normal Wald tests, confidence intervals, diagnostics, and
+    polished S3 output for applied inference.
+URL: https://prdm0.github.io/hcinfer/, https://github.com/prdm0/hcinfer
 BugReports: https://github.com/prdm0/hcinfer/issues
 License: MIT + file LICENSE
 Encoding: UTF-8

@@ -8,7 +8,7 @@ inference with rich S3 output.
 
 Useful links:
 
-- <https://prdm0.github.io/hcinfer>
+- <https://prdm0.github.io/hcinfer/>
 
 - <https://github.com/prdm0/hcinfer>
 

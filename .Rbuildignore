@@ -17,3 +17,4 @@
 ^\.claude$
 ^\.github$
 ^CRAN-SUBMISSION$
+^cran-comments\.md$

@@ -12,7 +12,7 @@ inference with rich S3 output.
 \seealso{
 Useful links:
 \itemize{
-  \item \url{https://prdm0.github.io/hcinfer}
+  \item \url{https://prdm0.github.io/hcinfer/}
   \item \url{https://github.com/prdm0/hcinfer}
   \item Report bugs at \url{https://github.com/prdm0/hcinfer/issues}
 }
