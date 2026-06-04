@@ -23,7 +23,6 @@ Useful links:
 
 Authors:
 \itemize{
-  \item Pedro Rafael D. Marinho \email{pedro.rafael.marinho@gmail.com} (\href{https://orcid.org/0000-0003-1591-8300}{ORCID})
   \item Francisco Cribari-Neto \email{cribari@gmail.com} (\href{https://orcid.org/0000-0002-5909-6698}{ORCID})
   \item Marina Oliveira Cunha \email{marina.oliveirac@ufpe.br} (\href{https://orcid.org/0009-0007-4938-3881}{ORCID})
 }

@@ -21,9 +21,6 @@ Useful links:
 
 Authors:
 
-- Pedro Rafael D. Marinho <pedro.rafael.marinho@gmail.com>
-  ([ORCID](https://orcid.org/0000-0003-1591-8300))
-
 - Francisco Cribari-Neto <cribari@gmail.com>
   ([ORCID](https://orcid.org/0000-0002-5909-6698))
 

@@ -148,9 +148,9 @@ plot.hcinfer <- function(x, parm, ...) {
     p <- p +
       ggplot2::geom_vline(
         xintercept = null_vals,
-        linewidth  = 0.3,
+        linewidth  = 0.35,
         linetype   = "dashed",
-        color      = "#2c5f8a"
+        color      = "#c0392b"
       ) +
       ggplot2::annotate(
         "text",
