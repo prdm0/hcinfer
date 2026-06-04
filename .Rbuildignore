@@ -16,3 +16,4 @@
 ^\.positai$
 ^\.claude$
 ^\.github$
+^CRAN-SUBMISSION$
