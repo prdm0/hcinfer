@@ -11,10 +11,18 @@ Authors@R: c(
            role = "aut", comment = c(ORCID = "0009-0007-4938-3881"))
   )
 Description: Computes heteroskedasticity-consistent covariance matrix
-    estimators for linear regression models, including the classical
-    heteroskedasticity-consistent (HC) family and the HCbeta estimator. The
-    package provides normal Wald tests, confidence intervals, diagnostics, and
-    polished S3 output for applied inference.
+    estimators for ordinary least squares regression models. The published HC0
+    through HC5m estimators implemented in the package follow White (1980)
+    <doi:10.2307/1912934>, Hinkley (1977)
+    <doi:10.1080/00401706.1977.10489550>, Horn et al. (1975)
+    <doi:10.1080/01621459.1975.10479877>, MacKinnon and White (1985)
+    <doi:10.1016/0304-4076(85)90158-7>, Cribari-Neto (2004)
+    <doi:10.1016/S0167-9473(02)00366-3>, Cribari-Neto and da Silva
+    (2011) <doi:10.1007/s10182-010-0141-2>, Cribari-Neto et al. (2007)
+    <doi:10.1080/03610920601126589>, and Li et al. (2016)
+    <doi:10.1080/00949655.2016.1198906>. The package also includes HCbeta, a
+    new estimator proposed by the package authors. It provides normal Wald tests,
+    confidence intervals, diagnostics, and S3 output for applied inference.
 URL: https://prdm0.github.io/hcinfer/, https://github.com/prdm0/hcinfer
 BugReports: https://github.com/prdm0/hcinfer/issues
 License: MIT + file LICENSE

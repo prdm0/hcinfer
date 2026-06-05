@@ -171,9 +171,9 @@ least squares models.
 <code class="sourceCode R"><span><span class="fu"><a href="reference/tests.html">tests</a></span><span class="op">(</span><span class="va">result</span><span class="op">)</span></span>
 <span><span class="co">#&gt; # A tibble: 3 × 8</span></span>
 <span><span class="co">#&gt;   term             estimate null_value std_error z_value p_value alpha reject</span></span>
-<span><span class="co">#&gt;   &lt;chr&gt;               &lt;dbl&gt;      &lt;dbl&gt;     &lt;dbl&gt;   &lt;dbl&gt;   &lt;dbl&gt; &lt;dbl&gt; &lt;lgl&gt; </span></span>
-<span><span class="co">#&gt; 1 (Intercept)          833.          0      851.   0.979   0.328  0.05 FALSE </span></span>
-<span><span class="co">#&gt; 2 income_scaled      -1834.          0     2309.  -0.794   0.427  0.05 FALSE </span></span>
+<span><span class="co">#&gt;   &lt;chr&gt;               &lt;dbl&gt;      &lt;dbl&gt;     &lt;dbl&gt;   &lt;dbl&gt;   &lt;dbl&gt; &lt;dbl&gt; &lt;lgl&gt;</span></span>
+<span><span class="co">#&gt; 1 (Intercept)          833.          0      851.   0.979   0.328  0.05 FALSE</span></span>
+<span><span class="co">#&gt; 2 income_scaled      -1834.          0     2309.  -0.794   0.427  0.05 FALSE</span></span>
 <span><span class="co">#&gt; 3 income_scaled_sq    1587.          0     1547.   1.03    0.305  0.05 FALSE</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/stats/confint.html" class="external-link">confint</a></span><span class="op">(</span><span class="va">result</span><span class="op">)</span></span>
 <span><span class="co">#&gt; # A tibble: 3 × 4</span></span>
@@ -226,9 +226,16 @@ least squares models.
 <h2 id="references">References<a class="anchor" aria-label="anchor" href="#references"></a>
 </h2>
 <ul>
-<li>White, H. (1980). A heteroskedasticity-consistent covariance matrix estimator and a direct test for heteroskedasticity. <em>Econometrica</em>, 48(4), 817-838.</li>
-<li>Cribari-Neto, F. (2004). Asymptotic inference under heteroskedasticity of unknown form. <em>Computational Statistics and Data Analysis</em>, 45(2), 215-233.</li>
-<li>Cribari-Neto, F., Cunha, M. O., and Marinho, P. R. D. (2025). HCbeta: A beta-distribution-based heteroskedasticity-consistent covariance estimator. Working paper.</li>
+<li>White, H. (1980). A heteroskedasticity-consistent covariance matrix estimator and a direct test for heteroskedasticity. <em>Econometrica</em>, 48(4), 817-838. <a href="https://doi.org/10.2307/1912934" class="external-link">doi:10.2307/1912934</a>.</li>
+<li>Hinkley, D. V. (1977). Jackknifing in unbalanced situations. <em>Technometrics</em>, 19(3), 285-292. <a href="https://doi.org/10.1080/00401706.1977.10489550" class="external-link">doi:10.1080/00401706.1977.10489550</a>.</li>
+<li>Horn, S. D., Horn, R. A., and Duncan, D. B. (1975). Estimating heteroscedastic variances in linear models. <em>Journal of the American Statistical Association</em>, 70(350), 380-385. <a href="https://doi.org/10.1080/01621459.1975.10479877" class="external-link">doi:10.1080/01621459.1975.10479877</a>.</li>
+<li>MacKinnon, J. G. and White, H. (1985). Some heteroskedasticity-consistent covariance matrix estimators with improved finite sample properties. <em>Journal of Econometrics</em>, 29(3), 305-325. <a href="https://doi.org/10.1016/0304-4076(85)90158-7" class="external-link">doi:10.1016/0304-4076(85)90158-7</a>.</li>
+<li>Davidson, R. and MacKinnon, J. G. (1993). <em>Estimation and Inference in Econometrics</em>. Oxford University Press.</li>
+<li>Cribari-Neto, F. (2004). Asymptotic inference under heteroskedasticity of unknown form. <em>Computational Statistics and Data Analysis</em>, 45(2), 215-233. <a href="https://doi.org/10.1016/S0167-9473(02)00366-3" class="external-link">doi:10.1016/S0167-9473(02)00366-3</a>.</li>
+<li>Cribari-Neto, F. and da Silva, W. B. (2011). A new heteroskedasticity-consistent covariance matrix estimator for the linear regression model. <em>AStA Advances in Statistical Analysis</em>, 95(2), 129-146. <a href="https://doi.org/10.1007/s10182-010-0141-2" class="external-link">doi:10.1007/s10182-010-0141-2</a>.</li>
+<li>Cribari-Neto, F., Souza, T. C., and Vasconcellos, K. L. P. (2007). Inference under heteroskedasticity and leveraged data. <em>Communications in Statistics - Theory and Methods</em>, 36(10), 1877-1888. <a href="https://doi.org/10.1080/03610920601126589" class="external-link">doi:10.1080/03610920601126589</a>.</li>
+<li>Li, S., Zhang, N., Zhang, X., and Wang, G. (2016). A new heteroskedasticity-consistent covariance matrix estimator and inference under heteroskedasticity. <em>Journal of Statistical Computation and Simulation</em>, 87(1), 198-210. <a href="https://doi.org/10.1080/00949655.2016.1198906" class="external-link">doi:10.1080/00949655.2016.1198906</a>.</li>
+<li>Cunha, M. A., Cribari-Neto, F., and Marinho, P. R. D. (manuscript). A beta-based heteroskedasticity-consistent covariance matrix estimator.</li>
 </ul>
 </div>
 </div>

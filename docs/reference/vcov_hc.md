@@ -69,15 +69,45 @@ max(lower, min(1 - h_t, upper))\\.
 
 White, H. (1980). A heteroskedasticity-consistent covariance matrix
 estimator and a direct test for heteroskedasticity. *Econometrica*,
-48(4), 817-838.
+48(4), 817-838. [doi:10.2307/1912934](https://doi.org/10.2307/1912934)
+
+Hinkley, D. V. (1977). Jackknifing in unbalanced situations.
+*Technometrics*, 19(3), 285-292.
+[doi:10.1080/00401706.1977.10489550](https://doi.org/10.1080/00401706.1977.10489550)
+
+Horn, S. D., Horn, R. A., and Duncan, D. B. (1975). Estimating
+heteroscedastic variances in linear models. *Journal of the American
+Statistical Association*, 70(350), 380-385.
+[doi:10.1080/01621459.1975.10479877](https://doi.org/10.1080/01621459.1975.10479877)
+
+MacKinnon, J. G. and White, H. (1985). Some
+heteroskedasticity-consistent covariance matrix estimators with improved
+finite sample properties. *Journal of Econometrics*, 29(3), 305-325.
+[doi:10.1016/0304-4076(85)90158-7](https://doi.org/10.1016/0304-4076%2885%2990158-7)
+
+Davidson, R. and MacKinnon, J. G. (1993). *Estimation and Inference in
+Econometrics*. Oxford University Press.
 
 Cribari-Neto, F. (2004). Asymptotic inference under heteroskedasticity
 of unknown form. *Computational Statistics and Data Analysis*, 45(2),
 215-233.
+[doi:10.1016/S0167-9473(02)00366-3](https://doi.org/10.1016/S0167-9473%2802%2900366-3)
 
 Cribari-Neto, F. and da Silva, W. B. (2011). A new heteroskedasticity
 consistent covariance matrix estimator for the linear regression model.
 *AStA Advances in Statistical Analysis*, 95(2), 129-146.
+[doi:10.1007/s10182-010-0141-2](https://doi.org/10.1007/s10182-010-0141-2)
+
+Cribari-Neto, F., Souza, T. C., and Vasconcellos, K. L. P. (2007).
+Inference under heteroskedasticity and leveraged data. *Communications
+in Statistics - Theory and Methods*, 36(10), 1877-1888.
+[doi:10.1080/03610920601126589](https://doi.org/10.1080/03610920601126589)
+
+Li, S., Zhang, N., Zhang, X., and Wang, G. (2016). A new
+heteroskedasticity-consistent covariance matrix estimator and inference
+under heteroskedasticity. *Journal of Statistical Computation and
+Simulation*, 87(1), 198-210.
+[doi:10.1080/00949655.2016.1198906](https://doi.org/10.1080/00949655.2016.1198906)
 
 ## Examples
 

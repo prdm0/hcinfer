@@ -5,6 +5,7 @@ This is a resubmission of hcinfer 0.1.0 after the CRAN incoming pretest.
 In this version I have:
 
 * changed the pkgdown URL in DESCRIPTION to its canonical form with a trailing slash;
+* added method references with DOIs to DESCRIPTION and the public documentation;
 * added `inst/WORDLIST` for technical terms reported by the spell checker;
 * kept version 0.1.0 because the previous upload was rejected before CRAN publication.
 
