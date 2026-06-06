@@ -84,7 +84,7 @@ the null value used in the tests.
 plot(result)
 ```
 
-<img src="man/figures/README-unnamed-chunk-5-1.png" alt="Robust confidence intervals for the public-schools regression coefficients."  />
+<img src="man/figures/README-unnamed-chunk-5-1.png" alt="Robust confidence intervals for the public-schools regression coefficients." width="672" />
 
 ## Diagnostics
 
@@ -97,7 +97,7 @@ cov_hcbeta <- vcov_hc(fit)
 plot(cov_hcbeta)
 ```
 
-<img src="man/figures/README-unnamed-chunk-6-1.png" alt="HCbeta adjustment factors plotted against leverage values for the public-schools regression."  />
+<img src="man/figures/README-unnamed-chunk-6-1.png" alt="HCbeta adjustment factors plotted against leverage values for the public-schools regression." width="672" />
 
 ## Main Functions
 

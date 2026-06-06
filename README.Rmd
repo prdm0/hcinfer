@@ -6,6 +6,9 @@ output: github_document
 knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>",
+  dev = "ragg_png",
+  dpi = 96,
+  fig.retina = 3,
   fig.path = "man/figures/README-"
 )
 options(hcinfer.use_emoji = FALSE)
