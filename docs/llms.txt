@@ -27,10 +27,11 @@ and lists the covariance matrix estimators currently implemented in
 
 ``` r
 
-# install.packages("hcinfer")
+# Official CRAN installation of the package
+install.packages("hcinfer")
 
-# Development version
-remotes::install_github("prdm0/hcinfer")
+# Development version installation from GitHub
+remotes::install_github("prdm0/hcinfer", force = TRUE)
 ```
 
 ## Basic Use
