@@ -20,6 +20,7 @@ options(hcinfer.use_emoji = FALSE)
 [![R-CMD-check](https://github.com/prdm0/hcinfer/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/prdm0/hcinfer/actions/workflows/R-CMD-check.yaml)
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/prdm0/hcinfer/blob/main/LICENSE.md)
 [![pkgdown](https://img.shields.io/badge/docs-pkgdown-blue.svg)](https://prdm0.github.io/hcinfer/)
+[![r-universe](https://prdm0.r-universe.dev/badges/hcinfer)](https://prdm0.r-universe.dev)
 [![Lifecycle: experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://lifecycle.r-lib.org/articles/stages.html#experimental)
 <!-- badges: end -->
 
@@ -41,6 +42,9 @@ knitr::kable(hcinfer::hc_methods())
 ```{r, eval = FALSE}
 # Official CRAN installation of the package
 install.packages("hcinfer")
+
+# r-universe installation
+install.packages('hcinfer', repos = c('https://prdm0.r-universe.dev', 'https://cloud.r-project.org'))
 
 # Development version installation from GitHub
 remotes::install_github("prdm0/hcinfer", force = TRUE)

@@ -7,6 +7,7 @@
 [![License:
 MIT](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/prdm0/hcinfer/blob/main/LICENSE.md)
 [![pkgdown](https://img.shields.io/badge/docs-pkgdown-blue.svg)](https://prdm0.github.io/hcinfer/)
+[![r-universe](https://prdm0.r-universe.dev/badges/hcinfer)](https://prdm0.r-universe.dev)
 [![Lifecycle:
 experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://lifecycle.r-lib.org/articles/stages.html#experimental)
 <!-- badges: end -->
@@ -38,6 +39,9 @@ matrix estimators currently implemented in `hcinfer`.
 # Official CRAN installation of the package
 install.packages("hcinfer")
 
+# r-universe installation
+install.packages('hcinfer', repos = c('https://prdm0.r-universe.dev', 'https://cloud.r-project.org'))
+
 # Development version installation from GitHub
 remotes::install_github("prdm0/hcinfer", force = TRUE)
 ```
@@ -63,9 +67,9 @@ extract the main inferential quantities as tibbles.
 tests(result)
 #> # A tibble: 3 × 8
 #>   term             estimate null_value std_error z_value p_value alpha reject
-#>   <chr>               <dbl>      <dbl>     <dbl>   <dbl>   <dbl> <dbl> <lgl>
-#> 1 (Intercept)          833.          0      851.   0.979   0.328  0.05 FALSE
-#> 2 income_scaled      -1834.          0     2309.  -0.794   0.427  0.05 FALSE
+#>   <chr>               <dbl>      <dbl>     <dbl>   <dbl>   <dbl> <dbl> <lgl> 
+#> 1 (Intercept)          833.          0      851.   0.979   0.328  0.05 FALSE 
+#> 2 income_scaled      -1834.          0     2309.  -0.794   0.427  0.05 FALSE 
 #> 3 income_scaled_sq    1587.          0     1547.   1.03    0.305  0.05 FALSE
 confint(result)
 #> # A tibble: 3 × 4
