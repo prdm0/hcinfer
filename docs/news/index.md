@@ -4,6 +4,8 @@
 
 ## hcinfer 0.1.0
 
+CRAN release: 2026-06-10
+
 ## hcinfer 0.0.0.9000
 
 - Added the initial development version with HC covariance estimators,
