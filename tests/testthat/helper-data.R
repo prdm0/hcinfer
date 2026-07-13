@@ -1,4 +1,5 @@
 data("PublicSchools", package = "hcinfer")
+data("PublicSchools2", package = "hcinfer")
 
 public_schools_article_data <- function() {
   transform(

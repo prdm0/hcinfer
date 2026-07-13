@@ -26,7 +26,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">hcinfer</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.1.0.9000</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.1.1</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -297,26 +297,26 @@ leverages.</p>
 <span>  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/arrange.html" class="external-link">arrange</a></span><span class="op">(</span><span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/desc.html" class="external-link">desc</a></span><span class="op">(</span><span class="va">leverage</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/slice.html" class="external-link">slice_head</a></span><span class="op">(</span>n <span class="op">=</span> <span class="fl">5</span><span class="op">)</span></span>
 <span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 5 × 5</span></span></span>
-<span><span class="co">#&gt;   observation state          leverage weight residual</span></span>
-<span><span class="co">#&gt;   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>       <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>             <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span> 2           Alaska           0.651    4.58   110.  </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span> 48          Washington DC    0.208    1.61  -<span style="color: #BB0000;">161.</span>  </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">3</span> 24          Mississippi      0.200    1.59   -<span style="color: #BB0000;">44.0</span> </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">4</span> 4           Arkansas         0.088<span style="text-decoration: underline;">7</span>   1.30   -<span style="color: #BB0000;">30.5</span> </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">5</span> 40          South Carolina   0.079<span style="text-decoration: underline;">4</span>   1.28     8.64</span></span></code></pre></div>
+<span><span class="co">#&gt;   observation state                leverage weight residual</span></span>
+<span><span class="co">#&gt;   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>       <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>                   <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span> 2           Alaska                 0.651    4.58   110.  </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span> 48          District of Columbia   0.208    1.61  -<span style="color: #BB0000;">161.</span>  </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">3</span> 24          Mississippi            0.200    1.59   -<span style="color: #BB0000;">44.0</span> </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">4</span> 4           Arkansas               0.088<span style="text-decoration: underline;">7</span>   1.30   -<span style="color: #BB0000;">30.5</span> </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">5</span> 40          South Carolina         0.079<span style="text-decoration: underline;">4</span>   1.28     8.64</span></span></code></pre></div>
 <p>You can also sort by robust weight.</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">diagnostics</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/arrange.html" class="external-link">arrange</a></span><span class="op">(</span><span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/desc.html" class="external-link">desc</a></span><span class="op">(</span><span class="va">weight</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/slice.html" class="external-link">slice_head</a></span><span class="op">(</span>n <span class="op">=</span> <span class="fl">5</span><span class="op">)</span></span>
 <span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 5 × 5</span></span></span>
-<span><span class="co">#&gt;   observation state          leverage weight residual</span></span>
-<span><span class="co">#&gt;   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>       <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>             <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span> 2           Alaska           0.651    4.58   110.  </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span> 48          Washington DC    0.208    1.61  -<span style="color: #BB0000;">161.</span>  </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">3</span> 24          Mississippi      0.200    1.59   -<span style="color: #BB0000;">44.0</span> </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">4</span> 4           Arkansas         0.088<span style="text-decoration: underline;">7</span>   1.30   -<span style="color: #BB0000;">30.5</span> </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">5</span> 40          South Carolina   0.079<span style="text-decoration: underline;">4</span>   1.28     8.64</span></span></code></pre></div>
+<span><span class="co">#&gt;   observation state                leverage weight residual</span></span>
+<span><span class="co">#&gt;   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>       <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>                   <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span> 2           Alaska                 0.651    4.58   110.  </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span> 48          District of Columbia   0.208    1.61  -<span style="color: #BB0000;">161.</span>  </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">3</span> 24          Mississippi            0.200    1.59   -<span style="color: #BB0000;">44.0</span> </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">4</span> 4           Arkansas               0.088<span style="text-decoration: underline;">7</span>   1.30   -<span style="color: #BB0000;">30.5</span> </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">5</span> 40          South Carolina         0.079<span style="text-decoration: underline;">4</span>   1.28     8.64</span></span></code></pre></div>
 <p>The covariance object can be plotted directly to display adjustment
 factors against leverages.</p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">

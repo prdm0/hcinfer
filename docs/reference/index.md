@@ -25,7 +25,9 @@
 ## Data
 
 - [`PublicSchools`](https://prdm0.github.io/hcinfer/reference/PublicSchools.md)
-  : Public school expenditure and income by US state
+  : Public school expenditure and income by U.S. jurisdiction
+- [`PublicSchools2`](https://prdm0.github.io/hcinfer/reference/PublicSchools2.md)
+  : Public school expenditure, income, and region by U.S. jurisdiction
 
 ## S3 methods
 

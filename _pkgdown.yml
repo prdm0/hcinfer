@@ -45,6 +45,7 @@ reference:
   - title: Data
     contents:
       - PublicSchools
+      - PublicSchools2
   - title: S3 methods
     contents:
       - coef.hcinfer

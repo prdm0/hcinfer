@@ -1,11 +1,12 @@
-# Public school expenditure and income by US state
+# Public school expenditure and income by U.S. jurisdiction
 
-Public school expenditure and income data for US states and Washington
-DC in 1979. The expenditure value for Wisconsin is missing in the source
-data, so the standard regression example uses 50 complete observations.
-The data are useful for illustrating heteroskedasticity-consistent
-inference because Alaska is a high-leverage observation in the quadratic
-public-schools model studied in the HCbeta paper.
+Public school expenditure and income data for the 50 U.S. states and the
+District of Columbia in 1979. The expenditure value for Wisconsin is
+missing in the source data, so the standard regression example uses 50
+complete observations. The data are useful for illustrating
+heteroskedasticity-consistent inference because Alaska is a
+high-leverage observation in the quadratic public-schools model studied
+in the HCbeta paper.
 
 ## Usage
 
@@ -19,7 +20,7 @@ A tibble with 51 rows and 3 variables:
 
 - state:
 
-  US state or Washington DC.
+  Name of one of the 50 U.S. states or the District of Columbia.
 
 - expenditure:
 

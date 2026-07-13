@@ -220,13 +220,13 @@ diagnostics |>
   dplyr::arrange(dplyr::desc(leverage)) |>
   dplyr::slice_head(n = 5)
 #> # A tibble: 5 × 5
-#>   observation state          leverage weight residual
-#>   <chr>       <chr>             <dbl>  <dbl>    <dbl>
-#> 1 2           Alaska           0.651    4.58   110.  
-#> 2 48          Washington DC    0.208    1.61  -161.  
-#> 3 24          Mississippi      0.200    1.59   -44.0 
-#> 4 4           Arkansas         0.0887   1.30   -30.5 
-#> 5 40          South Carolina   0.0794   1.28     8.64
+#>   observation state                leverage weight residual
+#>   <chr>       <chr>                   <dbl>  <dbl>    <dbl>
+#> 1 2           Alaska                 0.651    4.58   110.  
+#> 2 48          District of Columbia   0.208    1.61  -161.  
+#> 3 24          Mississippi            0.200    1.59   -44.0 
+#> 4 4           Arkansas               0.0887   1.30   -30.5 
+#> 5 40          South Carolina         0.0794   1.28     8.64
 ```
 
 You can also sort by robust weight.
@@ -237,13 +237,13 @@ diagnostics |>
   dplyr::arrange(dplyr::desc(weight)) |>
   dplyr::slice_head(n = 5)
 #> # A tibble: 5 × 5
-#>   observation state          leverage weight residual
-#>   <chr>       <chr>             <dbl>  <dbl>    <dbl>
-#> 1 2           Alaska           0.651    4.58   110.  
-#> 2 48          Washington DC    0.208    1.61  -161.  
-#> 3 24          Mississippi      0.200    1.59   -44.0 
-#> 4 4           Arkansas         0.0887   1.30   -30.5 
-#> 5 40          South Carolina   0.0794   1.28     8.64
+#>   observation state                leverage weight residual
+#>   <chr>       <chr>                   <dbl>  <dbl>    <dbl>
+#> 1 2           Alaska                 0.651    4.58   110.  
+#> 2 48          District of Columbia   0.208    1.61  -161.  
+#> 3 24          Mississippi            0.200    1.59   -44.0 
+#> 4 4           Arkansas               0.0887   1.30   -30.5 
+#> 5 40          South Carolina         0.0794   1.28     8.64
 ```
 
 The covariance object can be plotted directly to display adjustment

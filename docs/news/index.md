@@ -1,6 +1,12 @@
 # Changelog
 
-## hcinfer (development version)
+## hcinfer 0.1.1
+
+- Added the `PublicSchools2` dataset with 2024 per capita income, 2025
+  public school expenditure per student, a Southern-region indicator,
+  and complete variable and source documentation.
+- Standardized the federal district name in `PublicSchools` from
+  `Washington DC` to `District of Columbia`.
 
 ## hcinfer 0.1.0
 

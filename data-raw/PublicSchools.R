@@ -10,7 +10,11 @@ env <- new.env(parent = emptyenv())
 load(source_file, envir = env)
 
 PublicSchools <- tibble::tibble(
-  state = rownames(env$PublicSchools),
+  state = ifelse(
+    rownames(env$PublicSchools) == "Washington DC",
+    "District of Columbia",
+    rownames(env$PublicSchools)
+  ),
   expenditure = as.numeric(env$PublicSchools$Expenditure),
   income = as.numeric(env$PublicSchools$Income)
 )

@@ -3,11 +3,12 @@
 \docType{data}
 \name{PublicSchools}
 \alias{PublicSchools}
-\title{Public school expenditure and income by US state}
+\title{Public school expenditure and income by U.S. jurisdiction}
 \format{
 A tibble with 51 rows and 3 variables:
 \describe{
-\item{state}{US state or Washington DC.}
+\item{state}{Name of one of the 50 U.S. states or the District of
+Columbia.}
 \item{expenditure}{Per capita expenditure on public schools in 1979. This
 variable has one missing value.}
 \item{income}{Per capita income in 1979.}
@@ -23,12 +24,13 @@ the U.S. Department of Commerce, \emph{Statistical Abstract of the United States
 PublicSchools
 }
 \description{
-Public school expenditure and income data for US states and Washington DC in
-1979. The expenditure value for Wisconsin is missing in the source data, so
-the standard regression example uses 50 complete observations. The data are
-useful for illustrating heteroskedasticity-consistent inference because
-Alaska is a high-leverage observation in the quadratic public-schools model
-studied in the HCbeta paper.
+Public school expenditure and income data for the 50 U.S. states and the
+District of Columbia in 1979. The expenditure value for Wisconsin is missing
+in the source data, so the standard regression example uses 50 complete
+observations. The data are useful for illustrating
+heteroskedasticity-consistent inference because Alaska is a high-leverage
+observation in the quadratic public-schools model studied in the HCbeta
+paper.
 }
 \examples{
 data(PublicSchools)
