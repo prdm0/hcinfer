@@ -85,7 +85,13 @@ check_scalar_number <- function(x, arg, lower = -Inf, upper = Inf,
     } else {
       paste0("(", lower, ", ", upper, ")")
     }
-    abort_bad_argument(arg, "It must be in the interval {.val {interval}}.", call = call)
+    cli::cli_abort(
+      c(
+        "Invalid argument {.arg {arg}}.",
+        "x" = "It must be in the interval {.val {interval}}."
+      ),
+      call = call
+    )
   }
 
   x
@@ -97,6 +103,20 @@ check_nonnegative_scalar <- function(x, arg, call = rlang::caller_env()) {
 
 check_positive_scalar <- function(x, arg, call = rlang::caller_env()) {
   check_scalar_number(x, arg, lower = 0, closed = FALSE, call = call)
+}
+
+check_count <- function(x, arg, call = rlang::caller_env()) {
+  if (!is.numeric(x) || length(x) != 1 || !is.finite(x) || x < 1 || x != round(x)) {
+    abort_bad_argument(arg, "It must be one positive integer.", call = call)
+  }
+  as.integer(x)
+}
+
+check_flag <- function(x, arg, call = rlang::caller_env()) {
+  if (!is.logical(x) || length(x) != 1 || is.na(x)) {
+    abort_bad_argument(arg, "It must be TRUE or FALSE.", call = call)
+  }
+  invisible(x)
 }
 
 check_dots_empty <- function(dots, call = rlang::caller_env()) {

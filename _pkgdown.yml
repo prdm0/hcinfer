@@ -37,6 +37,10 @@ reference:
       - confint.hcinfer
       - plot.hcinfer
       - summary.hcinfer
+  - title: Bootstrap
+    contents:
+      - boot_pairs
+      - hcinfer_boot-methods
   - title: Covariance estimators
     contents:
       - vcov_hc

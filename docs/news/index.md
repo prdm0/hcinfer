@@ -1,6 +1,38 @@
 # Changelog
 
+## hcinfer (development version)
+
+- Added
+  [`boot_pairs()`](https://prdm0.github.io/hcinfer/reference/boot_pairs.md)
+  for pairs (case) bootstrap standard errors and confidence intervals of
+  ordinary least squares coefficients. It resamples the observations
+  with replacement, refits the model on each replicate, and summarizes
+  the sampling distribution of the coefficients, providing an
+  assumption-free empirical reference for the analytic
+  heteroskedasticity-consistent standard errors from
+  [`hcinfer()`](https://prdm0.github.io/hcinfer/reference/hcinfer.md)
+  and
+  [`vcov_hc()`](https://prdm0.github.io/hcinfer/reference/vcov_hc.md).
+  Percentile, basic, and normal intervals are available, the resampling
+  is reproducible through the `seed` argument, and the replicate fits
+  can optionally run in parallel via
+  [`purrr::in_parallel()`](https://purrr.tidyverse.org/reference/in_parallel.html)
+  and `mirai` without changing the numeric result.
+- Added [`coef()`](https://rdrr.io/r/stats/coef.html),
+  [`vcov()`](https://rdrr.io/r/stats/vcov.html),
+  [`confint()`](https://rdrr.io/r/stats/confint.html), and
+  [`print()`](https://rdrr.io/r/base/print.html) methods for the
+  `hcinfer_boot` objects returned by
+  [`boot_pairs()`](https://prdm0.github.io/hcinfer/reference/boot_pairs.md).
+  [`vcov()`](https://rdrr.io/r/stats/vcov.html) returns the bootstrap
+  covariance matrix of the coefficients, and
+  [`confint()`](https://rdrr.io/r/stats/confint.html) can recompute
+  intervals at a different `level` or `type` directly from the stored
+  replicates.
+
 ## hcinfer 0.1.1
+
+CRAN release: 2026-07-13
 
 - Added the `PublicSchools2` dataset with 2024 per capita income, 2025
   public school expenditure per student, a Southern-region indicator,

@@ -1,6 +1,6 @@
 Package: hcinfer
 Title: Heteroskedasticity-Consistent Inference for Linear Models
-Version: 0.1.1
+Version: 0.1.1.9000
 Authors@R: c(
     person("Pedro Rafael D.", "Marinho", email = "pedro.rafael.marinho@gmail.com",
            role = c("aut", "cre"),
@@ -14,8 +14,7 @@ Description: Computes heteroskedasticity-consistent covariance matrix
     estimators for ordinary least squares regression models. The published HC0
     through HC5m estimators implemented in the package follow White (1980)
     <doi:10.2307/1912934>, Hinkley (1977)
-    <doi:10.1080/00401706.1977.10489550>, Horn et al. (1975)
-    <doi:10.1080/01621459.1975.10479877>, MacKinnon and White (1985)
+    <doi:10.1080/00401706.1977.10489550>, MacKinnon and White (1985)
     <doi:10.1016/0304-4076(85)90158-7>, Cribari-Neto (2004)
     <doi:10.1016/S0167-9473(02)00366-3>, Cribari-Neto and da Silva
     (2011) <doi:10.1007/s10182-010-0141-2>, Cribari-Neto et al. (2007)
@@ -37,8 +36,10 @@ Imports:
     rlang,
     tibble
 Suggests:
+    carrier,
     dplyr,
     knitr,
+    mirai,
     rmarkdown,
     testthat (>= 3.0.0)
 VignetteBuilder: knitr
@@ -46,4 +47,4 @@ Config/testthat/edition: 3
 Config/Needs/website: pkgdown
 LazyData: true
 Config/roxygen2/version: 8.0.0
-RoxygenNote: 7.3.3
+RoxygenNote: 8.0.0

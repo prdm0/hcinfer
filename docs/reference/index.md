@@ -13,6 +13,16 @@
 - [`summary(`*`<hcinfer>`*`)`](https://prdm0.github.io/hcinfer/reference/summary.hcinfer.md)
   : Summarize heteroskedasticity-consistent inference
 
+## Bootstrap
+
+- [`boot_pairs()`](https://prdm0.github.io/hcinfer/reference/boot_pairs.md)
+  [`print(`*`<hcinfer_boot>`*`)`](https://prdm0.github.io/hcinfer/reference/boot_pairs.md)
+  : Pairs bootstrap standard errors and confidence intervals
+- [`coef(`*`<hcinfer_boot>`*`)`](https://prdm0.github.io/hcinfer/reference/hcinfer_boot-methods.md)
+  [`vcov(`*`<hcinfer_boot>`*`)`](https://prdm0.github.io/hcinfer/reference/hcinfer_boot-methods.md)
+  [`confint(`*`<hcinfer_boot>`*`)`](https://prdm0.github.io/hcinfer/reference/hcinfer_boot-methods.md)
+  : Extract components from a pairs bootstrap object
+
 ## Covariance estimators
 
 - [`vcov_hc()`](https://prdm0.github.io/hcinfer/reference/vcov_hc.md) :

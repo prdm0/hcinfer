@@ -143,10 +143,6 @@ for a compact overview of the package API.
 - Hinkley, D. V. (1977). Jackknifing in unbalanced situations.
   *Technometrics*, 19(3), 285-292.
   [doi:10.1080/00401706.1977.10489550](https://doi.org/10.1080/00401706.1977.10489550).
-- Horn, S. D., Horn, R. A., and Duncan, D. B. (1975). Estimating
-  heteroscedastic variances in linear models. *Journal of the American
-  Statistical Association*, 70(350), 380-385.
-  [doi:10.1080/01621459.1975.10479877](https://doi.org/10.1080/01621459.1975.10479877).
 - MacKinnon, J. G. and White, H. (1985). Some
   heteroskedasticity-consistent covariance matrix estimators with
   improved finite sample properties. *Journal of Econometrics*, 29(3),
@@ -189,6 +185,16 @@ for a compact overview of the package API.
   : Plot robust confidence intervals
 - [`summary(`*`<hcinfer>`*`)`](https://prdm0.github.io/hcinfer/reference/summary.hcinfer.md)
   : Summarize heteroskedasticity-consistent inference
+
+## Bootstrap
+
+- [`boot_pairs()`](https://prdm0.github.io/hcinfer/reference/boot_pairs.md)
+  [`print(`*`<hcinfer_boot>`*`)`](https://prdm0.github.io/hcinfer/reference/boot_pairs.md)
+  : Pairs bootstrap standard errors and confidence intervals
+- [`coef(`*`<hcinfer_boot>`*`)`](https://prdm0.github.io/hcinfer/reference/hcinfer_boot-methods.md)
+  [`vcov(`*`<hcinfer_boot>`*`)`](https://prdm0.github.io/hcinfer/reference/hcinfer_boot-methods.md)
+  [`confint(`*`<hcinfer_boot>`*`)`](https://prdm0.github.io/hcinfer/reference/hcinfer_boot-methods.md)
+  : Extract components from a pairs bootstrap object
 
 ## Covariance estimators
 

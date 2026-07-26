@@ -84,11 +84,6 @@ Hinkley, D. V. (1977). Jackknifing in unbalanced situations.
 \emph{Technometrics}, 19(3), 285-292.
 \doi{10.1080/00401706.1977.10489550}
 
-Horn, S. D., Horn, R. A., and Duncan, D. B. (1975). Estimating
-heteroscedastic variances in linear models. \emph{Journal of the American
-Statistical Association}, 70(350), 380-385.
-\doi{10.1080/01621459.1975.10479877}
-
 MacKinnon, J. G. and White, H. (1985). Some heteroskedasticity-consistent
 covariance matrix estimators with improved finite sample properties.
 \emph{Journal of Econometrics}, 29(3), 305-325.
