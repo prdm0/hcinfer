@@ -11,11 +11,11 @@
 #' produced by [hcinfer()] and [vcov_hc()].
 #'
 #' @details
-#' For each of `R` bootstrap replicates, a sample of `n` row indices is drawn
+#' For each of `B` bootstrap replicates, a sample of `n` row indices is drawn
 #' with replacement from `1, ..., n`, and OLS is refitted on the resampled rows
 #' \eqn{(y_{i}, x_{i})}. Writing \eqn{\hat\beta^{*}_{(r)}} for the estimate on
 #' replicate `r`, the bootstrap standard error of coefficient `j` is the sample
-#' standard deviation of \eqn{\hat\beta^{*}_{1,j}, \ldots, \hat\beta^{*}_{R,j}},
+#' standard deviation of \eqn{\hat\beta^{*}_{1,j}, \ldots, \hat\beta^{*}_{B,j}},
 #' and the bias estimate is the mean of the replicates minus the original OLS
 #' estimate.
 #'
@@ -40,13 +40,14 @@
 #' does not disturb a surrounding random stream. When `seed` is `NULL`, the
 #' current RNG state is used and results are not reproducible.
 #'
-#' **Parallelism.** With `parallel = TRUE`, the deterministic per-replicate fits
-#' are distributed with [purrr::in_parallel()], which uses the \pkg{mirai}
-#' package as its backend. `boot_pairs()` starts `cores` daemons for the duration
-#' of the call and shuts them down on exit; do not call it while relying on
-#' externally configured `mirai` daemons. Parallelism only speeds up the
-#' computation: it never changes the numeric result. It is worthwhile mainly for
-#' large `R` or large `n`; for small problems the setup overhead can dominate.
+#' **Parallelism.** The default `cores = 1` fits the replicates sequentially.
+#' When `cores` rounds to `2` or more, the deterministic per-replicate fits are
+#' distributed with [purrr::in_parallel()], which uses the \pkg{mirai} package
+#' as its backend. `boot_pairs()` starts `cores` daemons for the duration of the
+#' call and shuts them down on exit; do not call it while relying on externally
+#' configured `mirai` daemons. Parallelism only speeds up the computation: it
+#' never changes the numeric result. It is worthwhile mainly for large `B` or
+#' large `n`; for small problems the setup overhead can dominate.
 #'
 #' **Rank-deficient resamples.** A resample can be rank deficient (for example
 #' when a resample omits the observations that identify a coefficient). Such
@@ -56,27 +57,29 @@
 #'
 #' @param object An ordinary least squares model fitted by [stats::lm()].
 #'   Weighted fits are not supported.
-#' @param R Number of bootstrap replicates. A positive integer; defaults to
+#' @param B Number of bootstrap replicates. A positive integer; defaults to
 #'   `1000`.
 #' @param level Confidence level for the intervals, strictly between 0 and 1.
 #'   Defaults to `0.95`.
 #' @param ci_type Interval type: `"percentile"` (default), `"basic"`, or
 #'   `"normal"`. See Details.
-#' @param parallel Logical; if `TRUE`, run the replicate fits in parallel with
-#'   [purrr::in_parallel()] and \pkg{mirai}. Defaults to `FALSE`.
-#' @param cores Number of parallel worker processes to use when
-#'   `parallel = TRUE`. A positive integer, or `NULL` (the default) to use one
-#'   fewer than the number of detected cores. Ignored when `parallel = FALSE`.
+#' @param cores Number of worker processes. A single number greater than or
+#'   equal to 1; non-integer values are rounded to the nearest integer. The
+#'   default `1` runs the replicate fits sequentially. Any value that rounds to
+#'   `2` or more runs them in parallel with [purrr::in_parallel()] and the
+#'   \pkg{mirai} backend, which requires the \pkg{mirai} and \pkg{carrier}
+#'   packages. Parallelism only speeds up the computation and never changes the
+#'   numeric result.
 #' @param seed Optional single number used to seed the resampling for
 #'   reproducibility. When supplied, the result is deterministic and independent
-#'   of `parallel` and `cores`. Defaults to `NULL`.
+#'   of the number of `cores`. Defaults to `NULL`.
 #'
 #' @return
 #' An object of class `hcinfer_boot`: a list with the original OLS
 #' `coefficients`, bootstrap `std_error`, `bias`, interval endpoints `conf_low`
-#' and `conf_high`, the settings (`level`, `ci_type`, `R`, `R_effective`,
-#' `n_failed`, `parallel`, `cores`, `seed`), the full `replicates` matrix
-#' (`R` rows by `p` columns), and a tidy `table` tibble with columns `term`,
+#' and `conf_high`, the settings (`level`, `ci_type`, `B`, `B_effective`,
+#' `n_failed`, `cores`, `seed`), the full `replicates` matrix
+#' (`B` rows by `p` columns), and a tidy `table` tibble with columns `term`,
 #' `estimate`, `bias`, `std_error`, `conf_low`, and `conf_high`. Use
 #' [coef()], [vcov()], and [confint()] to extract components.
 #'
@@ -97,60 +100,56 @@
 #'   )
 #' fit <- lm(expenditure ~ income_scaled + income_scaled_sq, data = schools)
 #'
-#' # 1. Basic reproducible pairs bootstrap with percentile intervals.
-#' boot <- boot_pairs(fit, R = 1000, seed = 123)
+#' # 1. Fit, inspect, and visualize a reproducible pairs bootstrap.
+#' boot <- boot_pairs(fit, B = 1000, seed = 123)
 #' boot
 #' confint(boot)
+#' plot(boot)
 #'
-#' # 2. Reproducibility and use as an empirical reference for HC standard errors.
-#' boot_a <- boot_pairs(fit, R = 1000, seed = 2024)
-#' boot_b <- boot_pairs(fit, R = 1000, seed = 2024)
-#' identical(boot_a$replicates, boot_b$replicates)
+#' # 2. Use the bootstrap as an empirical reference for the analytic HC standard
+#' #    errors, side by side in one table.
 #' data.frame(
-#'   term = boot_a$table$term,
-#'   bootstrap = boot_a$table$std_error,
-#'   hcbeta = sqrt(diag(vcov(hcinfer(fit, type = "hcbeta"))))
+#'   term = boot$table$term,
+#'   ols = sqrt(diag(vcov(fit))),
+#'   bootstrap = boot$table$std_error,
+#'   hcbeta = sqrt(diag(vcov(hcinfer(fit, type = "hcbeta")))),
+#'   hc3 = sqrt(diag(vcov(hcinfer(fit, type = "hc3"))))
 #' )
 #'
-#' # 3. Parallel run with more replicates and basic (reverse-percentile)
-#' #    intervals. Requires the mirai package; the numeric result matches a
-#' #    sequential run with the same seed.
+#' # 3. Recompute intervals at a new level and type from the same replicates,
+#' #    without rerunning the bootstrap.
+#' confint(boot, level = 0.99, type = "basic")
+#' confint(boot, parm = "income_scaled_sq", level = 0.90)
+#'
+#' # 4. Larger, parallel run on two cores. Requires the mirai and carrier
+#' #    packages; the numeric result matches a sequential run with the same seed.
 #' \donttest{
 #' if (requireNamespace("mirai", quietly = TRUE) &&
 #'     requireNamespace("carrier", quietly = TRUE)) {
-#'   boot_par <- boot_pairs(
-#'     fit,
-#'     R = 4000,
-#'     ci_type = "basic",
-#'     parallel = TRUE,
-#'     cores = 2,
-#'     seed = 42
-#'   )
-#'   summary_par <- boot_par$table
-#'   print(summary_par)
+#'   boot_par <- boot_pairs(fit, B = 4000, ci_type = "basic", cores = 2, seed = 42)
+#'   boot_par$table
 #' }
 #' }
 #'
 #' @export
 boot_pairs <- function(object,
-                       R = 1000L,
+                       B = 1000L,
                        level = 0.95,
                        ci_type = c("percentile", "basic", "normal"),
-                       parallel = FALSE,
-                       cores = NULL,
+                       cores = 1L,
                        seed = NULL) {
   call <- match.call()
   ci_type <- rlang::arg_match(ci_type)
-  R <- check_count(R, "R")
+  B <- check_count(B, "B")
   level <- check_scalar_number(level, "level", lower = 0, upper = 1,
     closed = FALSE)
-  check_flag(parallel, "parallel")
   if (!is.null(seed)) {
     seed <- check_scalar_number(seed, "seed")
   }
-  if (!is.null(cores)) {
-    cores <- check_count(cores, "cores")
+  if (!is.numeric(cores) || length(cores) != 1 || !is.finite(cores) || cores < 1) {
+    abort_bad_argument("cores", "It must be a single number greater than or equal to 1.")
   }
+  cores <- as.integer(round(cores))
 
   info <- model_info_lm(object)
   x <- info$x
@@ -167,11 +166,10 @@ boot_pairs <- function(object,
     }
     set.seed(seed)
   }
-  idx_list <- purrr::map(seq_len(R), function(i) sample.int(n, n, replace = TRUE))
+  idx_list <- purrr::map(seq_len(B), function(i) sample.int(n, n, replace = TRUE))
 
-  if (parallel) {
+  if (cores >= 2L) {
     rlang::check_installed(c("mirai", "carrier"), reason = "for parallel pairs bootstrap.")
-    cores <- resolve_boot_cores(cores)
     mirai::daemons(cores)
     on.exit(mirai::daemons(0), add = TRUE)
     coef_list <- purrr::map(
@@ -199,8 +197,8 @@ boot_pairs <- function(object,
     cli::cli_abort(
       c(
         "The pairs bootstrap could not produce enough valid replicates.",
-        "x" = "Only {nrow(replicates_ok)} of {R} resamples yielded a full-rank fit.",
-        "i" = "Increase {.arg R} or check the design matrix for near-collinearity."
+        "x" = "Only {nrow(replicates_ok)} of {B} resamples yielded a full-rank fit.",
+        "i" = "Increase {.arg B} or check the design matrix for near-collinearity."
       )
     )
   }
@@ -208,7 +206,7 @@ boot_pairs <- function(object,
     cli::cli_warn(
       c(
         "Some pairs bootstrap resamples were rank deficient and were dropped.",
-        "i" = "{n_failed} of {R} resamples produced a rank-deficient fit."
+        "i" = "{n_failed} of {B} resamples produced a rank-deficient fit."
       )
     )
   }
@@ -238,11 +236,10 @@ boot_pairs <- function(object,
       conf_high = stats::setNames(unname(ci$conf_high), terms),
       level = level,
       ci_type = ci_type,
-      R = R,
-      R_effective = nrow(replicates_ok),
+      B = B,
+      B_effective = nrow(replicates_ok),
       n_failed = n_failed,
-      parallel = parallel,
-      cores = if (parallel) cores else NULL,
+      cores = cores,
       seed = seed,
       n = n,
       p = p,
@@ -290,17 +287,6 @@ boot_pairs_ci <- function(replicates, estimate, std_error, level, ci_type) {
   list(conf_low = lower, conf_high = upper)
 }
 
-resolve_boot_cores <- function(cores) {
-  if (!is.null(cores)) {
-    return(cores)
-  }
-  detected <- parallel::detectCores()
-  if (is.na(detected) || detected < 2L) {
-    return(1L)
-  }
-  as.integer(detected - 1L)
-}
-
 boot_display_table <- function(table) {
   tibble::tibble(
     term = table$term,
@@ -345,9 +331,9 @@ print.hcinfer_boot <- function(x, ...) {
   model <- output_label("model", "Model")
   cli::cli_text("{model}: {.code {format_formula(x$model_formula)}}")
   cli::cli_text("Observations: {x$n} | Parameters: {x$p}")
-  cli::cli_text("Replicates: {x$R_effective} of {x$R} valid | Interval: {x$ci_type} at {format_percent(x$level)}")
+  cli::cli_text("Replicates: {x$B_effective} of {x$B} valid | Interval: {x$ci_type} at {format_percent(x$level)}")
 
-  execution <- if (isTRUE(x$parallel)) paste0("parallel (", x$cores, " cores)") else "sequential"
+  execution <- if (x$cores >= 2L) paste0("parallel (", x$cores, " cores)") else "sequential"
   seed_text <- if (is.null(x$seed)) "none" else as.character(x$seed)
   cli::cli_text("Execution: {execution} | Seed: {seed_text}")
 

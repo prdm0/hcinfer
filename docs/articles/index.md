@@ -13,3 +13,5 @@
   Estimators](https://prdm0.github.io/hcinfer/articles/hcinfer-comparison.md):
 - [Using
   HCbeta](https://prdm0.github.io/hcinfer/articles/hcinfer-hcbeta.md):
+- [Pairs bootstrap inference with
+  hcinfer](https://prdm0.github.io/hcinfer/articles/hcinfer-bootstrap.md):

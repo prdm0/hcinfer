@@ -7,11 +7,10 @@
 \usage{
 boot_pairs(
   object,
-  R = 1000L,
+  B = 1000L,
   level = 0.95,
   ci_type = c("percentile", "basic", "normal"),
-  parallel = FALSE,
-  cores = NULL,
+  cores = 1L,
   seed = NULL
 )
 
@@ -21,7 +20,7 @@ boot_pairs(
 \item{object}{An ordinary least squares model fitted by \code{\link[stats:lm]{stats::lm()}}.
 Weighted fits are not supported.}
 
-\item{R}{Number of bootstrap replicates. A positive integer; defaults to
+\item{B}{Number of bootstrap replicates. A positive integer; defaults to
 \code{1000}.}
 
 \item{level}{Confidence level for the intervals, strictly between 0 and 1.
@@ -30,16 +29,17 @@ Defaults to \code{0.95}.}
 \item{ci_type}{Interval type: \code{"percentile"} (default), \code{"basic"}, or
 \code{"normal"}. See Details.}
 
-\item{parallel}{Logical; if \code{TRUE}, run the replicate fits in parallel with
-\code{\link[purrr:in_parallel]{purrr::in_parallel()}} and \pkg{mirai}. Defaults to \code{FALSE}.}
-
-\item{cores}{Number of parallel worker processes to use when
-\code{parallel = TRUE}. A positive integer, or \code{NULL} (the default) to use one
-fewer than the number of detected cores. Ignored when \code{parallel = FALSE}.}
+\item{cores}{Number of worker processes. A single number greater than or
+equal to 1; non-integer values are rounded to the nearest integer. The
+default \code{1} runs the replicate fits sequentially. Any value that rounds to
+\code{2} or more runs them in parallel with \code{\link[purrr:in_parallel]{purrr::in_parallel()}} and the
+\pkg{mirai} backend, which requires the \pkg{mirai} and \pkg{carrier}
+packages. Parallelism only speeds up the computation and never changes the
+numeric result.}
 
 \item{seed}{Optional single number used to seed the resampling for
 reproducibility. When supplied, the result is deterministic and independent
-of \code{parallel} and \code{cores}. Defaults to \code{NULL}.}
+of the number of \code{cores}. Defaults to \code{NULL}.}
 
 \item{x}{An object returned by \code{\link[=boot_pairs]{boot_pairs()}}.}
 
@@ -48,9 +48,9 @@ of \code{parallel} and \code{cores}. Defaults to \code{NULL}.}
 \value{
 An object of class \code{hcinfer_boot}: a list with the original OLS
 \code{coefficients}, bootstrap \code{std_error}, \code{bias}, interval endpoints \code{conf_low}
-and \code{conf_high}, the settings (\code{level}, \code{ci_type}, \code{R}, \code{R_effective},
-\code{n_failed}, \code{parallel}, \code{cores}, \code{seed}), the full \code{replicates} matrix
-(\code{R} rows by \code{p} columns), and a tidy \code{table} tibble with columns \code{term},
+and \code{conf_high}, the settings (\code{level}, \code{ci_type}, \code{B}, \code{B_effective},
+\code{n_failed}, \code{cores}, \code{seed}), the full \code{replicates} matrix
+(\code{B} rows by \code{p} columns), and a tidy \code{table} tibble with columns \code{term},
 \code{estimate}, \code{bias}, \code{std_error}, \code{conf_low}, and \code{conf_high}. Use
 \code{\link[=coef]{coef()}}, \code{\link[=vcov]{vcov()}}, and \code{\link[=confint]{confint()}} to extract components.
 }
@@ -65,11 +65,11 @@ reference for the analytic heteroskedasticity-consistent standard errors
 produced by \code{\link[=hcinfer]{hcinfer()}} and \code{\link[=vcov_hc]{vcov_hc()}}.
 }
 \details{
-For each of \code{R} bootstrap replicates, a sample of \code{n} row indices is drawn
+For each of \code{B} bootstrap replicates, a sample of \code{n} row indices is drawn
 with replacement from \verb{1, ..., n}, and OLS is refitted on the resampled rows
 \eqn{(y_{i}, x_{i})}. Writing \eqn{\hat\beta^{*}_{(r)}} for the estimate on
 replicate \code{r}, the bootstrap standard error of coefficient \code{j} is the sample
-standard deviation of \eqn{\hat\beta^{*}_{1,j}, \ldots, \hat\beta^{*}_{R,j}},
+standard deviation of \eqn{\hat\beta^{*}_{1,j}, \ldots, \hat\beta^{*}_{B,j}},
 and the bias estimate is the mean of the replicates minus the original OLS
 estimate.
 
@@ -94,13 +94,14 @@ random number generator state is saved and restored, so calling \code{boot_pairs
 does not disturb a surrounding random stream. When \code{seed} is \code{NULL}, the
 current RNG state is used and results are not reproducible.
 
-\strong{Parallelism.} With \code{parallel = TRUE}, the deterministic per-replicate fits
-are distributed with \code{\link[purrr:in_parallel]{purrr::in_parallel()}}, which uses the \pkg{mirai}
-package as its backend. \code{boot_pairs()} starts \code{cores} daemons for the duration
-of the call and shuts them down on exit; do not call it while relying on
-externally configured \code{mirai} daemons. Parallelism only speeds up the
-computation: it never changes the numeric result. It is worthwhile mainly for
-large \code{R} or large \code{n}; for small problems the setup overhead can dominate.
+\strong{Parallelism.} The default \code{cores = 1} fits the replicates sequentially.
+When \code{cores} rounds to \code{2} or more, the deterministic per-replicate fits are
+distributed with \code{\link[purrr:in_parallel]{purrr::in_parallel()}}, which uses the \pkg{mirai} package
+as its backend. \code{boot_pairs()} starts \code{cores} daemons for the duration of the
+call and shuts them down on exit; do not call it while relying on externally
+configured \code{mirai} daemons. Parallelism only speeds up the computation: it
+never changes the numeric result. It is worthwhile mainly for large \code{B} or
+large \code{n}; for small problems the setup overhead can dominate.
 
 \strong{Rank-deficient resamples.} A resample can be rank deficient (for example
 when a resample omits the observations that identify a coefficient). Such
@@ -116,37 +117,34 @@ schools <- PublicSchools |>
   )
 fit <- lm(expenditure ~ income_scaled + income_scaled_sq, data = schools)
 
-# 1. Basic reproducible pairs bootstrap with percentile intervals.
-boot <- boot_pairs(fit, R = 1000, seed = 123)
+# 1. Fit, inspect, and visualize a reproducible pairs bootstrap.
+boot <- boot_pairs(fit, B = 1000, seed = 123)
 boot
 confint(boot)
+plot(boot)
 
-# 2. Reproducibility and use as an empirical reference for HC standard errors.
-boot_a <- boot_pairs(fit, R = 1000, seed = 2024)
-boot_b <- boot_pairs(fit, R = 1000, seed = 2024)
-identical(boot_a$replicates, boot_b$replicates)
+# 2. Use the bootstrap as an empirical reference for the analytic HC standard
+#    errors, side by side in one table.
 data.frame(
-  term = boot_a$table$term,
-  bootstrap = boot_a$table$std_error,
-  hcbeta = sqrt(diag(vcov(hcinfer(fit, type = "hcbeta"))))
+  term = boot$table$term,
+  ols = sqrt(diag(vcov(fit))),
+  bootstrap = boot$table$std_error,
+  hcbeta = sqrt(diag(vcov(hcinfer(fit, type = "hcbeta")))),
+  hc3 = sqrt(diag(vcov(hcinfer(fit, type = "hc3"))))
 )
 
-# 3. Parallel run with more replicates and basic (reverse-percentile)
-#    intervals. Requires the mirai package; the numeric result matches a
-#    sequential run with the same seed.
+# 3. Recompute intervals at a new level and type from the same replicates,
+#    without rerunning the bootstrap.
+confint(boot, level = 0.99, type = "basic")
+confint(boot, parm = "income_scaled_sq", level = 0.90)
+
+# 4. Larger, parallel run on two cores. Requires the mirai and carrier
+#    packages; the numeric result matches a sequential run with the same seed.
 \donttest{
 if (requireNamespace("mirai", quietly = TRUE) &&
     requireNamespace("carrier", quietly = TRUE)) {
-  boot_par <- boot_pairs(
-    fit,
-    R = 4000,
-    ci_type = "basic",
-    parallel = TRUE,
-    cores = 2,
-    seed = 42
-  )
-  summary_par <- boot_par$table
-  print(summary_par)
+  boot_par <- boot_pairs(fit, B = 4000, ci_type = "basic", cores = 2, seed = 42)
+  boot_par$table
 }
 }
 

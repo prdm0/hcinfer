@@ -22,6 +22,7 @@ articles:
       - hcinfer-methodology
       - hcinfer-comparison
       - hcinfer-hcbeta
+      - hcinfer-bootstrap
 
 home:
   title: Heteroskedasticity-consistent inference for linear models
@@ -41,6 +42,7 @@ reference:
     contents:
       - boot_pairs
       - hcinfer_boot-methods
+      - plot.hcinfer_boot
   - title: Covariance estimators
     contents:
       - vcov_hc

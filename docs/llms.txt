@@ -195,6 +195,8 @@ for a compact overview of the package API.
   [`vcov(`*`<hcinfer_boot>`*`)`](https://prdm0.github.io/hcinfer/reference/hcinfer_boot-methods.md)
   [`confint(`*`<hcinfer_boot>`*`)`](https://prdm0.github.io/hcinfer/reference/hcinfer_boot-methods.md)
   : Extract components from a pairs bootstrap object
+- [`plot(`*`<hcinfer_boot>`*`)`](https://prdm0.github.io/hcinfer/reference/plot.hcinfer_boot.md)
+  : Plot pairs bootstrap confidence intervals
 
 ## Covariance estimators
 
@@ -241,3 +243,5 @@ for a compact overview of the package API.
   Estimators](https://prdm0.github.io/hcinfer/articles/hcinfer-comparison.md):
 - [Using
   HCbeta](https://prdm0.github.io/hcinfer/articles/hcinfer-hcbeta.md):
+- [Pairs bootstrap inference with
+  hcinfer](https://prdm0.github.io/hcinfer/articles/hcinfer-bootstrap.md):

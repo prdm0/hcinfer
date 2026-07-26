@@ -287,6 +287,124 @@ plot.hcinfer_vcov <- function(x, label_top = 3, ...) {
     )
 }
 
+#' Plot pairs bootstrap confidence intervals
+#'
+#' @description
+#' Plots the pairs bootstrap confidence intervals stored in a [boot_pairs()]
+#' object. Each coefficient is drawn as its ordinary least squares point estimate
+#' with a horizontal bootstrap interval, color-coded by whether the interval
+#' excludes zero (shown in red) or includes zero (shown in blue). A dashed
+#' vertical reference line is drawn at zero.
+#'
+#' @param x An object returned by [boot_pairs()].
+#' @param parm Optional coefficient names or integer positions. When supplied,
+#'   only the selected coefficients are plotted, following the same rules as
+#'   [confint.hcinfer_boot()].
+#' @param ... Unused. Passing named arguments raises an error.
+#'
+#' @return A [ggplot2::ggplot()] object.
+#'
+#' @seealso [boot_pairs()], [plot.hcinfer()]
+#'
+#' @examples
+#' schools <- PublicSchools |>
+#'   dplyr::mutate(
+#'     income_scaled = income / 10000,
+#'     income_scaled_sq = income_scaled^2
+#'   )
+#' fit <- lm(expenditure ~ income_scaled + income_scaled_sq, data = schools)
+#' boot <- boot_pairs(fit, B = 1000, seed = 123)
+#' plot(boot)
+#' plot(boot, parm = "income_scaled_sq")
+#'
+#' @export
+plot.hcinfer_boot <- function(x, parm, ...) {
+  check_dots_empty(list(...))
+
+  plot_data <- x$table
+
+  if (!missing(parm)) {
+    if (is.numeric(parm)) {
+      plot_data <- plot_data[parm, , drop = FALSE]
+    } else if (is.character(parm)) {
+      missing_terms <- setdiff(parm, plot_data$term)
+      if (length(missing_terms) > 0) {
+        cli::cli_abort(
+          c(
+            "Unknown coefficient name in {.arg parm}.",
+            "x" = "Unknown term: {.val {missing_terms}}."
+          )
+        )
+      }
+      plot_data <- plot_data[match(parm, plot_data$term), , drop = FALSE]
+    } else {
+      abort_bad_argument("parm", "It must contain coefficient names or positions.")
+    }
+  }
+
+  plot_data$term <- factor(plot_data$term, levels = rev(plot_data$term))
+  plot_data$relation <- ifelse(
+    plot_data$conf_low <= 0 & plot_data$conf_high >= 0,
+    "includes zero",
+    "excludes zero"
+  )
+
+  pal <- c(
+    "excludes zero" = "#c0392b",
+    "includes zero" = "#2c5f8a"
+  )
+
+  ggplot2::ggplot(
+    plot_data,
+    ggplot2::aes(y = .data$term, color = .data$relation)
+  ) +
+    ggplot2::geom_vline(
+      xintercept = 0,
+      linewidth  = 0.35,
+      linetype   = "dashed",
+      color      = "grey50"
+    ) +
+    ggplot2::geom_segment(
+      ggplot2::aes(x = .data$conf_low, xend = .data$conf_high, yend = .data$term),
+      linewidth = 1
+    ) +
+    ggplot2::geom_point(
+      ggplot2::aes(x = .data$estimate),
+      size  = 3.2,
+      shape = 19
+    ) +
+    ggplot2::scale_color_manual(
+      name   = NULL,
+      values = pal,
+      breaks = c("includes zero", "excludes zero")
+    ) +
+    ggplot2::scale_x_continuous(
+      expand = ggplot2::expansion(mult = c(0.08, 0.08))
+    ) +
+    ggplot2::labs(
+      title    = "Pairs bootstrap confidence intervals",
+      subtitle = paste0(format_percent(x$level), " ", x$ci_type, " bootstrap intervals"),
+      caption  = paste0("n = ", x$n, "  \u00b7  B = ", x$B_effective, " valid of ", x$B, " replicates"),
+      x        = "Coefficient estimate",
+      y        = NULL
+    ) +
+    ggplot2::theme_minimal(base_size = 12) +
+    ggplot2::theme(
+      plot.title            = ggplot2::element_text(face = "bold", size = 13),
+      plot.subtitle         = ggplot2::element_text(color = "grey40", margin = ggplot2::margin(b = 4)),
+      plot.caption          = ggplot2::element_text(color = "grey50", size = 8, hjust = 0),
+      plot.title.position   = "plot",
+      plot.caption.position = "plot",
+      axis.text.y           = ggplot2::element_text(face = "bold", size = 10.5),
+      axis.text.x           = ggplot2::element_text(color = "grey40", size = 9),
+      panel.grid.major.y    = ggplot2::element_blank(),
+      panel.grid.minor      = ggplot2::element_blank(),
+      panel.grid.major.x    = ggplot2::element_line(color = "grey90", linewidth = 0.4),
+      legend.position       = "bottom",
+      legend.text           = ggplot2::element_text(size = 9)
+    )
+}
+
 check_label_top <- function(label_top, call = rlang::caller_env()) {
   if (!is.numeric(label_top) || length(label_top) != 1 || !is.finite(label_top)) {
     abort_bad_argument("label_top", "It must be one nonnegative whole number.", call = call)

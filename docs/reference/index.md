@@ -22,6 +22,8 @@
   [`vcov(`*`<hcinfer_boot>`*`)`](https://prdm0.github.io/hcinfer/reference/hcinfer_boot-methods.md)
   [`confint(`*`<hcinfer_boot>`*`)`](https://prdm0.github.io/hcinfer/reference/hcinfer_boot-methods.md)
   : Extract components from a pairs bootstrap object
+- [`plot(`*`<hcinfer_boot>`*`)`](https://prdm0.github.io/hcinfer/reference/plot.hcinfer_boot.md)
+  : Plot pairs bootstrap confidence intervals
 
 ## Covariance estimators
 

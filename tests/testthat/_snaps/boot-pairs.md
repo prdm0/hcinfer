@@ -10,16 +10,16 @@
 ---
 
     Code
-      boot_pairs(fit, R = 0)
+      boot_pairs(fit, B = 0)
     Condition
       Error in `boot_pairs()`:
-      ! Invalid argument `R`.
+      ! Invalid argument `B`.
       x It must be one positive integer.
 
 ---
 
     Code
-      boot_pairs(fit, R = 100, level = 1)
+      boot_pairs(fit, B = 100, level = 1)
     Condition
       Error in `boot_pairs()`:
       ! Invalid argument `level`.
@@ -28,18 +28,18 @@
 ---
 
     Code
-      boot_pairs(fit, R = 100, parallel = "yes")
+      boot_pairs(fit, B = 100, cores = 0)
     Condition
       Error in `boot_pairs()`:
-      ! Invalid argument `parallel`.
-      x It must be TRUE or FALSE.
+      ! Invalid argument `cores`.
+      x It must be a single number greater than or equal to 1.
 
 ---
 
     Code
-      boot_pairs(fit, R = 100, cores = -1)
+      boot_pairs(fit, B = 100, cores = "two")
     Condition
       Error in `boot_pairs()`:
       ! Invalid argument `cores`.
-      x It must be one positive integer.
+      x It must be a single number greater than or equal to 1.
 

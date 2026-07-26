@@ -1,6 +1,6 @@
 test_that("boot_pairs() returns a well-formed hcinfer_boot object", {
   fit <- public_schools_article_fit()
-  boot <- boot_pairs(fit, R = 200, seed = 1)
+  boot <- boot_pairs(fit, B = 200, seed = 1)
 
   expect_s3_class(boot, "hcinfer_boot")
   expect_named(
@@ -16,7 +16,7 @@ test_that("boot_pairs() returns a well-formed hcinfer_boot object", {
 
 test_that("boot_pairs() std_error and vcov are internally consistent", {
   fit <- public_schools_article_fit()
-  boot <- boot_pairs(fit, R = 300, seed = 5)
+  boot <- boot_pairs(fit, B = 300, seed = 5)
 
   expect_equal(
     unname(boot$std_error),
@@ -31,8 +31,8 @@ test_that("boot_pairs() std_error and vcov are internally consistent", {
 
 test_that("boot_pairs() is reproducible with a fixed seed", {
   fit <- public_schools_article_fit()
-  a <- boot_pairs(fit, R = 300, seed = 42)
-  b <- boot_pairs(fit, R = 300, seed = 42)
+  a <- boot_pairs(fit, B = 300, seed = 42)
+  b <- boot_pairs(fit, B = 300, seed = 42)
 
   expect_identical(a$replicates, b$replicates)
   expect_identical(a$std_error, b$std_error)
@@ -42,8 +42,8 @@ test_that("boot_pairs() is reproducible with a fixed seed", {
 
 test_that("boot_pairs() differs across different seeds", {
   fit <- public_schools_article_fit()
-  a <- boot_pairs(fit, R = 300, seed = 1)
-  b <- boot_pairs(fit, R = 300, seed = 2)
+  a <- boot_pairs(fit, B = 300, seed = 1)
+  b <- boot_pairs(fit, B = 300, seed = 2)
 
   expect_false(identical(a$replicates, b$replicates))
 })
@@ -53,7 +53,7 @@ test_that("boot_pairs() does not disturb the caller RNG state", {
   set.seed(99)
   before <- runif(1)
   set.seed(99)
-  invisible(boot_pairs(fit, R = 100, seed = 7))
+  invisible(boot_pairs(fit, B = 100, seed = 7))
   after <- runif(1)
 
   expect_equal(before, after)
@@ -61,7 +61,7 @@ test_that("boot_pairs() does not disturb the caller RNG state", {
 
 test_that("percentile intervals match empirical quantiles of the replicates", {
   fit <- public_schools_article_fit()
-  boot <- boot_pairs(fit, R = 400, level = 0.90, ci_type = "percentile",
+  boot <- boot_pairs(fit, B = 400, level = 0.90, ci_type = "percentile",
     seed = 3)
 
   q <- apply(boot$replicates, 2, stats::quantile, probs = c(0.05, 0.95),
@@ -72,9 +72,9 @@ test_that("percentile intervals match empirical quantiles of the replicates", {
 
 test_that("ci_type variants produce the documented endpoints", {
   fit <- public_schools_article_fit()
-  perc <- boot_pairs(fit, R = 400, ci_type = "percentile", seed = 8)
-  basic <- boot_pairs(fit, R = 400, ci_type = "basic", seed = 8)
-  normal <- boot_pairs(fit, R = 400, ci_type = "normal", seed = 8)
+  perc <- boot_pairs(fit, B = 400, ci_type = "percentile", seed = 8)
+  basic <- boot_pairs(fit, B = 400, ci_type = "basic", seed = 8)
+  normal <- boot_pairs(fit, B = 400, ci_type = "normal", seed = 8)
 
   # basic is the reverse-percentile reflection of percentile about the estimate
   expect_equal(
@@ -94,7 +94,7 @@ test_that("ci_type variants produce the documented endpoints", {
 
 test_that("confint.hcinfer_boot recomputes level and type, and selects parm", {
   fit <- public_schools_article_fit()
-  boot <- boot_pairs(fit, R = 400, level = 0.95, ci_type = "percentile",
+  boot <- boot_pairs(fit, B = 400, level = 0.95, ci_type = "percentile",
     seed = 11)
 
   default_ci <- confint(boot)
@@ -115,8 +115,8 @@ test_that("boot_pairs() parallel run equals the sequential run", {
   skip_if_not_installed("carrier")
   fit <- public_schools_article_fit()
 
-  seq_run <- boot_pairs(fit, R = 500, seed = 123, parallel = FALSE)
-  par_run <- boot_pairs(fit, R = 500, seed = 123, parallel = TRUE, cores = 2)
+  seq_run <- boot_pairs(fit, B = 500, seed = 123, cores = 1)
+  par_run <- boot_pairs(fit, B = 500, seed = 123, cores = 2)
 
   expect_identical(seq_run$replicates, par_run$replicates)
   expect_identical(seq_run$std_error, par_run$std_error)
@@ -127,8 +127,33 @@ test_that("boot_pairs() parallel run equals the sequential run", {
 test_that("boot_pairs() rejects invalid input", {
   fit <- public_schools_article_fit()
   expect_snapshot(error = TRUE, boot_pairs("not a model"))
-  expect_snapshot(error = TRUE, boot_pairs(fit, R = 0))
-  expect_snapshot(error = TRUE, boot_pairs(fit, R = 100, level = 1))
-  expect_snapshot(error = TRUE, boot_pairs(fit, R = 100, parallel = "yes"))
-  expect_snapshot(error = TRUE, boot_pairs(fit, R = 100, cores = -1))
+  expect_snapshot(error = TRUE, boot_pairs(fit, B = 0))
+  expect_snapshot(error = TRUE, boot_pairs(fit, B = 100, level = 1))
+  expect_snapshot(error = TRUE, boot_pairs(fit, B = 100, cores = 0))
+  expect_snapshot(error = TRUE, boot_pairs(fit, B = 100, cores = "two"))
+})
+
+test_that("boot_pairs() rounds cores and runs serially for cores < 2", {
+  fit <- public_schools_article_fit()
+  boot <- boot_pairs(fit, B = 100, seed = 1, cores = 1.4)
+  expect_identical(boot$cores, 1L)
+})
+
+test_that("plot.hcinfer_boot() returns a ggplot with a relation column", {
+  fit <- public_schools_article_fit()
+  boot <- boot_pairs(fit, B = 200, seed = 1)
+
+  p <- plot(boot)
+  expect_s3_class(p, "ggplot")
+  expect_true("relation" %in% names(p$data))
+  expect_true(all(p$data$relation %in% c("includes zero", "excludes zero")))
+})
+
+test_that("plot.hcinfer_boot() selects coefficients and errors on unknown parm", {
+  fit <- public_schools_article_fit()
+  boot <- boot_pairs(fit, B = 200, seed = 1)
+
+  p <- plot(boot, parm = "income_scaled_sq")
+  expect_equal(nrow(p$data), 1L)
+  expect_error(plot(boot, parm = "nonexistent"), "Unknown coefficient")
 })

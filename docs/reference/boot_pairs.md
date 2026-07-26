@@ -16,11 +16,10 @@ heteroskedasticity-consistent standard errors produced by
 ``` r
 boot_pairs(
   object,
-  R = 1000L,
+  B = 1000L,
   level = 0.95,
   ci_type = c("percentile", "basic", "normal"),
-  parallel = FALSE,
-  cores = NULL,
+  cores = 1L,
   seed = NULL
 )
 
@@ -36,7 +35,7 @@ print(x, ...)
   [`stats::lm()`](https://rdrr.io/r/stats/lm.html). Weighted fits are
   not supported.
 
-- R:
+- B:
 
   Number of bootstrap replicates. A positive integer; defaults to
   `1000`.
@@ -51,23 +50,22 @@ print(x, ...)
   Interval type: `"percentile"` (default), `"basic"`, or `"normal"`. See
   Details.
 
-- parallel:
-
-  Logical; if `TRUE`, run the replicate fits in parallel with
-  [`purrr::in_parallel()`](https://purrr.tidyverse.org/reference/in_parallel.html)
-  and mirai. Defaults to `FALSE`.
-
 - cores:
 
-  Number of parallel worker processes to use when `parallel = TRUE`. A
-  positive integer, or `NULL` (the default) to use one fewer than the
-  number of detected cores. Ignored when `parallel = FALSE`.
+  Number of worker processes. A single number greater than or equal to
+  1; non-integer values are rounded to the nearest integer. The default
+  `1` runs the replicate fits sequentially. Any value that rounds to `2`
+  or more runs them in parallel with
+  [`purrr::in_parallel()`](https://purrr.tidyverse.org/reference/in_parallel.html)
+  and the mirai backend, which requires the mirai and carrier packages.
+  Parallelism only speeds up the computation and never changes the
+  numeric result.
 
 - seed:
 
   Optional single number used to seed the resampling for
   reproducibility. When supplied, the result is deterministic and
-  independent of `parallel` and `cores`. Defaults to `NULL`.
+  independent of the number of `cores`. Defaults to `NULL`.
 
 - x:
 
@@ -81,23 +79,23 @@ print(x, ...)
 
 An object of class `hcinfer_boot`: a list with the original OLS
 `coefficients`, bootstrap `std_error`, `bias`, interval endpoints
-`conf_low` and `conf_high`, the settings (`level`, `ci_type`, `R`,
-`R_effective`, `n_failed`, `parallel`, `cores`, `seed`), the full
-`replicates` matrix (`R` rows by `p` columns), and a tidy `table` tibble
-with columns `term`, `estimate`, `bias`, `std_error`, `conf_low`, and
-`conf_high`. Use [`coef()`](https://rdrr.io/r/stats/coef.html),
+`conf_low` and `conf_high`, the settings (`level`, `ci_type`, `B`,
+`B_effective`, `n_failed`, `cores`, `seed`), the full `replicates`
+matrix (`B` rows by `p` columns), and a tidy `table` tibble with columns
+`term`, `estimate`, `bias`, `std_error`, `conf_low`, and `conf_high`.
+Use [`coef()`](https://rdrr.io/r/stats/coef.html),
 [`vcov()`](https://rdrr.io/r/stats/vcov.html), and
 [`confint()`](https://rdrr.io/r/stats/confint.html) to extract
 components.
 
 ## Details
 
-For each of `R` bootstrap replicates, a sample of `n` row indices is
+For each of `B` bootstrap replicates, a sample of `n` row indices is
 drawn with replacement from `1, ..., n`, and OLS is refitted on the
 resampled rows \\(y\_{i}, x\_{i})\\. Writing \\\hat\beta^{\*}\_{(r)}\\
 for the estimate on replicate `r`, the bootstrap standard error of
 coefficient `j` is the sample standard deviation of
-\\\hat\beta^{\*}\_{1,j}, \ldots, \hat\beta^{\*}\_{R,j}\\, and the bias
+\\\hat\beta^{\*}\_{1,j}, \ldots, \hat\beta^{\*}\_{B,j}\\, and the bias
 estimate is the mean of the replicates minus the original OLS estimate.
 
 Three interval types are available through `ci_type`. Let \\q\_\alpha\\
@@ -119,14 +117,15 @@ restored, so calling `boot_pairs()` does not disturb a surrounding
 random stream. When `seed` is `NULL`, the current RNG state is used and
 results are not reproducible.
 
-**Parallelism.** With `parallel = TRUE`, the deterministic per-replicate
-fits are distributed with
+**Parallelism.** The default `cores = 1` fits the replicates
+sequentially. When `cores` rounds to `2` or more, the deterministic
+per-replicate fits are distributed with
 [`purrr::in_parallel()`](https://purrr.tidyverse.org/reference/in_parallel.html),
 which uses the mirai package as its backend. `boot_pairs()` starts
 `cores` daemons for the duration of the call and shuts them down on
 exit; do not call it while relying on externally configured `mirai`
 daemons. Parallelism only speeds up the computation: it never changes
-the numeric result. It is worthwhile mainly for large `R` or large `n`;
+the numeric result. It is worthwhile mainly for large `B` or large `n`;
 for small problems the setup overhead can dominate.
 
 **Rank-deficient resamples.** A resample can be rank deficient (for
@@ -160,8 +159,8 @@ schools <- PublicSchools |>
   )
 fit <- lm(expenditure ~ income_scaled + income_scaled_sq, data = schools)
 
-# 1. Basic reproducible pairs bootstrap with percentile intervals.
-boot <- boot_pairs(fit, R = 1000, seed = 123)
+# 1. Fit, inspect, and visualize a reproducible pairs bootstrap.
+boot <- boot_pairs(fit, B = 1000, seed = 123)
 boot
 #> 
 #> ── 🔎 Pairs bootstrap inference ────────────────────────────────────────────────
@@ -182,38 +181,45 @@ confint(boot)
 #> 1 (Intercept)         -631.     1498.  0.95
 #> 2 income_scaled      -3545.     2116.  0.95
 #> 3 income_scaled_sq   -1027.     2634.  0.95
+plot(boot)
 
-# 2. Reproducibility and use as an empirical reference for HC standard errors.
-boot_a <- boot_pairs(fit, R = 1000, seed = 2024)
-boot_b <- boot_pairs(fit, R = 1000, seed = 2024)
-identical(boot_a$replicates, boot_b$replicates)
-#> [1] TRUE
+
+# 2. Use the bootstrap as an empirical reference for the analytic HC standard
+#    errors, side by side in one table.
 data.frame(
-  term = boot_a$table$term,
-  bootstrap = boot_a$table$std_error,
-  hcbeta = sqrt(diag(vcov(hcinfer(fit, type = "hcbeta"))))
+  term = boot$table$term,
+  ols = sqrt(diag(vcov(fit))),
+  bootstrap = boot$table$std_error,
+  hcbeta = sqrt(diag(vcov(hcinfer(fit, type = "hcbeta")))),
+  hc3 = sqrt(diag(vcov(hcinfer(fit, type = "hc3"))))
 )
-#>                              term bootstrap    hcbeta
-#> (Intercept)           (Intercept)  631.2285  850.6572
-#> income_scaled       income_scaled 1706.9685 2308.6541
-#> income_scaled_sq income_scaled_sq 1140.5313 1547.4583
+#>                              term      ols bootstrap    hcbeta      hc3
+#> (Intercept)           (Intercept) 327.2925  626.6211  850.6572 1095.001
+#> income_scaled       income_scaled 828.9855 1696.6723 2308.6541 2975.411
+#> income_scaled_sq income_scaled_sq 519.0768 1135.2656 1547.4583 1995.242
 
-# 3. Parallel run with more replicates and basic (reverse-percentile)
-#    intervals. Requires the mirai package; the numeric result matches a
-#    sequential run with the same seed.
+# 3. Recompute intervals at a new level and type from the same replicates,
+#    without rerunning the bootstrap.
+confint(boot, level = 0.99, type = "basic")
+#> # A tibble: 3 × 4
+#>   term             conf_low conf_high level
+#>   <chr>               <dbl>     <dbl> <dbl>
+#> 1 (Intercept)          9.28     2546.  0.99
+#> 2 income_scaled    -6417.        308.  0.99
+#> 3 income_scaled_sq   239.       4625.  0.99
+confint(boot, parm = "income_scaled_sq", level = 0.90)
+#> # A tibble: 1 × 4
+#>   term             conf_low conf_high level
+#>   <chr>               <dbl>     <dbl> <dbl>
+#> 1 income_scaled_sq    -846.     2526.   0.9
+
+# 4. Larger, parallel run on two cores. Requires the mirai and carrier
+#    packages; the numeric result matches a sequential run with the same seed.
 # \donttest{
 if (requireNamespace("mirai", quietly = TRUE) &&
     requireNamespace("carrier", quietly = TRUE)) {
-  boot_par <- boot_pairs(
-    fit,
-    R = 4000,
-    ci_type = "basic",
-    parallel = TRUE,
-    cores = 2,
-    seed = 42
-  )
-  summary_par <- boot_par$table
-  print(summary_par)
+  boot_par <- boot_pairs(fit, B = 4000, ci_type = "basic", cores = 2, seed = 42)
+  boot_par$table
 }
 #> # A tibble: 3 × 6
 #>   term             estimate  bias std_error conf_low conf_high

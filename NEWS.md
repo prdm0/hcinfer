@@ -1,7 +1,7 @@
 # hcinfer (development version)
 
 * Added `boot_pairs()` for pairs (case) bootstrap standard errors and confidence intervals of ordinary least squares coefficients. It resamples the observations with replacement, refits the model on each replicate, and summarizes the sampling distribution of the coefficients, providing an assumption-free empirical reference for the analytic heteroskedasticity-consistent standard errors from `hcinfer()` and `vcov_hc()`. Percentile, basic, and normal intervals are available, the resampling is reproducible through the `seed` argument, and the replicate fits can optionally run in parallel via `purrr::in_parallel()` and `mirai` without changing the numeric result.
-* Added `coef()`, `vcov()`, `confint()`, and `print()` methods for the `hcinfer_boot` objects returned by `boot_pairs()`. `vcov()` returns the bootstrap covariance matrix of the coefficients, and `confint()` can recompute intervals at a different `level` or `type` directly from the stored replicates.
+* Added `coef()`, `vcov()`, `confint()`, `print()`, and `plot()` methods for the `hcinfer_boot` objects returned by `boot_pairs()`. `vcov()` returns the bootstrap covariance matrix of the coefficients, `confint()` can recompute intervals at a different `level` or `type` directly from the stored replicates, and `plot()` draws the bootstrap confidence intervals, coloring each coefficient by whether its interval excludes or includes zero.
 
 # hcinfer 0.1.1
 

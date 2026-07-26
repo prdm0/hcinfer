@@ -112,13 +112,6 @@ check_count <- function(x, arg, call = rlang::caller_env()) {
   as.integer(x)
 }
 
-check_flag <- function(x, arg, call = rlang::caller_env()) {
-  if (!is.logical(x) || length(x) != 1 || is.na(x)) {
-    abort_bad_argument(arg, "It must be TRUE or FALSE.", call = call)
-  }
-  invisible(x)
-}
-
 check_dots_empty <- function(dots, call = rlang::caller_env()) {
   if (length(dots) > 0) {
     cli::cli_abort(
