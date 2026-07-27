@@ -15,9 +15,7 @@
 #' with replacement from `1, ..., n`, and OLS is refitted on the resampled rows
 #' \eqn{(y_{i}, x_{i})}. Writing \eqn{\hat\beta^{*}_{(r)}} for the estimate on
 #' replicate `r`, the bootstrap standard error of coefficient `j` is the sample
-#' standard deviation of \eqn{\hat\beta^{*}_{1,j}, \ldots, \hat\beta^{*}_{B,j}},
-#' and the bias estimate is the mean of the replicates minus the original OLS
-#' estimate.
+#' standard deviation of \eqn{\hat\beta^{*}_{1,j}, \ldots, \hat\beta^{*}_{B,j}}.
 #'
 #' Three interval types are available through `ci_type`. Let
 #' \eqn{q_\alpha} denote the empirical \eqn{\alpha} quantile of the bootstrap

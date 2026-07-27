@@ -20,15 +20,19 @@
   and `mirai` without changing the numeric result.
 - Added [`coef()`](https://rdrr.io/r/stats/coef.html),
   [`vcov()`](https://rdrr.io/r/stats/vcov.html),
-  [`confint()`](https://rdrr.io/r/stats/confint.html), and
-  [`print()`](https://rdrr.io/r/base/print.html) methods for the
-  `hcinfer_boot` objects returned by
+  [`confint()`](https://rdrr.io/r/stats/confint.html),
+  [`print()`](https://rdrr.io/r/base/print.html), and
+  [`plot()`](https://rdrr.io/r/graphics/plot.default.html) methods for
+  the `hcinfer_boot` objects returned by
   [`boot_pairs()`](https://prdm0.github.io/hcinfer/reference/boot_pairs.md).
   [`vcov()`](https://rdrr.io/r/stats/vcov.html) returns the bootstrap
-  covariance matrix of the coefficients, and
+  covariance matrix of the coefficients,
   [`confint()`](https://rdrr.io/r/stats/confint.html) can recompute
   intervals at a different `level` or `type` directly from the stored
-  replicates.
+  replicates, and
+  [`plot()`](https://rdrr.io/r/graphics/plot.default.html) draws the
+  bootstrap confidence intervals, coloring each coefficient by whether
+  its interval excludes or includes zero.
 
 ## hcinfer 0.1.1
 

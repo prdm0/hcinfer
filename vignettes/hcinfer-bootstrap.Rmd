@@ -29,8 +29,7 @@ output, and compare it with the HC estimators.
 For each replicate the bootstrap draws `n` rows with replacement from the
 original data and refits OLS on that resample. Writing the estimate on replicate
 `r` as the vector of refitted coefficients, the bootstrap standard error of a
-coefficient is the standard deviation of its replicate values, and the bias
-estimate is the mean of the replicates minus the original estimate. `boot_pairs()`
+coefficient is the standard deviation of its replicate values. `boot_pairs()`
 offers three interval types: `"percentile"` uses the empirical quantiles of the
 replicates, `"basic"` (reverse percentile) reflects those quantiles about the
 original estimate, and `"normal"` uses the estimate plus or minus a normal
