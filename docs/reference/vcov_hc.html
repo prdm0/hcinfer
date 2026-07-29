@@ -26,6 +26,7 @@ values, method parameters, and model metadata."><meta property="og:image" conten
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
   <ul class="dropdown-menu" aria-labelledby="dropdown-articles"><li><a class="dropdown-item" href="../articles/introduction.html">Introduction to hcinfer</a></li>
     <li><a class="dropdown-item" href="../articles/hcinfer-methodology.html">HC Estimator Methodology</a></li>
+    <li><a class="dropdown-item" href="../articles/hcinfer-hcbeta-algorithm.html">The HCbeta algorithm and its consistency</a></li>
     <li><a class="dropdown-item" href="../articles/hcinfer-comparison.html">Comparing HC Estimators</a></li>
     <li><a class="dropdown-item" href="../articles/hcinfer-hcbeta.html">Using HCbeta</a></li>
     <li><a class="dropdown-item" href="../articles/hcinfer-bootstrap.html">Pairs bootstrap inference with hcinfer</a></li>
@@ -92,12 +93,19 @@ method-specific arguments.</p></li>
 <li><p><code>"hc5"</code>: <code>k = 0.7</code>.</p></li>
 <li><p><code>"hc5m"</code>: <code>k = 0.7</code>, <code>k1 = 1</code>, <code>k2 = 0</code>, <code>k3 = 1</code>, <code>gamma1 = 1</code>, and
 <code>gamma2 = 1.5</code>.</p></li>
-<li><p><code>"hcbeta"</code>: <code>c1 = 7</code>, <code>c2 = 0.75</code>, <code>lower = 0.01</code>, and <code>upper = 0.99</code>.</p></li>
+<li><p><code>"hcbeta"</code>: <code>c1 = 7</code>, <code>c2 = 0.75</code>, <code>lower = 0.01</code>, <code>upper = 0.99</code>,
+<code>a_max = 10000</code>, and <code>b_max = 10000</code>.</p></li>
 </ul><p>For <code>"hc5"</code> and <code>"hc5m"</code>, <code>k</code>, <code>k1</code>, <code>k2</code>, and <code>k3</code> must be nonnegative,
 while <code>gamma1</code> and <code>gamma2</code> must be positive. For <code>"hcbeta"</code>, <code>c1</code> must be
 nonnegative, <code>c2</code> must be positive, and <code>lower</code> and <code>upper</code> must lie in
 <code>(0, 1)</code> with <code>lower &lt; upper</code>. The HCbeta truncation is
-\(w_t = max(lower, min(1 - h_t, upper))\).</p>
+\(w_t = max(lower, min(1 - h_t, upper))\).
+Both <code>a_max</code> and <code>b_max</code> must be finite and lie in <code>[50, 25000]</code>; they cap
+the shrunk Beta shape parameters \(\tilde a\) and \(\tilde b\) and
+default to 10000. The two caps can be set independently through <code>...</code> for
+sensitivity analysis. HCbeta remains defined when \(h_t = 1\) because it
+truncates \(1 - h_t\) before evaluating the Beta CDF. In contrast, HC2
+through HC5m require a strictly positive leverage complement.</p>
     </div>
     <div class="section level2">
     <h2 id="references">References<a class="anchor" aria-label="anchor" href="#references"></a></h2>
@@ -158,7 +166,8 @@ Simulation</em>, 87(1), 198-210.
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">cov</span><span class="op">)</span></span></span>
 <span class="r-plt img"><img src="vcov_hc-1.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="fu">vcov_hc</span><span class="op">(</span><span class="va">fit</span>, type <span class="op">=</span> <span class="st">"hcbeta"</span>, c1 <span class="op">=</span> <span class="fl">7</span>, c2 <span class="op">=</span> <span class="fl">0.75</span>, lower <span class="op">=</span> <span class="fl">0.01</span>, upper <span class="op">=</span> <span class="fl">0.99</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="co"># Sensitivity analysis with nondefault HCbeta caps</span></span></span>
+<span class="r-in"><span><span class="fu">vcov_hc</span><span class="op">(</span><span class="va">fit</span>, type <span class="op">=</span> <span class="st">"hcbeta"</span>, a_max <span class="op">=</span> <span class="fl">20000</span>, b_max <span class="op">=</span> <span class="fl">20000</span><span class="op">)</span></span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">──</span> <span style="font-weight: bold;">🥪 HCbeta robust covariance</span> <span style="color: #00BBBB;">─────────────────────────────────────────────────</span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> 📐 Model: `expenditure ~ income_scaled + income_scaled_sq`</span>

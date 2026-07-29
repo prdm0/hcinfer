@@ -64,15 +64,6 @@ model_info_lm <- function(object, call = rlang::caller_env()) {
 
   leverage <- pmin(pmax(leverage, 0), 1)
 
-  if (any(1 - leverage <= .Machine$double.eps)) {
-    cli::cli_abort(
-      c(
-        "At least one leverage value is too close to 1.",
-        "i" = "HC leverage corrections require positive {.code 1 - h_t}."
-      ),
-      call = call
-    )
-  }
 
   terms <- names(coefficients)
   if (is.null(terms)) {

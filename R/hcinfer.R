@@ -30,8 +30,10 @@
 #' @param null Null values for the coefficient tests. Use a scalar to test all
 #'   coefficients against the same value, or a numeric vector with one value per
 #'   coefficient.
-#' @param ... Method-specific constants passed to [vcov_hc()]. Defaults are
-#'   documented in [vcov_hc()] and can be inspected with [hc_methods()].
+#' @param ... Method-specific constants passed to [vcov_hc()]. For HCbeta,
+#'   `a_max` and `b_max` default to 10000, may be set independently, and must
+#'   each be finite and lie in `[50, 25000]`. See [vcov_hc()] for all other
+#'   method-specific defaults and parameter domains.
 #'
 #' @return
 #' An object of class `hcinfer` containing the fitted HC covariance estimator,
@@ -87,7 +89,8 @@
 #' summary(result)
 #' confint(result)
 #'
-#' hcinfer(fit, type = "hcbeta", c1 = 7, c2 = 0.75, lower = 0.01, upper = 0.99)
+#' # Sensitivity analysis with nondefault HCbeta caps
+#' hcinfer(fit, type = "hcbeta", a_max = 20000, b_max = 20000)
 #' hcinfer(fit, type = "hc5", k = 0.7)
 #' hcinfer(fit, type = "hc5m", k = 0.7, k1 = 1, k2 = 0, k3 = 1)
 #'

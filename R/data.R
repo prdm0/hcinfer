@@ -86,3 +86,78 @@
 #' table(PublicSchools2$south)
 #'
 "PublicSchools2"
+
+#' State crime rates and socioeconomic indicators, 2009
+#'
+#' @description
+#' Violent-crime and murder rates together with socioeconomic indicators for the
+#' 50 U.S. states and the District of Columbia in 2009. The data are useful for
+#' illustrating heteroskedasticity-consistent inference in a cross-sectional
+#' design with influential observations.
+#'
+#' @format A tibble with 51 rows and 8 variables:
+#' \describe{
+#'   \item{state}{Name of one of the 50 U.S. states or the District of Columbia.}
+#'   \item{violent}{Violent-crime rate per 100,000 population.}
+#'   \item{murder}{Murder rate per 100,000 population.}
+#'   \item{hs_grad}{Percentage of the population that graduated from high school
+#'   or higher.}
+#'   \item{poverty}{Percentage of the population living below the poverty line.}
+#'   \item{single}{Percentage of households headed by a single parent.}
+#'   \item{white}{Percentage of the population that is white.}
+#'   \item{urban}{Percentage of the population living in urban areas.}
+#' }
+#'
+#' @source
+#' French, J. P. (2023). *api2lm: Functions and Data Sets for the Book 'A
+#' Progressive Introduction to Linear Models'*. R package version 0.2.
+#' \doi{10.32614/CRAN.package.api2lm}. The same data are distributed as the
+#' `statecrime` dataset in the Python `statsmodels` package (Seabold and
+#' Perktold, 2010, <https://www.statsmodels.org/>); the underlying figures come
+#' from the *Statistical Abstract of the United States* (2009) and are in the
+#' public domain.
+#'
+#' @examples
+#' data(Crime2009)
+#' Crime2009[Crime2009$state == "Alabama", ]
+#'
+#' fit <- lm(violent ~ poverty + single, data = Crime2009)
+#' hcinfer(fit, type = "hcbeta")
+#'
+"Crime2009"
+
+#' Boston-area home prices, 1990
+#'
+#' @description
+#' Sale prices, assessed values, and physical characteristics of 88 homes sold
+#' in the Boston, Massachusetts area in 1990. The data are widely used to
+#' illustrate regression and heteroskedasticity-consistent inference.
+#'
+#' @format A tibble with 88 rows and 10 variables:
+#' \describe{
+#'   \item{price}{House price, in thousands of U.S. dollars.}
+#'   \item{assess}{Assessed value, in thousands of U.S. dollars.}
+#'   \item{bdrms}{Number of bedrooms.}
+#'   \item{lotsize}{Size of the lot, in square feet.}
+#'   \item{sqrft}{Size of the house, in square feet.}
+#'   \item{colonial}{Indicator equal to 1 if the home is of colonial style.}
+#'   \item{lprice}{Natural logarithm of `price`.}
+#'   \item{lassess}{Natural logarithm of `assess`.}
+#'   \item{llotsize}{Natural logarithm of `lotsize`.}
+#'   \item{lsqrft}{Natural logarithm of `sqrft`.}
+#' }
+#'
+#' @source
+#' Wooldridge, J. M. (2020). *Introductory Econometrics: A Modern Approach*,
+#' 7th ed. Cengage Learning, Boston, MA. The `hprice1` data are distributed with
+#' the `wooldridge` R package and were originally collected from the real estate
+#' pages of the *Boston Globe*.
+#'
+#' @examples
+#' data(Hprice)
+#' head(Hprice)
+#'
+#' fit <- lm(price ~ lotsize + sqrft + bdrms, data = Hprice)
+#' hcinfer(fit, type = "hcbeta")
+#'
+"Hprice"

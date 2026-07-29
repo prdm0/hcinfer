@@ -20,6 +20,7 @@ articles:
     navbar: ~
     contents:
       - hcinfer-methodology
+      - hcinfer-hcbeta-algorithm
       - hcinfer-comparison
       - hcinfer-hcbeta
       - hcinfer-bootstrap
@@ -52,6 +53,8 @@ reference:
     contents:
       - PublicSchools
       - PublicSchools2
+      - Crime2009
+      - Hprice
   - title: S3 methods
     contents:
       - coef.hcinfer

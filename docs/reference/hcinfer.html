@@ -22,6 +22,7 @@ squares model using a heteroskedasticity-consistent covariance estimator."><meta
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
   <ul class="dropdown-menu" aria-labelledby="dropdown-articles"><li><a class="dropdown-item" href="../articles/introduction.html">Introduction to hcinfer</a></li>
     <li><a class="dropdown-item" href="../articles/hcinfer-methodology.html">HC Estimator Methodology</a></li>
+    <li><a class="dropdown-item" href="../articles/hcinfer-hcbeta-algorithm.html">The HCbeta algorithm and its consistency</a></li>
     <li><a class="dropdown-item" href="../articles/hcinfer-comparison.html">Comparing HC Estimators</a></li>
     <li><a class="dropdown-item" href="../articles/hcinfer-hcbeta.html">Using HCbeta</a></li>
     <li><a class="dropdown-item" href="../articles/hcinfer-bootstrap.html">Pairs bootstrap inference with hcinfer</a></li>
@@ -73,8 +74,10 @@ coefficient.</p></dd>
 
 
 <dt id="arg--">...<a class="anchor" aria-label="anchor" href="#arg--"></a></dt>
-<dd><p>Method-specific constants passed to <code><a href="vcov_hc.html">vcov_hc()</a></code>. Defaults are
-documented in <code><a href="vcov_hc.html">vcov_hc()</a></code> and can be inspected with <code><a href="hc_methods.html">hc_methods()</a></code>.</p></dd>
+<dd><p>Method-specific constants passed to <code><a href="vcov_hc.html">vcov_hc()</a></code>. For HCbeta,
+<code>a_max</code> and <code>b_max</code> default to 10000, may be set independently, and must
+each be finite and lie in <code>[50, 25000]</code>. See <code><a href="vcov_hc.html">vcov_hc()</a></code> for all other
+method-specific defaults and parameter domains.</p></dd>
 
 </dl></div>
     <div class="section level2">
@@ -195,21 +198,23 @@ Simulation</em>, 87(1), 198-210.
 <span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> ── <span style="font-weight: bold;">⚙️ Method parameters</span> ──</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># A tibble: 12 × 3</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># A tibble: 14 × 3</span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span>    parameter value    role              </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>             </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 1</span> c1        7        method constant   </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 2</span> c2        0.75     method constant   </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 3</span> lower     0.01     method constant   </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 4</span> upper     0.99     method constant   </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 5</span> mu_hat    0.94     estimated quantity</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 6</span> s2_w      0.008504 estimated quantity</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 7</span> phi_hat   5.632    estimated quantity</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 8</span> a_hat     5.294    estimated quantity</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 9</span> b_hat     0.3379   estimated quantity</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">10</span> zeta      0.5      estimated quantity</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">11</span> a_tilde   3.147    estimated quantity</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">12</span> b_tilde   0.669    estimated quantity</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 5</span> a_max     1e+04    method constant   </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 6</span> b_max     1e+04    method constant   </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 7</span> mu_hat    0.94     estimated quantity</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 8</span> s2_w      0.008504 estimated quantity</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 9</span> phi_hat   5.632    estimated quantity</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">10</span> a_hat     5.294    estimated quantity</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">11</span> b_hat     0.3379   estimated quantity</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">12</span> zeta      0.5      estimated quantity</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">13</span> a_tilde   3.147    estimated quantity</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">14</span> b_tilde   0.669    estimated quantity</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> ── <span style="font-weight: bold;">🔎 Coefficient tests</span> ──</span>
@@ -245,7 +250,8 @@ Simulation</em>, 87(1), 198-210.
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">2</span> income_scaled      -<span style="color: #BB0000; text-decoration: underline;">6</span><span style="color: #BB0000;">359.</span>     <span style="text-decoration: underline;">2</span>691.  0.95</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">3</span> income_scaled_sq   -<span style="color: #BB0000; text-decoration: underline;">1</span><span style="color: #BB0000;">446.</span>     <span style="text-decoration: underline;">4</span>620.  0.95</span>
 <span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="fu">hcinfer</span><span class="op">(</span><span class="va">fit</span>, type <span class="op">=</span> <span class="st">"hcbeta"</span>, c1 <span class="op">=</span> <span class="fl">7</span>, c2 <span class="op">=</span> <span class="fl">0.75</span>, lower <span class="op">=</span> <span class="fl">0.01</span>, upper <span class="op">=</span> <span class="fl">0.99</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="co"># Sensitivity analysis with nondefault HCbeta caps</span></span></span>
+<span class="r-in"><span><span class="fu">hcinfer</span><span class="op">(</span><span class="va">fit</span>, type <span class="op">=</span> <span class="st">"hcbeta"</span>, a_max <span class="op">=</span> <span class="fl">20000</span>, b_max <span class="op">=</span> <span class="fl">20000</span><span class="op">)</span></span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">──</span> <span style="font-weight: bold;">🔎 HCbeta robust inference</span> <span style="color: #00BBBB;">──────────────────────────────────────────────────</span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> 📐 Model: `expenditure ~ income_scaled + income_scaled_sq`</span>

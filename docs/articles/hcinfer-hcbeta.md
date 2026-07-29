@@ -71,21 +71,23 @@ summary(result)
 #> 
 #> ── ⚙️ Method parameters ──
 #> 
-#> # A tibble: 12 × 3
+#> # A tibble: 14 × 3
 #>    parameter value    role              
 #>    <chr>     <chr>    <chr>             
 #>  1 c1        7        method constant   
 #>  2 c2        0.75     method constant   
 #>  3 lower     0.01     method constant   
 #>  4 upper     0.99     method constant   
-#>  5 mu_hat    0.94     estimated quantity
-#>  6 s2_w      0.008504 estimated quantity
-#>  7 phi_hat   5.632    estimated quantity
-#>  8 a_hat     5.294    estimated quantity
-#>  9 b_hat     0.3379   estimated quantity
-#> 10 zeta      0.5      estimated quantity
-#> 11 a_tilde   3.147    estimated quantity
-#> 12 b_tilde   0.669    estimated quantity
+#>  5 a_max     1e+04    method constant   
+#>  6 b_max     1e+04    method constant   
+#>  7 mu_hat    0.94     estimated quantity
+#>  8 s2_w      0.008504 estimated quantity
+#>  9 phi_hat   5.632    estimated quantity
+#> 10 a_hat     5.294    estimated quantity
+#> 11 b_hat     0.3379   estimated quantity
+#> 12 zeta      0.5      estimated quantity
+#> 13 a_tilde   3.147    estimated quantity
+#> 14 b_tilde   0.669    estimated quantity
 #> 
 #> ── 🔎 Coefficient tests ──
 #> 
@@ -161,6 +163,12 @@ result$method_params
 #> $upper
 #> [1] 0.99
 #> 
+#> $a_max
+#> [1] 10000
+#> 
+#> $b_max
+#> [1] 10000
+#> 
 #> $mu_hat
 #> [1] 0.94
 #> 
@@ -192,6 +200,7 @@ The most useful entries for routine inspection are:
 |----|----|
 | `c1`, `c2` | Constants controlling the HCbeta exponent. |
 | `lower`, `upper` | Truncation limits for leverage complements. |
+| `a_max`, `b_max` | Upper caps for the adjusted Beta shape parameters (default 10000, valid range `[50, 25000]`). |
 | `a_tilde`, `b_tilde` | Adjusted Beta shape parameters. |
 | `zeta` | Shrinkage weight used in the Beta parameter adjustment. |
 
@@ -300,6 +309,12 @@ hcbeta_cov$method_params
 #> $upper
 #> [1] 0.99
 #> 
+#> $a_max
+#> [1] 10000
+#> 
+#> $b_max
+#> [1] 10000
+#> 
 #> $mu_hat
 #> [1] 0.94
 #> 
@@ -364,34 +379,38 @@ summary(hcbeta_cov)
 #> 
 #> ── ⚙️ Method parameters ──
 #> 
-#> # A tibble: 12 × 3
+#> # A tibble: 14 × 3
 #>    parameter value    role              
 #>    <chr>     <chr>    <chr>             
 #>  1 c1        7        method constant   
 #>  2 c2        0.75     method constant   
 #>  3 lower     0.01     method constant   
 #>  4 upper     0.99     method constant   
-#>  5 mu_hat    0.94     estimated quantity
-#>  6 s2_w      0.008504 estimated quantity
-#>  7 phi_hat   5.632    estimated quantity
-#>  8 a_hat     5.294    estimated quantity
-#>  9 b_hat     0.3379   estimated quantity
-#> 10 zeta      0.5      estimated quantity
-#> 11 a_tilde   3.147    estimated quantity
-#> 12 b_tilde   0.669    estimated quantity
+#>  5 a_max     1e+04    method constant   
+#>  6 b_max     1e+04    method constant   
+#>  7 mu_hat    0.94     estimated quantity
+#>  8 s2_w      0.008504 estimated quantity
+#>  9 phi_hat   5.632    estimated quantity
+#> 10 a_hat     5.294    estimated quantity
+#> 11 b_hat     0.3379   estimated quantity
+#> 12 zeta      0.5      estimated quantity
+#> 13 a_tilde   3.147    estimated quantity
+#> 14 b_tilde   0.669    estimated quantity
 ```
 
 ## Run a sensitivity check
 
-The HCbeta constants can be passed through `...`. A sensitivity check
-compares the default result with a small set of alternative settings.
+The HCbeta constants can be passed through `...`, and the two shape caps
+can be supplied independently. A sensitivity check compares the default
+result with a small set of alternative settings.
 
 ``` r
 
 sensitivity_results <- list(
   default = hcinfer(fit, type = "hcbeta"),
   c1_5 = hcinfer(fit, type = "hcbeta", c1 = 5),
-  tighter_truncation = hcinfer(fit, type = "hcbeta", lower = 0.02, upper = 0.98)
+  tighter_truncation = hcinfer(fit, type = "hcbeta", lower = 0.02, upper = 0.98),
+  capped_shapes = hcinfer(fit, type = "hcbeta", a_max = 50)
 )
 
 sensitivity <- purrr::imap(sensitivity_results, \(res, setting) {
@@ -409,12 +428,13 @@ sensitivity <- purrr::imap(sensitivity_results, \(res, setting) {
 })
 sensitivity <- dplyr::bind_rows(sensitivity)
 sensitivity
-#> # A tibble: 3 × 6
+#> # A tibble: 4 × 6
 #>   setting            std_error p_value conf_low conf_high max_weight
 #>   <chr>                  <dbl>   <dbl>    <dbl>     <dbl>      <dbl>
 #> 1 default                1547.   0.305   -1446.     4620.       4.58
 #> 2 c1_5                   1292.   0.219    -945.     4119.       3.02
 #> 3 tighter_truncation     1547.   0.305   -1446.     4620.       4.58
+#> 4 capped_shapes          1547.   0.305   -1446.     4620.       4.58
 ```
 
 This table helps identify whether the reported inference is sensitive to

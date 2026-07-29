@@ -33,6 +33,13 @@
   [`plot()`](https://rdrr.io/r/graphics/plot.default.html) draws the
   bootstrap confidence intervals, coloring each coefficient by whether
   its interval excludes or includes zero.
+- [`hcinfer()`](https://prdm0.github.io/hcinfer/reference/hcinfer.md)
+  and
+  [`vcov_hc()`](https://prdm0.github.io/hcinfer/reference/vcov_hc.md)
+  now accept independent HCbeta shape caps from 50 through 25000
+  inclusive, with defaults of 10000. HC0, HC1, and HCbeta also remain
+  defined for an exact leverage value of one, while HC2, HC3, HC4, HC4m,
+  HC5, and HC5m retain the positive leverage-complement requirement.
 
 ## hcinfer 0.1.1
 

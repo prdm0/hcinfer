@@ -21,7 +21,7 @@ and lists the covariance matrix estimators currently implemented in
 | hc4m | HC4m | Modified HC4 correction by Cribari-Neto and da Silva. | none |
 | hc5 | HC5 | High-leverage correction by Cribari-Neto, Souza, and Vasconcellos. | k = 0.7 |
 | hc5m | HC5m | Modified HC5 correction by Li, Zhang, Zhang, and Wang. | k = 0.7, k1 = 1, k2 = 0, k3 = 1, gamma1 = 1, gamma2 = 1.5 |
-| hcbeta | HCbeta | Beta-distribution leverage correction. | c1 = 7, c2 = 0.75, lower = 0.01, upper = 0.99 |
+| hcbeta | HCbeta | Beta-distribution leverage correction. | c1 = 7, c2 = 0.75, lower = 0.01, upper = 0.99, a_max = 10000, b_max = 10000 |
 
 ## Installation
 
@@ -57,6 +57,24 @@ The default estimator is HCbeta. Use
 [`confint()`](https://rdrr.io/r/stats/confint.html) to extract the main
 inferential quantities as tibbles.
 
+HCbeta caps the two shrunk Beta shape parameters with `a_max` and
+`b_max`. Both arguments default to 10000 and accept finite values in the
+inclusive interval `[50, 25000]`. They can be set independently through
+`...` and should normally be changed only for a sensitivity analysis.
+
+``` r
+
+hcinfer(fit, type = "hcbeta", a_max = 20000, b_max = 20000)
+#> 
+#> ── HCbeta robust inference ─────────────────────────────────────────────────────
+#> Model: `expenditure ~ income_scaled + income_scaled_sq`
+#> Observations: 50 | Parameters: 3
+#> Robust covariance: HCbeta
+#> Confidence level: 95.0% | Normal critical value: 1.9600
+#> Use `summary()` for p-values, test results, confidence intervals, and
+#> diagnostics.
+```
+
 ``` r
 
 tests(result)
@@ -87,7 +105,7 @@ plot(result)
 ```
 
 ![Robust confidence intervals for the public-schools regression
-coefficients.](reference/figures/README-unnamed-chunk-5-1.png)
+coefficients.](reference/figures/README-unnamed-chunk-6-1.png)
 
 ## Diagnostics
 
@@ -104,7 +122,7 @@ plot(cov_hcbeta)
 
 ![HCbeta adjustment factors plotted against leverage values for the
 public-schools
-regression.](reference/figures/README-unnamed-chunk-6-1.png)
+regression.](reference/figures/README-unnamed-chunk-7-1.png)
 
 ## Main Functions
 
@@ -213,6 +231,10 @@ for a compact overview of the package API.
   : Public school expenditure and income by U.S. jurisdiction
 - [`PublicSchools2`](https://prdm0.github.io/hcinfer/reference/PublicSchools2.md)
   : Public school expenditure, income, and region by U.S. jurisdiction
+- [`Crime2009`](https://prdm0.github.io/hcinfer/reference/Crime2009.md)
+  : State crime rates and socioeconomic indicators, 2009
+- [`Hprice`](https://prdm0.github.io/hcinfer/reference/Hprice.md) :
+  Boston-area home prices, 1990
 
 ## S3 methods
 
@@ -239,6 +261,8 @@ for a compact overview of the package API.
 
 - [HC Estimator
   Methodology](https://prdm0.github.io/hcinfer/articles/hcinfer-methodology.md):
+- [The HCbeta algorithm and its
+  consistency](https://prdm0.github.io/hcinfer/articles/hcinfer-hcbeta-algorithm.md):
 - [Comparing HC
   Estimators](https://prdm0.github.io/hcinfer/articles/hcinfer-comparison.md):
 - [Using

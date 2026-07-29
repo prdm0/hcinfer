@@ -18,8 +18,10 @@ hcinfer(object, type = "hcbeta", alpha = 0.05, null = 0, ...)
 coefficients against the same value, or a numeric vector with one value per
 coefficient.}
 
-\item{...}{Method-specific constants passed to \code{\link[=vcov_hc]{vcov_hc()}}. Defaults are
-documented in \code{\link[=vcov_hc]{vcov_hc()}} and can be inspected with \code{\link[=hc_methods]{hc_methods()}}.}
+\item{...}{Method-specific constants passed to \code{\link[=vcov_hc]{vcov_hc()}}. For HCbeta,
+\code{a_max} and \code{b_max} default to 10000, may be set independently, and must
+each be finite and lie in \verb{[50, 25000]}. See \code{\link[=vcov_hc]{vcov_hc()}} for all other
+method-specific defaults and parameter domains.}
 }
 \value{
 An object of class \code{hcinfer} containing the fitted HC covariance estimator,
@@ -61,7 +63,8 @@ result
 summary(result)
 confint(result)
 
-hcinfer(fit, type = "hcbeta", c1 = 7, c2 = 0.75, lower = 0.01, upper = 0.99)
+# Sensitivity analysis with nondefault HCbeta caps
+hcinfer(fit, type = "hcbeta", a_max = 20000, b_max = 20000)
 hcinfer(fit, type = "hc5", k = 0.7)
 hcinfer(fit, type = "hc5m", k = 0.7, k1 = 1, k2 = 0, k3 = 1)
 

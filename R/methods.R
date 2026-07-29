@@ -36,7 +36,7 @@ hc_default_arguments <- function() {
     hc4m = list(),
     hc5 = list(k = 0.7),
     hc5m = list(k = 0.7, k1 = 1, k2 = 0, k3 = 1, gamma1 = 1, gamma2 = 1.5),
-    hcbeta = list(c1 = 7, c2 = 0.75, lower = 0.01, upper = 0.99)
+    hcbeta = list(c1 = 7, c2 = 0.75, lower = 0.01, upper = 0.99, a_max = 10000, b_max = 10000)
   )
 }
 

@@ -40,6 +40,10 @@
   : Public school expenditure and income by U.S. jurisdiction
 - [`PublicSchools2`](https://prdm0.github.io/hcinfer/reference/PublicSchools2.md)
   : Public school expenditure, income, and region by U.S. jurisdiction
+- [`Crime2009`](https://prdm0.github.io/hcinfer/reference/Crime2009.md)
+  : State crime rates and socioeconomic indicators, 2009
+- [`Hprice`](https://prdm0.github.io/hcinfer/reference/Hprice.md) :
+  Boston-area home prices, 1990
 
 ## S3 methods
 

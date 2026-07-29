@@ -41,6 +41,7 @@
   <ul class="dropdown-menu" aria-labelledby="dropdown-articles">
 <li><a class="dropdown-item" href="../articles/introduction.html">Introduction to hcinfer</a></li>
     <li><a class="dropdown-item" href="../articles/hcinfer-methodology.html">HC Estimator Methodology</a></li>
+    <li><a class="dropdown-item" href="../articles/hcinfer-hcbeta-algorithm.html">The HCbeta algorithm and its consistency</a></li>
     <li><a class="dropdown-item" href="../articles/hcinfer-comparison.html">Comparing HC Estimators</a></li>
     <li><a class="dropdown-item" href="../articles/hcinfer-hcbeta.html">Using HCbeta</a></li>
     <li><a class="dropdown-item" href="../articles/hcinfer-bootstrap.html">Pairs bootstrap inference with hcinfer</a></li>
@@ -137,21 +138,23 @@ the default <code>hcinfer(fit)</code> call.</p>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; ── <span style="font-weight: bold;">⚙️ Method parameters</span> ──</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 12 × 3</span></span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 14 × 3</span></span></span>
 <span><span class="co">#&gt;    parameter value    role              </span></span>
 <span><span class="co">#&gt;    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>             </span></span>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;"> 1</span> c1        7        method constant   </span></span>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;"> 2</span> c2        0.75     method constant   </span></span>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;"> 3</span> lower     0.01     method constant   </span></span>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;"> 4</span> upper     0.99     method constant   </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 5</span> mu_hat    0.94     estimated quantity</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 6</span> s2_w      0.008504 estimated quantity</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 7</span> phi_hat   5.632    estimated quantity</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 8</span> a_hat     5.294    estimated quantity</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 9</span> b_hat     0.3379   estimated quantity</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">10</span> zeta      0.5      estimated quantity</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">11</span> a_tilde   3.147    estimated quantity</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">12</span> b_tilde   0.669    estimated quantity</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 5</span> a_max     1e+04    method constant   </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 6</span> b_max     1e+04    method constant   </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 7</span> mu_hat    0.94     estimated quantity</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 8</span> s2_w      0.008504 estimated quantity</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 9</span> phi_hat   5.632    estimated quantity</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">10</span> a_hat     5.294    estimated quantity</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">11</span> b_hat     0.3379   estimated quantity</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">12</span> zeta      0.5      estimated quantity</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">13</span> a_tilde   3.147    estimated quantity</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">14</span> b_tilde   0.669    estimated quantity</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; ── <span style="font-weight: bold;">🔎 Coefficient tests</span> ──</span></span>
 <span><span class="co">#&gt; </span></span>
@@ -219,6 +222,12 @@ quadratic income term.</p>
 <span><span class="co">#&gt; $upper</span></span>
 <span><span class="co">#&gt; [1] 0.99</span></span>
 <span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; $a_max</span></span>
+<span><span class="co">#&gt; [1] 10000</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; $b_max</span></span>
+<span><span class="co">#&gt; [1] 10000</span></span>
+<span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; $mu_hat</span></span>
 <span><span class="co">#&gt; [1] 0.94</span></span>
 <span><span class="co">#&gt; </span></span>
@@ -244,6 +253,10 @@ quadratic income term.</p>
 <span><span class="co">#&gt; [1] 0.6689698</span></span></code></pre></div>
 <p>The most useful entries for routine inspection are:</p>
 <table class="table">
+<colgroup>
+<col width="43%">
+<col width="56%">
+</colgroup>
 <thead><tr class="header">
 <th>Entry</th>
 <th>Meaning</th>
@@ -263,11 +276,18 @@ quadratic income term.</p>
 </tr>
 <tr class="odd">
 <td>
+<code>a_max</code>, <code>b_max</code>
+</td>
+<td>Upper caps for the adjusted Beta shape parameters (default 10000,
+valid range <code>[50, 25000]</code>).</td>
+</tr>
+<tr class="even">
+<td>
 <code>a_tilde</code>, <code>b_tilde</code>
 </td>
 <td>Adjusted Beta shape parameters.</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td><code>zeta</code></td>
 <td>Shrinkage weight used in the Beta parameter adjustment.</td>
 </tr>
@@ -362,6 +382,12 @@ diagnostics.</p>
 <span><span class="co">#&gt; $upper</span></span>
 <span><span class="co">#&gt; [1] 0.99</span></span>
 <span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; $a_max</span></span>
+<span><span class="co">#&gt; [1] 10000</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; $b_max</span></span>
+<span><span class="co">#&gt; [1] 10000</span></span>
+<span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; $mu_hat</span></span>
 <span><span class="co">#&gt; [1] 0.94</span></span>
 <span><span class="co">#&gt; </span></span>
@@ -426,33 +452,37 @@ diagnostics.</p>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; ── <span style="font-weight: bold;">⚙️ Method parameters</span> ──</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 12 × 3</span></span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 14 × 3</span></span></span>
 <span><span class="co">#&gt;    parameter value    role              </span></span>
 <span><span class="co">#&gt;    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>             </span></span>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;"> 1</span> c1        7        method constant   </span></span>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;"> 2</span> c2        0.75     method constant   </span></span>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;"> 3</span> lower     0.01     method constant   </span></span>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;"> 4</span> upper     0.99     method constant   </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 5</span> mu_hat    0.94     estimated quantity</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 6</span> s2_w      0.008504 estimated quantity</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 7</span> phi_hat   5.632    estimated quantity</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 8</span> a_hat     5.294    estimated quantity</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 9</span> b_hat     0.3379   estimated quantity</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">10</span> zeta      0.5      estimated quantity</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">11</span> a_tilde   3.147    estimated quantity</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">12</span> b_tilde   0.669    estimated quantity</span></span></code></pre></div>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 5</span> a_max     1e+04    method constant   </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 6</span> b_max     1e+04    method constant   </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 7</span> mu_hat    0.94     estimated quantity</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 8</span> s2_w      0.008504 estimated quantity</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 9</span> phi_hat   5.632    estimated quantity</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">10</span> a_hat     5.294    estimated quantity</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">11</span> b_hat     0.3379   estimated quantity</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">12</span> zeta      0.5      estimated quantity</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">13</span> a_tilde   3.147    estimated quantity</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">14</span> b_tilde   0.669    estimated quantity</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="run-a-sensitivity-check">Run a sensitivity check<a class="anchor" aria-label="anchor" href="#run-a-sensitivity-check"></a>
 </h2>
-<p>The HCbeta constants can be passed through <code>...</code>. A
-sensitivity check compares the default result with a small set of
-alternative settings.</p>
+<p>The HCbeta constants can be passed through <code>...</code>, and the
+two shape caps can be supplied independently. A sensitivity check
+compares the default result with a small set of alternative
+settings.</p>
 <div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">sensitivity_results</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
 <span>  default <span class="op">=</span> <span class="fu"><a href="../reference/hcinfer.html">hcinfer</a></span><span class="op">(</span><span class="va">fit</span>, type <span class="op">=</span> <span class="st">"hcbeta"</span><span class="op">)</span>,</span>
 <span>  c1_5 <span class="op">=</span> <span class="fu"><a href="../reference/hcinfer.html">hcinfer</a></span><span class="op">(</span><span class="va">fit</span>, type <span class="op">=</span> <span class="st">"hcbeta"</span>, c1 <span class="op">=</span> <span class="fl">5</span><span class="op">)</span>,</span>
-<span>  tighter_truncation <span class="op">=</span> <span class="fu"><a href="../reference/hcinfer.html">hcinfer</a></span><span class="op">(</span><span class="va">fit</span>, type <span class="op">=</span> <span class="st">"hcbeta"</span>, lower <span class="op">=</span> <span class="fl">0.02</span>, upper <span class="op">=</span> <span class="fl">0.98</span><span class="op">)</span></span>
+<span>  tighter_truncation <span class="op">=</span> <span class="fu"><a href="../reference/hcinfer.html">hcinfer</a></span><span class="op">(</span><span class="va">fit</span>, type <span class="op">=</span> <span class="st">"hcbeta"</span>, lower <span class="op">=</span> <span class="fl">0.02</span>, upper <span class="op">=</span> <span class="fl">0.98</span><span class="op">)</span>,</span>
+<span>  capped_shapes <span class="op">=</span> <span class="fu"><a href="../reference/hcinfer.html">hcinfer</a></span><span class="op">(</span><span class="va">fit</span>, type <span class="op">=</span> <span class="st">"hcbeta"</span>, a_max <span class="op">=</span> <span class="fl">50</span><span class="op">)</span></span>
 <span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">sensitivity</span> <span class="op">&lt;-</span> <span class="fu">purrr</span><span class="fu">::</span><span class="fu"><a href="https://purrr.tidyverse.org/reference/imap.html" class="external-link">imap</a></span><span class="op">(</span><span class="va">sensitivity_results</span>, \<span class="op">(</span><span class="va">res</span>, <span class="va">setting</span><span class="op">)</span> <span class="op">{</span></span>
@@ -470,12 +500,13 @@ alternative settings.</p>
 <span><span class="op">}</span><span class="op">)</span></span>
 <span><span class="va">sensitivity</span> <span class="op">&lt;-</span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/bind_rows.html" class="external-link">bind_rows</a></span><span class="op">(</span><span class="va">sensitivity</span><span class="op">)</span></span>
 <span><span class="va">sensitivity</span></span>
-<span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 3 × 6</span></span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 4 × 6</span></span></span>
 <span><span class="co">#&gt;   setting            std_error p_value conf_low conf_high max_weight</span></span>
 <span><span class="co">#&gt;   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>                  <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>      <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span></span>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span> default                <span style="text-decoration: underline;">1</span>547.   0.305   -<span style="color: #BB0000; text-decoration: underline;">1</span><span style="color: #BB0000;">446.</span>     <span style="text-decoration: underline;">4</span>620.       4.58</span></span>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span> c1_5                   <span style="text-decoration: underline;">1</span>292.   0.219    -<span style="color: #BB0000;">945.</span>     <span style="text-decoration: underline;">4</span>119.       3.02</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">3</span> tighter_truncation     <span style="text-decoration: underline;">1</span>547.   0.305   -<span style="color: #BB0000; text-decoration: underline;">1</span><span style="color: #BB0000;">446.</span>     <span style="text-decoration: underline;">4</span>620.       4.58</span></span></code></pre></div>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">3</span> tighter_truncation     <span style="text-decoration: underline;">1</span>547.   0.305   -<span style="color: #BB0000; text-decoration: underline;">1</span><span style="color: #BB0000;">446.</span>     <span style="text-decoration: underline;">4</span>620.       4.58</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">4</span> capped_shapes          <span style="text-decoration: underline;">1</span>547.   0.305   -<span style="color: #BB0000; text-decoration: underline;">1</span><span style="color: #BB0000;">446.</span>     <span style="text-decoration: underline;">4</span>620.       4.58</span></span></code></pre></div>
 <p>This table helps identify whether the reported inference is sensitive
 to small changes in HCbeta tuning constants. The defaults remain the
 recommended starting point.</p>

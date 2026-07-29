@@ -36,10 +36,10 @@ hcinfer(object, type = "hcbeta", alpha = 0.05, null = 0, ...)
 
   Method-specific constants passed to
   [`vcov_hc()`](https://prdm0.github.io/hcinfer/reference/vcov_hc.md).
-  Defaults are documented in
+  For HCbeta, `a_max` and `b_max` default to 10000, may be set
+  independently, and must each be finite and lie in `[50, 25000]`. See
   [`vcov_hc()`](https://prdm0.github.io/hcinfer/reference/vcov_hc.md)
-  and can be inspected with
-  [`hc_methods()`](https://prdm0.github.io/hcinfer/reference/hc_methods.md).
+  for all other method-specific defaults and parameter domains.
 
 ## Value
 
@@ -173,21 +173,23 @@ summary(result)
 #> 
 #> ── ⚙️ Method parameters ──
 #> 
-#> # A tibble: 12 × 3
+#> # A tibble: 14 × 3
 #>    parameter value    role              
 #>    <chr>     <chr>    <chr>             
 #>  1 c1        7        method constant   
 #>  2 c2        0.75     method constant   
 #>  3 lower     0.01     method constant   
 #>  4 upper     0.99     method constant   
-#>  5 mu_hat    0.94     estimated quantity
-#>  6 s2_w      0.008504 estimated quantity
-#>  7 phi_hat   5.632    estimated quantity
-#>  8 a_hat     5.294    estimated quantity
-#>  9 b_hat     0.3379   estimated quantity
-#> 10 zeta      0.5      estimated quantity
-#> 11 a_tilde   3.147    estimated quantity
-#> 12 b_tilde   0.669    estimated quantity
+#>  5 a_max     1e+04    method constant   
+#>  6 b_max     1e+04    method constant   
+#>  7 mu_hat    0.94     estimated quantity
+#>  8 s2_w      0.008504 estimated quantity
+#>  9 phi_hat   5.632    estimated quantity
+#> 10 a_hat     5.294    estimated quantity
+#> 11 b_hat     0.3379   estimated quantity
+#> 12 zeta      0.5      estimated quantity
+#> 13 a_tilde   3.147    estimated quantity
+#> 14 b_tilde   0.669    estimated quantity
 #> 
 #> 
 #> ── 🔎 Coefficient tests ──
@@ -223,7 +225,8 @@ confint(result)
 #> 2 income_scaled      -6359.     2691.  0.95
 #> 3 income_scaled_sq   -1446.     4620.  0.95
 
-hcinfer(fit, type = "hcbeta", c1 = 7, c2 = 0.75, lower = 0.01, upper = 0.99)
+# Sensitivity analysis with nondefault HCbeta caps
+hcinfer(fit, type = "hcbeta", a_max = 20000, b_max = 20000)
 #> 
 #> ── 🔎 HCbeta robust inference ──────────────────────────────────────────────────
 #> 📐 Model: `expenditure ~ income_scaled + income_scaled_sq`
