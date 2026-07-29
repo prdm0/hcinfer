@@ -24,13 +24,16 @@
 #' * `"hc5"`: `k = 0.7`.
 #' * `"hc5m"`: `k = 0.7`, `k1 = 1`, `k2 = 0`, `k3 = 1`, `gamma1 = 1`, and
 #'   `gamma2 = 1.5`.
-#' * `"hcbeta"`: `c1 = 7`, `c2 = 0.75`, `lower = 0.01`, and `upper = 0.99`.
+#' * `"hcbeta"`: `c1 = 7`, `c2 = 0.75`, `lower = 0.01`, `upper = 0.99`,
+#'   `a_max = 10000`, and `b_max = 10000`.
 #'
 #' For `"hc5"` and `"hc5m"`, `k`, `k1`, `k2`, and `k3` must be nonnegative,
 #' while `gamma1` and `gamma2` must be positive. For `"hcbeta"`, `c1` must be
 #' nonnegative, `c2` must be positive, and `lower` and `upper` must lie in
 #' `(0, 1)` with `lower < upper`. The HCbeta truncation is
 #' \eqn{w_t = max(lower, min(1 - h_t, upper))}.
+#' Both `a_max` and `b_max` must be finite and at least 50; they cap the shrunk
+#' Beta shape parameters \eqn{\tilde a} and \eqn{\tilde b} (default 10000).
 #'
 #' @param object An ordinary least squares model fitted by [stats::lm()].
 #' @param type A character string specifying the HC estimator. The default is
@@ -91,7 +94,8 @@
 #' vcov(cov)
 #' plot(cov)
 #'
-#' vcov_hc(fit, type = "hcbeta", c1 = 7, c2 = 0.75, lower = 0.01, upper = 0.99)
+#' vcov_hc(fit, type = "hcbeta", c1 = 7, c2 = 0.75, lower = 0.01, upper = 0.99,
+#'   a_max = 10000, b_max = 10000)
 #' vcov_hc(fit, type = "hc5", k = 0.7)
 #' vcov_hc(fit, type = "hc5m", k = 0.7, k1 = 1, k2 = 0, k3 = 1)
 #'

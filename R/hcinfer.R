@@ -87,7 +87,8 @@
 #' summary(result)
 #' confint(result)
 #'
-#' hcinfer(fit, type = "hcbeta", c1 = 7, c2 = 0.75, lower = 0.01, upper = 0.99)
+#' hcinfer(fit, type = "hcbeta", c1 = 7, c2 = 0.75, lower = 0.01, upper = 0.99,
+#'   a_max = 10000, b_max = 10000)
 #' hcinfer(fit, type = "hc5", k = 0.7)
 #' hcinfer(fit, type = "hc5m", k = 0.7, k1 = 1, k2 = 0, k3 = 1)
 #'

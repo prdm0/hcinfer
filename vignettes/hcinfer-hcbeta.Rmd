@@ -68,6 +68,7 @@ The most useful entries for routine inspection are:
 |-------|---------|
 | `c1`, `c2` | Constants controlling the HCbeta exponent. |
 | `lower`, `upper` | Truncation limits for leverage complements. |
+| `a_max`, `b_max` | Upper caps for the adjusted Beta shape parameters (default 10000, minimum 50). |
 | `a_tilde`, `b_tilde` | Adjusted Beta shape parameters. |
 | `zeta` | Shrinkage weight used in the Beta parameter adjustment. |
 
@@ -137,7 +138,8 @@ the default result with a small set of alternative settings.
 sensitivity_results <- list(
   default = hcinfer(fit, type = "hcbeta"),
   c1_5 = hcinfer(fit, type = "hcbeta", c1 = 5),
-  tighter_truncation = hcinfer(fit, type = "hcbeta", lower = 0.02, upper = 0.98)
+  tighter_truncation = hcinfer(fit, type = "hcbeta", lower = 0.02, upper = 0.98),
+  capped_shapes = hcinfer(fit, type = "hcbeta", a_max = 50)
 )
 
 sensitivity <- purrr::imap(sensitivity_results, \(res, setting) {

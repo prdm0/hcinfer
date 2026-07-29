@@ -81,8 +81,8 @@ test_that("HCbeta weights match the method of moments formula", {
   a_hat <- mu_hat * phi_hat
   b_hat <- (1 - mu_hat) * phi_hat
   zeta <- n / (n + 50)
-  a_tilde <- (1 - zeta) + zeta * a_hat
-  b_tilde <- (1 - zeta) + zeta * b_hat
+  a_tilde <- min((1 - zeta) + zeta * a_hat, 10000)
+  b_tilde <- min((1 - zeta) + zeta * b_hat, 10000)
   expected <- (n / (n - p)) *
     (1 / stats::pbeta(w, a_tilde, b_tilde))^(c1 / n^c2)
 
@@ -101,4 +101,49 @@ test_that("HCbeta with c1 equal to zero reduces to HC1 weights", {
     vcov_hc(fit, "hc1")$weights,
     ignore_attr = TRUE
   )
+})
+
+test_that("HCbeta clamps Beta shape parameters at a_max and b_max", {
+  fit <- lm(y ~ x, data = data.frame(x = 1:60, y = sin(1:60)))
+
+  uncapped <- vcov_hc(fit, "hcbeta")            # default a_max = 10000
+  capped <- vcov_hc(fit, "hcbeta", a_max = 50)
+
+  expect_gt(uncapped$method_params$a_tilde, 50) # uncapped ~ 75.17
+  expect_equal(capped$method_params$a_tilde, 50)
+  expect_equal(                                 # b_tilde ~ 3.03, cap does not bind
+    capped$method_params$b_tilde,
+    uncapped$method_params$b_tilde
+  )
+})
+
+test_that("HCbeta rejects a_max or b_max below 50", {
+  fit <- local_public_schools_fit()
+
+  expect_error(vcov_hc(fit, "hcbeta", a_max = 49))
+  expect_error(vcov_hc(fit, "hcbeta", b_max = 10))
+})
+
+test_that("HCbeta weights never fall below the HC1 scale", {
+  fit <- local_public_schools_fit()
+  res <- vcov_hc(fit, "hcbeta")
+  hc1 <- res$n / (res$n - res$p)
+
+  expect_true(all(res$weights >= hc1 - 1e-8))
+})
+
+test_that("HCbeta caps degenerate moment estimates on balanced designs", {
+  n <- 500
+  fit <- lm(y ~ x, data = data.frame(
+    x = seq_len(n),
+    y = sin(seq_len(n))
+  ))
+  res <- vcov_hc(fit, "hcbeta")
+  hc1 <- n / (n - res$p)
+
+  expect_lt(max(res$leverage), 0.01)
+  expect_lte(res$method_params$s2_w, .Machine$double.eps)
+  expect_equal(res$method_params$a_tilde, 10000)
+  expect_equal(res$method_params$b_tilde, 10000)
+  expect_equal(res$weights, rep(hc1, n), ignore_attr = TRUE)
 })

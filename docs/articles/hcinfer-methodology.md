@@ -329,12 +329,28 @@ leverages.
 Small samples can make moment estimates unstable. HCbeta shrinks the
 estimated shape parameters toward the uniform case a = b = 1:
 
-\zeta = \frac{n}{n + 50}, \qquad \tilde a = (1 - \zeta) + \zeta \hat a,
-\qquad \tilde b = (1 - \zeta) + \zeta \hat b.
+\zeta = \frac{n}{n + 50}, \qquad \tilde a = \min\\(1 - \zeta) + \zeta
+\hat a,\\ A\_{\max}\\, \qquad \tilde b = \min\\(1 - \zeta) + \zeta \hat
+b,\\ B\_{\max}\\.
 
 For smaller n, \zeta is smaller and the method stays closer to the
 uniform baseline. As n grows, the estimated shape parameters receive
 more weight.
+
+The caps A\_{\max} = B\_{\max} = 10000 correspond to the arguments
+`a_max` and `b_max` (minimum 50). They keep the shape parameters bounded
+and act only as a numerical safeguard. Because the truncated w_t
+together with bounded \tilde a and \tilde b keep \log F_B(w_t; \tilde a,
+\tilde b) uniformly bounded, the exponent c_1/n^{c_2} alone governs the
+asymptotic behavior, and g_t \to 1 regardless of the cap.
+
+When every truncated complement is identical, s_w^2 = 0 and the raw
+method-of-moments shape estimates diverge. In that degenerate
+low-leverage regime, `hcinfer` sets \tilde a = A\_{\max} and \tilde b =
+B\_{\max} rather than aborting. The Beta cdf at the common upper
+truncation is then numerically one under the default caps, so the HCbeta
+factor reduces to the HC1 scale n/(n - p) and remains well-defined as it
+converges to one.
 
 ### Step 4: use a decaying exponent
 
@@ -404,8 +420,13 @@ model matrix by summing the squared entries in each row of the
 orthonormal factor.
 
 HCbeta uses [`stats::pbeta()`](https://rdrr.io/r/stats/Beta.html) for
-the Beta cdf. The incomplete beta function is not reimplemented inside
-the package.
+the Beta cdf, and the incomplete beta function is not reimplemented
+inside the package. The cdf is evaluated on the log scale with
+`pbeta(w, a_tilde, b_tilde, log.p = TRUE)`, and the resulting exponent
+is capped before exponentiation. This prevents both \log(0) = -\infty
+when the cdf underflows and floating point overflow in
+[`exp()`](https://rdrr.io/r/base/Log.html) for extreme shape parameters.
+The degrees of freedom factor n/(n - p) is computed once.
 
 Method specific constants are passed through `...` in
 [`vcov_hc()`](https://prdm0.github.io/hcinfer/reference/vcov_hc.md) and

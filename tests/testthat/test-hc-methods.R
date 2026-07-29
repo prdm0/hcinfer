@@ -22,7 +22,7 @@ test_that("hc_methods() reports method-specific defaults", {
   )
   expect_equal(
     methods$default_arguments[methods$type == "hcbeta"],
-    "c1 = 7, c2 = 0.75, lower = 0.01, upper = 0.99"
+    "c1 = 7, c2 = 0.75, lower = 0.01, upper = 0.99, a_max = 10000, b_max = 10000"
   )
 })
 

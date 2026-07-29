@@ -41,6 +41,7 @@
   <ul class="dropdown-menu" aria-labelledby="dropdown-articles">
 <li><a class="dropdown-item" href="../articles/introduction.html">Introduction to hcinfer</a></li>
     <li><a class="dropdown-item" href="../articles/hcinfer-methodology.html">HC Estimator Methodology</a></li>
+    <li><a class="dropdown-item" href="../articles/hcinfer-hcbeta-algorithm.html">The HCbeta algorithm and its consistency</a></li>
     <li><a class="dropdown-item" href="../articles/hcinfer-comparison.html">Comparing HC Estimators</a></li>
     <li><a class="dropdown-item" href="../articles/hcinfer-hcbeta.html">Using HCbeta</a></li>
     <li><a class="dropdown-item" href="../articles/hcinfer-bootstrap.html">Pairs bootstrap inference with hcinfer</a></li>
@@ -421,13 +422,29 @@ estimated shape parameters toward the uniform case <span class="math inline">a =
 <p><span class="math display">
 \zeta = \frac{n}{n + 50},
 \qquad
-\tilde a = (1 - \zeta) + \zeta \hat a,
+\tilde a = \min\{(1 - \zeta) + \zeta \hat a,\, A_{\max}\},
 \qquad
-\tilde b = (1 - \zeta) + \zeta \hat b.
+\tilde b = \min\{(1 - \zeta) + \zeta \hat b,\, B_{\max}\}.
 </span></p>
 <p>For smaller <span class="math inline">n</span>, <span class="math inline">\zeta</span> is smaller and the method stays closer
 to the uniform baseline. As <span class="math inline">n</span> grows,
 the estimated shape parameters receive more weight.</p>
+<p>The caps <span class="math inline">A_{\max} = B_{\max} = 10000</span>
+correspond to the arguments <code>a_max</code> and <code>b_max</code>
+(minimum 50). They keep the shape parameters bounded and act only as a
+numerical safeguard. Because the truncated <span class="math inline">w_t</span> together with bounded <span class="math inline">\tilde a</span> and <span class="math inline">\tilde
+b</span> keep <span class="math inline">\log F_B(w_t; \tilde a, \tilde
+b)</span> uniformly bounded, the exponent <span class="math inline">c_1/n^{c_2}</span> alone governs the asymptotic
+behavior, and <span class="math inline">g_t \to 1</span> regardless of
+the cap.</p>
+<p>When every truncated complement is identical, <span class="math inline">s_w^2 = 0</span> and the raw method-of-moments shape
+estimates diverge. In that degenerate low-leverage regime,
+<code>hcinfer</code> sets <span class="math inline">\tilde a =
+A_{\max}</span> and <span class="math inline">\tilde b = B_{\max}</span>
+rather than aborting. The Beta cdf at the common upper truncation is
+then numerically one under the default caps, so the HCbeta factor
+reduces to the HC1 scale <span class="math inline">n/(n - p)</span> and
+remains well-defined as it converges to one.</p>
 </div>
 <div class="section level3">
 <h3 id="step-4-use-a-decaying-exponent">Step 4: use a decaying exponent<a class="anchor" aria-label="anchor" href="#step-4-use-a-decaying-exponent"></a>
@@ -501,8 +518,14 @@ removed.</p>
 leverage. The leverages can be obtained from a QR decomposition of the
 model matrix by summing the squared entries in each row of the
 orthonormal factor.</p>
-<p>HCbeta uses <code><a href="https://rdrr.io/r/stats/Beta.html" class="external-link">stats::pbeta()</a></code> for the Beta cdf. The
-incomplete beta function is not reimplemented inside the package.</p>
+<p>HCbeta uses <code><a href="https://rdrr.io/r/stats/Beta.html" class="external-link">stats::pbeta()</a></code> for the Beta cdf, and the
+incomplete beta function is not reimplemented inside the package. The
+cdf is evaluated on the log scale with
+<code>pbeta(w, a_tilde, b_tilde, log.p = TRUE)</code>, and the resulting
+exponent is capped before exponentiation. This prevents both <span class="math inline">\log(0) = -\infty</span> when the cdf underflows and
+floating point overflow in <code><a href="https://rdrr.io/r/base/Log.html" class="external-link">exp()</a></code> for extreme shape
+parameters. The degrees of freedom factor <span class="math inline">n/(n
+- p)</span> is computed once.</p>
 <p>Method specific constants are passed through <code>...</code> in
 <code><a href="../reference/vcov_hc.html">vcov_hc()</a></code> and <code><a href="../reference/hcinfer.html">hcinfer()</a></code>. Unknown names are
 rejected. This keeps the interface compact while making the documented

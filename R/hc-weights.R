@@ -30,7 +30,7 @@ default_hc_args <- function(type, dots, call = rlang::caller_env()) {
       args
     },
     hcbeta = {
-      allowed <- c("c1", "c2", "lower", "upper")
+      allowed <- c("c1", "c2", "lower", "upper", "a_max", "b_max")
       check_allowed_dots(dots, allowed, call = call)
       args <- utils::modifyList(hc_default_arguments()$hcbeta, dots)
       args$c1 <- check_nonnegative_scalar(args$c1, "c1", call = call)
@@ -50,6 +50,8 @@ default_hc_args <- function(type, dots, call = rlang::caller_env()) {
           call = call
         )
       }
+      args$a_max <- check_scalar_number(args$a_max, "a_max", lower = 50, call = call)
+      args$b_max <- check_scalar_number(args$b_max, "b_max", lower = 50, call = call)
       args
     }
   )
@@ -62,22 +64,25 @@ hcbeta_components <- function(leverage, n, p, args, call = rlang::caller_env()) 
   mu_hat <- mean(w)
   s2_w <- sum((w - mu_hat)^2) / (n - 1)
 
-  if (!is.finite(s2_w) || s2_w <= .Machine$double.eps) {
-    cli::cli_abort(
-      c(
-        "HCbeta cannot estimate beta parameters from these leverages.",
-        "x" = "The sample variance of truncated leverage complements is zero or too small."
-      ),
-      call = call
-    )
-  }
-
-  phi_hat <- mu_hat * (1 - mu_hat) / s2_w - 1
-  a_hat <- mu_hat * phi_hat
-  b_hat <- (1 - mu_hat) * phi_hat
   zeta <- n / (n + 50)
-  a_tilde <- (1 - zeta) + zeta * a_hat
-  b_tilde <- (1 - zeta) + zeta * b_hat
+
+  if (is.finite(s2_w) && s2_w > .Machine$double.eps) {
+    phi_hat <- mu_hat * (1 - mu_hat) / s2_w - 1
+    a_hat <- mu_hat * phi_hat
+    b_hat <- (1 - mu_hat) * phi_hat
+    a_tilde <- min((1 - zeta) + zeta * a_hat, args$a_max)
+    b_tilde <- min((1 - zeta) + zeta * b_hat, args$b_max)
+  } else {
+    # Degenerate leverage configuration: all truncated complements coincide, so
+    # the method-of-moments variance vanishes and the raw shape estimates
+    # diverge. Following the article, the caps define the limiting shapes, which
+    # keeps HCbeta well-defined and drives g_t to the HC1 scale n / (n - p).
+    phi_hat <- Inf
+    a_hat <- Inf
+    b_hat <- Inf
+    a_tilde <- args$a_max
+    b_tilde <- args$b_max
+  }
 
   if (a_tilde <= 0 || b_tilde <= 0 || !is.finite(a_tilde) || !is.finite(b_tilde)) {
     cli::cli_abort(
@@ -90,15 +95,10 @@ hcbeta_components <- function(leverage, n, p, args, call = rlang::caller_env()) 
     )
   }
 
-  beta_cdf <- stats::pbeta(w, a_tilde, b_tilde)
-  if (any(!is.finite(beta_cdf)) || any(beta_cdf <= 0)) {
-    cli::cli_abort(
-      "HCbeta produced invalid beta distribution probabilities.",
-      call = call
-    )
-  }
-
-  weights <- (n / (n - p)) * (1 / beta_cdf)^(args$c1 / n^args$c2)
+  n_over_np <- n / (n - p)
+  log_beta_cdf <- stats::pbeta(w, a_tilde, b_tilde, log.p = TRUE)
+  exponent <- pmin(-(args$c1 / n^args$c2) * log_beta_cdf, 700)
+  weights <- n_over_np * exp(exponent)
 
   list(
     weights = weights,

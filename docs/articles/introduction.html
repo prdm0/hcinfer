@@ -41,6 +41,7 @@
   <ul class="dropdown-menu" aria-labelledby="dropdown-articles">
 <li><a class="dropdown-item" href="../articles/introduction.html">Introduction to hcinfer</a></li>
     <li><a class="dropdown-item" href="../articles/hcinfer-methodology.html">HC Estimator Methodology</a></li>
+    <li><a class="dropdown-item" href="../articles/hcinfer-hcbeta-algorithm.html">The HCbeta algorithm and its consistency</a></li>
     <li><a class="dropdown-item" href="../articles/hcinfer-comparison.html">Comparing HC Estimators</a></li>
     <li><a class="dropdown-item" href="../articles/hcinfer-hcbeta.html">Using HCbeta</a></li>
     <li><a class="dropdown-item" href="../articles/hcinfer-bootstrap.html">Pairs bootstrap inference with hcinfer</a></li>
@@ -191,21 +192,23 @@ heteroskedasticity-robust diagnostics.</p>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; ── <span style="font-weight: bold;">Method parameters</span> ──</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 12 × 3</span></span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 14 × 3</span></span></span>
 <span><span class="co">#&gt;    parameter value    role              </span></span>
 <span><span class="co">#&gt;    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>             </span></span>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;"> 1</span> c1        7        method constant   </span></span>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;"> 2</span> c2        0.75     method constant   </span></span>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;"> 3</span> lower     0.01     method constant   </span></span>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;"> 4</span> upper     0.99     method constant   </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 5</span> mu_hat    0.94     estimated quantity</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 6</span> s2_w      0.008504 estimated quantity</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 7</span> phi_hat   5.632    estimated quantity</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 8</span> a_hat     5.294    estimated quantity</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 9</span> b_hat     0.3379   estimated quantity</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">10</span> zeta      0.5      estimated quantity</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">11</span> a_tilde   3.147    estimated quantity</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">12</span> b_tilde   0.669    estimated quantity</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 5</span> a_max     1e+04    method constant   </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 6</span> b_max     1e+04    method constant   </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 7</span> mu_hat    0.94     estimated quantity</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 8</span> s2_w      0.008504 estimated quantity</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 9</span> phi_hat   5.632    estimated quantity</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">10</span> a_hat     5.294    estimated quantity</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">11</span> b_hat     0.3379   estimated quantity</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">12</span> zeta      0.5      estimated quantity</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">13</span> a_tilde   3.147    estimated quantity</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">14</span> b_tilde   0.669    estimated quantity</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; ── <span style="font-weight: bold;">Coefficient tests</span> ──</span></span>
 <span><span class="co">#&gt; </span></span>
@@ -394,21 +397,23 @@ for covariance objects.</p>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; ── <span style="font-weight: bold;">Method parameters</span> ──</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 12 × 3</span></span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 14 × 3</span></span></span>
 <span><span class="co">#&gt;    parameter value    role              </span></span>
 <span><span class="co">#&gt;    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>             </span></span>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;"> 1</span> c1        7        method constant   </span></span>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;"> 2</span> c2        0.75     method constant   </span></span>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;"> 3</span> lower     0.01     method constant   </span></span>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;"> 4</span> upper     0.99     method constant   </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 5</span> mu_hat    0.94     estimated quantity</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 6</span> s2_w      0.008504 estimated quantity</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 7</span> phi_hat   5.632    estimated quantity</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 8</span> a_hat     5.294    estimated quantity</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 9</span> b_hat     0.3379   estimated quantity</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">10</span> zeta      0.5      estimated quantity</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">11</span> a_tilde   3.147    estimated quantity</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">12</span> b_tilde   0.669    estimated quantity</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 5</span> a_max     1e+04    method constant   </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 6</span> b_max     1e+04    method constant   </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 7</span> mu_hat    0.94     estimated quantity</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 8</span> s2_w      0.008504 estimated quantity</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 9</span> phi_hat   5.632    estimated quantity</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">10</span> a_hat     5.294    estimated quantity</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">11</span> b_hat     0.3379   estimated quantity</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">12</span> zeta      0.5      estimated quantity</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">13</span> a_tilde   3.147    estimated quantity</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">14</span> b_tilde   0.669    estimated quantity</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/stats/vcov.html" class="external-link">vcov</a></span><span class="op">(</span><span class="va">cov_hcbeta</span><span class="op">)</span></span>
 <span><span class="co">#&gt;                  (Intercept) income_scaled income_scaled_sq</span></span>
 <span><span class="co">#&gt; (Intercept)         723617.6      -1962262          1312195</span></span>

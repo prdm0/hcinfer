@@ -9,6 +9,8 @@
 
 - [HC Estimator
   Methodology](https://prdm0.github.io/hcinfer/articles/hcinfer-methodology.md):
+- [The HCbeta algorithm and its
+  consistency](https://prdm0.github.io/hcinfer/articles/hcinfer-hcbeta-algorithm.md):
 - [Comparing HC
   Estimators](https://prdm0.github.io/hcinfer/articles/hcinfer-comparison.md):
 - [Using
