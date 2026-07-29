@@ -36,10 +36,10 @@ hcinfer(object, type = "hcbeta", alpha = 0.05, null = 0, ...)
 
   Method-specific constants passed to
   [`vcov_hc()`](https://prdm0.github.io/hcinfer/reference/vcov_hc.md).
-  Defaults are documented in
+  For HCbeta, `a_max` and `b_max` default to 10000, may be set
+  independently, and must each be finite and lie in `[50, 25000]`. See
   [`vcov_hc()`](https://prdm0.github.io/hcinfer/reference/vcov_hc.md)
-  and can be inspected with
-  [`hc_methods()`](https://prdm0.github.io/hcinfer/reference/hc_methods.md).
+  for all other method-specific defaults and parameter domains.
 
 ## Value
 
@@ -225,8 +225,8 @@ confint(result)
 #> 2 income_scaled      -6359.     2691.  0.95
 #> 3 income_scaled_sq   -1446.     4620.  0.95
 
-hcinfer(fit, type = "hcbeta", c1 = 7, c2 = 0.75, lower = 0.01, upper = 0.99,
-  a_max = 10000, b_max = 10000)
+# Sensitivity analysis with nondefault HCbeta caps
+hcinfer(fit, type = "hcbeta", a_max = 20000, b_max = 20000)
 #> 
 #> ── 🔎 HCbeta robust inference ──────────────────────────────────────────────────
 #> 📐 Model: `expenditure ~ income_scaled + income_scaled_sq`

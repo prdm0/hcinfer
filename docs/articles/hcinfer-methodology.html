@@ -430,13 +430,15 @@ estimated shape parameters toward the uniform case <span class="math inline">a =
 to the uniform baseline. As <span class="math inline">n</span> grows,
 the estimated shape parameters receive more weight.</p>
 <p>The caps <span class="math inline">A_{\max} = B_{\max} = 10000</span>
-correspond to the arguments <code>a_max</code> and <code>b_max</code>
-(minimum 50). They keep the shape parameters bounded and act only as a
-numerical safeguard. Because the truncated <span class="math inline">w_t</span> together with bounded <span class="math inline">\tilde a</span> and <span class="math inline">\tilde
-b</span> keep <span class="math inline">\log F_B(w_t; \tilde a, \tilde
-b)</span> uniformly bounded, the exponent <span class="math inline">c_1/n^{c_2}</span> alone governs the asymptotic
-behavior, and <span class="math inline">g_t \to 1</span> regardless of
-the cap.</p>
+correspond to the arguments <code>a_max</code> and <code>b_max</code>,
+each with the inclusive range <code>[50, 25000]</code>. They keep the
+shape parameters bounded and act only as a numerical safeguard. Because
+the truncated <span class="math inline">w_t</span> together with bounded
+<span class="math inline">\tilde a</span> and <span class="math inline">\tilde b</span> keep <span class="math inline">\log
+F_B(w_t; \tilde a, \tilde b)</span> uniformly bounded, the exponent
+<span class="math inline">c_1/n^{c_2}</span> alone governs the
+asymptotic behavior, and <span class="math inline">g_t \to 1</span>
+regardless of the cap.</p>
 <p>When every truncated complement is identical, <span class="math inline">s_w^2 = 0</span> and the raw method-of-moments shape
 estimates diverge. In that degenerate low-leverage regime,
 <code>hcinfer</code> sets <span class="math inline">\tilde a =
@@ -522,14 +524,15 @@ orthonormal factor.</p>
 incomplete beta function is not reimplemented inside the package. The
 cdf is evaluated on the log scale with
 <code>pbeta(w, a_tilde, b_tilde, log.p = TRUE)</code>, and the resulting
-exponent is capped before exponentiation. This prevents both <span class="math inline">\log(0) = -\infty</span> when the cdf underflows and
-floating point overflow in <code><a href="https://rdrr.io/r/base/Log.html" class="external-link">exp()</a></code> for extreme shape
-parameters. The degrees of freedom factor <span class="math inline">n/(n
-- p)</span> is computed once.</p>
-<p>Method specific constants are passed through <code>...</code> in
-<code><a href="../reference/vcov_hc.html">vcov_hc()</a></code> and <code><a href="../reference/hcinfer.html">hcinfer()</a></code>. Unknown names are
-rejected. This keeps the interface compact while making the documented
-constants available for sensitivity analyses.</p>
+exponent is capped at 700 before exponentiation. This prevents both
+<span class="math inline">\log(0) = -\infty</span> when the cdf
+underflows and floating-point overflow in <code><a href="https://rdrr.io/r/base/Log.html" class="external-link">exp()</a></code> for extreme
+shape parameters. The degrees of freedom factor <span class="math inline">n/(n - p)</span> is computed once.</p>
+<p>Method-specific constants are passed through <code>...</code> in
+<code><a href="../reference/vcov_hc.html">vcov_hc()</a></code> and <code><a href="../reference/hcinfer.html">hcinfer()</a></code>. The HCbeta caps can
+be supplied independently through <code>...</code>, and unknown names
+are rejected. This keeps the interface compact while making the
+documented constants available for sensitivity analyses.</p>
 </div>
 <div class="section level2">
 <h2 id="references">References<a class="anchor" aria-label="anchor" href="#references"></a>

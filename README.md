@@ -35,7 +35,7 @@ matrix estimators currently implemented in `hcinfer`.
 | hc4m | HC4m | Modified HC4 correction by Cribari-Neto and da Silva. | none |
 | hc5 | HC5 | High-leverage correction by Cribari-Neto, Souza, and Vasconcellos. | k = 0.7 |
 | hc5m | HC5m | Modified HC5 correction by Li, Zhang, Zhang, and Wang. | k = 0.7, k1 = 1, k2 = 0, k3 = 1, gamma1 = 1, gamma2 = 1.5 |
-| hcbeta | HCbeta | Beta-distribution leverage correction. | c1 = 7, c2 = 0.75, lower = 0.01, upper = 0.99 |
+| hcbeta | HCbeta | Beta-distribution leverage correction. | c1 = 7, c2 = 0.75, lower = 0.01, upper = 0.99, a_max = 10000, b_max = 10000 |
 
 ## Installation
 
@@ -67,6 +67,23 @@ result <- hcinfer(fit)
 The default estimator is HCbeta. Use `tests()` and `confint()` to
 extract the main inferential quantities as tibbles.
 
+HCbeta caps the two shrunk Beta shape parameters with `a_max` and
+`b_max`. Both arguments default to 10000 and accept finite values in the
+inclusive interval `[50, 25000]`. They can be set independently through
+`...` and should normally be changed only for a sensitivity analysis.
+
+``` r
+hcinfer(fit, type = "hcbeta", a_max = 20000, b_max = 20000)
+#> 
+#> ── HCbeta robust inference ─────────────────────────────────────────────────────
+#> Model: `expenditure ~ income_scaled + income_scaled_sq`
+#> Observations: 50 | Parameters: 3
+#> Robust covariance: HCbeta
+#> Confidence level: 95.0% | Normal critical value: 1.9600
+#> Use `summary()` for p-values, test results, confidence intervals, and
+#> diagnostics.
+```
+
 ``` r
 tests(result)
 #> # A tibble: 3 × 8
@@ -93,7 +110,7 @@ the null value used in the tests.
 plot(result)
 ```
 
-<img src="man/figures/README-unnamed-chunk-5-1.png" alt="Robust confidence intervals for the public-schools regression coefficients." width="672" />
+<img src="man/figures/README-unnamed-chunk-6-1.png" alt="Robust confidence intervals for the public-schools regression coefficients." width="672" />
 
 ## Diagnostics
 
@@ -106,7 +123,7 @@ cov_hcbeta <- vcov_hc(fit)
 plot(cov_hcbeta)
 ```
 
-<img src="man/figures/README-unnamed-chunk-6-1.png" alt="HCbeta adjustment factors plotted against leverage values for the public-schools regression." width="672" />
+<img src="man/figures/README-unnamed-chunk-7-1.png" alt="HCbeta adjustment factors plotted against leverage values for the public-schools regression." width="672" />
 
 ## Main Functions
 

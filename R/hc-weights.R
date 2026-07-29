@@ -50,8 +50,12 @@ default_hc_args <- function(type, dots, call = rlang::caller_env()) {
           call = call
         )
       }
-      args$a_max <- check_scalar_number(args$a_max, "a_max", lower = 50, call = call)
-      args$b_max <- check_scalar_number(args$b_max, "b_max", lower = 50, call = call)
+      args$a_max <- check_scalar_number(args$a_max, "a_max",
+        lower = 50, upper = 25000, call = call
+      )
+      args$b_max <- check_scalar_number(args$b_max, "b_max",
+        lower = 50, upper = 25000, call = call
+      )
       args
     }
   )
@@ -126,6 +130,19 @@ compute_hc_weights <- function(type, leverage, n, p, dots,
   h_max <- max(leverage)
   ratio <- leverage / h_bar
   u <- 1 - leverage
+
+  if (
+    type %in% c("hc2", "hc3", "hc4", "hc4m", "hc5", "hc5m") &&
+      any(u <= .Machine$double.eps)
+  ) {
+    cli::cli_abort(
+      c(
+        "At least one leverage value is too close to 1.",
+        "i" = "HC leverage corrections require positive {.code 1 - h_t}."
+      ),
+      call = call
+    )
+  }
 
   out <- switch(
     type,

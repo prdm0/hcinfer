@@ -141,7 +141,7 @@ least squares models.
 <td align="left">hcbeta</td>
 <td align="left">HCbeta</td>
 <td align="left">Beta-distribution leverage correction.</td>
-<td align="left">c1 = 7, c2 = 0.75, lower = 0.01, upper = 0.99</td>
+<td align="left">c1 = 7, c2 = 0.75, lower = 0.01, upper = 0.99, a_max = 10000, b_max = 10000</td>
 </tr>
 </tbody>
 </table>
@@ -173,7 +173,18 @@ least squares models.
 <span></span>
 <span><span class="va">result</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/hcinfer.html">hcinfer</a></span><span class="op">(</span><span class="va">fit</span><span class="op">)</span></span></code></pre></div>
 <p>The default estimator is HCbeta. Use <code><a href="reference/tests.html">tests()</a></code> and <code><a href="https://rdrr.io/r/stats/confint.html" class="external-link">confint()</a></code> to extract the main inferential quantities as tibbles.</p>
+<p>HCbeta caps the two shrunk Beta shape parameters with <code>a_max</code> and <code>b_max</code>. Both arguments default to 10000 and accept finite values in the inclusive interval <code>[50, 25000]</code>. They can be set independently through <code>...</code> and should normally be changed only for a sensitivity analysis.</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="reference/hcinfer.html">hcinfer</a></span><span class="op">(</span><span class="va">fit</span>, type <span class="op">=</span> <span class="st">"hcbeta"</span>, a_max <span class="op">=</span> <span class="fl">20000</span>, b_max <span class="op">=</span> <span class="fl">20000</span><span class="op">)</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; ── HCbeta robust inference ─────────────────────────────────────────────────────</span></span>
+<span><span class="co">#&gt; Model: `expenditure ~ income_scaled + income_scaled_sq`</span></span>
+<span><span class="co">#&gt; Observations: 50 | Parameters: 3</span></span>
+<span><span class="co">#&gt; Robust covariance: HCbeta</span></span>
+<span><span class="co">#&gt; Confidence level: 95.0% | Normal critical value: 1.9600</span></span>
+<span><span class="co">#&gt; Use `summary()` for p-values, test results, confidence intervals, and</span></span>
+<span><span class="co">#&gt; diagnostics.</span></span></code></pre></div>
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="reference/tests.html">tests</a></span><span class="op">(</span><span class="va">result</span><span class="op">)</span></span>
 <span><span class="co">#&gt; # A tibble: 3 × 8</span></span>
 <span><span class="co">#&gt;   term             estimate null_value std_error z_value p_value alpha reject</span></span>
@@ -193,28 +204,28 @@ least squares models.
 <h2 id="confidence-intervals">Confidence Intervals<a class="anchor" aria-label="anchor" href="#confidence-intervals"></a>
 </h2>
 <p>The <code><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot()</a></code> method displays the robust confidence intervals and marks the null value used in the tests.</p>
-<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">result</span><span class="op">)</span></span></code></pre></div>
-<p><img src="reference/figures/README-unnamed-chunk-5-1.png" alt="Robust confidence intervals for the public-schools regression coefficients." width="672"></p>
+<p><img src="reference/figures/README-unnamed-chunk-6-1.png" alt="Robust confidence intervals for the public-schools regression coefficients." width="672"></p>
 </div>
 <div class="section level2">
 <h2 id="diagnostics">Diagnostics<a class="anchor" aria-label="anchor" href="#diagnostics"></a>
 </h2>
 <p>Use <code><a href="reference/vcov_hc.html">vcov_hc()</a></code> when you only need the robust covariance matrix and its diagnostics. The <code><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot()</a></code> method for this object shows leverage values and HC adjustment factors.</p>
-<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">cov_hcbeta</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/vcov_hc.html">vcov_hc</a></span><span class="op">(</span><span class="va">fit</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">cov_hcbeta</span><span class="op">)</span></span></code></pre></div>
-<p><img src="reference/figures/README-unnamed-chunk-6-1.png" alt="HCbeta adjustment factors plotted against leverage values for the public-schools regression." width="672"></p>
+<p><img src="reference/figures/README-unnamed-chunk-7-1.png" alt="HCbeta adjustment factors plotted against leverage values for the public-schools regression." width="672"></p>
 </div>
 <div class="section level2">
 <h2 id="main-functions">Main Functions<a class="anchor" aria-label="anchor" href="#main-functions"></a>
 </h2>
-<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="reference/hc_methods.html">hc_methods</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/stats/coef.html" class="external-link">coef</a></span><span class="op">(</span><span class="va">result</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/stats/vcov.html" class="external-link">vcov</a></span><span class="op">(</span><span class="va">result</span><span class="op">)</span></span></code></pre></div>
 <p>The most common workflow is:</p>
-<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">fit</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/lm.html" class="external-link">lm</a></span><span class="op">(</span><span class="va">y</span> <span class="op">~</span> <span class="va">x1</span> <span class="op">+</span> <span class="va">x2</span>, data <span class="op">=</span> <span class="va">data</span><span class="op">)</span></span>
 <span><span class="va">result</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/hcinfer.html">hcinfer</a></span><span class="op">(</span><span class="va">fit</span>, type <span class="op">=</span> <span class="st">"hcbeta"</span><span class="op">)</span></span>
 <span></span>

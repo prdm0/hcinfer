@@ -52,8 +52,12 @@ while \code{gamma1} and \code{gamma2} must be positive. For \code{"hcbeta"}, \co
 nonnegative, \code{c2} must be positive, and \code{lower} and \code{upper} must lie in
 \verb{(0, 1)} with \code{lower < upper}. The HCbeta truncation is
 \eqn{w_t = max(lower, min(1 - h_t, upper))}.
-Both \code{a_max} and \code{b_max} must be finite and at least 50; they cap the shrunk
-Beta shape parameters \eqn{\tilde a} and \eqn{\tilde b} (default 10000).
+Both \code{a_max} and \code{b_max} must be finite and lie in \verb{[50, 25000]}; they cap
+the shrunk Beta shape parameters \eqn{\tilde a} and \eqn{\tilde b} and
+default to 10000. The two caps can be set independently through \code{...} for
+sensitivity analysis. HCbeta remains defined when \eqn{h_t = 1} because it
+truncates \eqn{1 - h_t} before evaluating the Beta CDF. In contrast, HC2
+through HC5m require a strictly positive leverage complement.
 }
 \examples{
 schools <- PublicSchools |>
@@ -67,8 +71,8 @@ cov
 vcov(cov)
 plot(cov)
 
-vcov_hc(fit, type = "hcbeta", c1 = 7, c2 = 0.75, lower = 0.01, upper = 0.99,
-  a_max = 10000, b_max = 10000)
+# Sensitivity analysis with nondefault HCbeta caps
+vcov_hc(fit, type = "hcbeta", a_max = 20000, b_max = 20000)
 vcov_hc(fit, type = "hc5", k = 0.7)
 vcov_hc(fit, type = "hc5m", k = 0.7, k1 = 1, k2 = 0, k3 = 1)
 

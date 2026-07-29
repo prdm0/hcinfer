@@ -65,8 +65,12 @@ while `gamma1` and `gamma2` must be positive. For `"hcbeta"`, `c1` must
 be nonnegative, `c2` must be positive, and `lower` and `upper` must lie
 in `(0, 1)` with `lower < upper`. The HCbeta truncation is \\w_t =
 max(lower, min(1 - h_t, upper))\\. Both `a_max` and `b_max` must be
-finite and at least 50; they cap the shrunk Beta shape parameters
-\\\tilde a\\ and \\\tilde b\\ (default 10000).
+finite and lie in `[50, 25000]`; they cap the shrunk Beta shape
+parameters \\\tilde a\\ and \\\tilde b\\ and default to 10000. The two
+caps can be set independently through `...` for sensitivity analysis.
+HCbeta remains defined when \\h_t = 1\\ because it truncates \\1 - h_t\\
+before evaluating the Beta CDF. In contrast, HC2 through HC5m require a
+strictly positive leverage complement.
 
 ## References
 
@@ -135,8 +139,8 @@ vcov(cov)
 plot(cov)
 
 
-vcov_hc(fit, type = "hcbeta", c1 = 7, c2 = 0.75, lower = 0.01, upper = 0.99,
-  a_max = 10000, b_max = 10000)
+# Sensitivity analysis with nondefault HCbeta caps
+vcov_hc(fit, type = "hcbeta", a_max = 20000, b_max = 20000)
 #> 
 #> ── 🥪 HCbeta robust covariance ─────────────────────────────────────────────────
 #> 📐 Model: `expenditure ~ income_scaled + income_scaled_sq`

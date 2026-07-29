@@ -130,9 +130,10 @@ them from above, <span class="math inline">\zeta = n/(n + 50)</span>,
 <span class="math inline">\tilde a = \min\{(1 - \zeta) + \zeta\hat a,\,
 A_{\max}\}</span>, and <span class="math inline">\tilde b = \min\{(1 -
 \zeta) + \zeta\hat b,\, B_{\max}\}</span>, with defaults <span class="math inline">A_{\max} = B_{\max} = 10000</span> set through the
-arguments <code>a_max</code> and <code>b_max</code>. Shrinkage
-stabilizes the small sample estimates, and the caps keep the shape
-parameters in a bounded range.</p></li>
+arguments <code>a_max</code> and <code>b_max</code>, each of which
+accepts finite values in the inclusive range <code>[50, 25000]</code>.
+Shrinkage stabilizes the small sample estimates, and the caps keep the
+shape parameters in a bounded range.</p></li>
 <li><p><strong>Adjustment factor and sandwich.</strong> Combine the Beta
 cdf with a decaying exponent, <span class="math inline">g_t = \frac{n}{n
 - p}\left\{1/F_B(w_t; \tilde a, \tilde b)\right\}^{c_1/n^{c_2}}</span>,

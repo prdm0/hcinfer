@@ -60,8 +60,9 @@ adjustment factor g_t in four steps.
     a = \min\\(1 - \zeta) + \zeta\hat a,\\ A\_{\max}\\, and \tilde b =
     \min\\(1 - \zeta) + \zeta\hat b,\\ B\_{\max}\\, with defaults
     A\_{\max} = B\_{\max} = 10000 set through the arguments `a_max` and
-    `b_max`. Shrinkage stabilizes the small sample estimates, and the
-    caps keep the shape parameters in a bounded range.
+    `b_max`, each of which accepts finite values in the inclusive range
+    `[50, 25000]`. Shrinkage stabilizes the small sample estimates, and
+    the caps keep the shape parameters in a bounded range.
 
 4.  **Adjustment factor and sandwich.** Combine the Beta cdf with a
     decaying exponent, g_t = \frac{n}{n - p}\left\\1/F_B(w_t; \tilde a,

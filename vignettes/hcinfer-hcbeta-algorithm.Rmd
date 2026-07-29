@@ -68,7 +68,8 @@ adjustment factor $g_t$ in four steps.
    $a = b = 1$ and bound them from above, $\zeta = n/(n + 50)$,
    $\tilde a = \min\{(1 - \zeta) + \zeta\hat a,\, A_{\max}\}$, and
    $\tilde b = \min\{(1 - \zeta) + \zeta\hat b,\, B_{\max}\}$, with defaults
-   $A_{\max} = B_{\max} = 10000$ set through the arguments `a_max` and `b_max`.
+   $A_{\max} = B_{\max} = 10000$ set through the arguments `a_max` and `b_max`,
+   each of which accepts finite values in the inclusive range `[50, 25000]`.
    Shrinkage stabilizes the small sample estimates, and the caps keep the shape
    parameters in a bounded range.
 

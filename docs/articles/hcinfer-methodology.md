@@ -338,11 +338,12 @@ uniform baseline. As n grows, the estimated shape parameters receive
 more weight.
 
 The caps A\_{\max} = B\_{\max} = 10000 correspond to the arguments
-`a_max` and `b_max` (minimum 50). They keep the shape parameters bounded
-and act only as a numerical safeguard. Because the truncated w_t
-together with bounded \tilde a and \tilde b keep \log F_B(w_t; \tilde a,
-\tilde b) uniformly bounded, the exponent c_1/n^{c_2} alone governs the
-asymptotic behavior, and g_t \to 1 regardless of the cap.
+`a_max` and `b_max`, each with the inclusive range `[50, 25000]`. They
+keep the shape parameters bounded and act only as a numerical safeguard.
+Because the truncated w_t together with bounded \tilde a and \tilde b
+keep \log F_B(w_t; \tilde a, \tilde b) uniformly bounded, the exponent
+c_1/n^{c_2} alone governs the asymptotic behavior, and g_t \to 1
+regardless of the cap.
 
 When every truncated complement is identical, s_w^2 = 0 and the raw
 method-of-moments shape estimates diverge. In that degenerate
@@ -423,16 +424,17 @@ HCbeta uses [`stats::pbeta()`](https://rdrr.io/r/stats/Beta.html) for
 the Beta cdf, and the incomplete beta function is not reimplemented
 inside the package. The cdf is evaluated on the log scale with
 `pbeta(w, a_tilde, b_tilde, log.p = TRUE)`, and the resulting exponent
-is capped before exponentiation. This prevents both \log(0) = -\infty
-when the cdf underflows and floating point overflow in
+is capped at 700 before exponentiation. This prevents both \log(0) =
+-\infty when the cdf underflows and floating-point overflow in
 [`exp()`](https://rdrr.io/r/base/Log.html) for extreme shape parameters.
 The degrees of freedom factor n/(n - p) is computed once.
 
-Method specific constants are passed through `...` in
+Method-specific constants are passed through `...` in
 [`vcov_hc()`](https://prdm0.github.io/hcinfer/reference/vcov_hc.md) and
-[`hcinfer()`](https://prdm0.github.io/hcinfer/reference/hcinfer.md).
-Unknown names are rejected. This keeps the interface compact while
-making the documented constants available for sensitivity analyses.
+[`hcinfer()`](https://prdm0.github.io/hcinfer/reference/hcinfer.md). The
+HCbeta caps can be supplied independently through `...`, and unknown
+names are rejected. This keeps the interface compact while making the
+documented constants available for sensitivity analyses.
 
 ## References
 

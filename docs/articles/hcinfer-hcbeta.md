@@ -200,7 +200,7 @@ The most useful entries for routine inspection are:
 |----|----|
 | `c1`, `c2` | Constants controlling the HCbeta exponent. |
 | `lower`, `upper` | Truncation limits for leverage complements. |
-| `a_max`, `b_max` | Upper caps for the adjusted Beta shape parameters (default 10000, minimum 50). |
+| `a_max`, `b_max` | Upper caps for the adjusted Beta shape parameters (default 10000, valid range `[50, 25000]`). |
 | `a_tilde`, `b_tilde` | Adjusted Beta shape parameters. |
 | `zeta` | Shrinkage weight used in the Beta parameter adjustment. |
 
@@ -400,8 +400,9 @@ summary(hcbeta_cov)
 
 ## Run a sensitivity check
 
-The HCbeta constants can be passed through `...`. A sensitivity check
-compares the default result with a small set of alternative settings.
+The HCbeta constants can be passed through `...`, and the two shape caps
+can be supplied independently. A sensitivity check compares the default
+result with a small set of alternative settings.
 
 ``` r
 
