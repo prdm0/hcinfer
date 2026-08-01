@@ -372,27 +372,36 @@ leverages.
 
 ### Step 3: shrink toward the uniform cdf
 
-Small samples can make moment estimates unstable. HCbeta shrinks the estimated
-shape parameters toward the uniform case $a = b = 1$:
+Small samples can make moment estimates unstable. HCbeta therefore shrinks the
+estimated shape parameters toward the uniform case $a = b = 1$ and then clamps
+the resulting values. The regularized shape parameters are
 
 $$
 \zeta = \frac{n}{n + 50},
 \qquad
-\tilde a = \min\{(1 - \zeta) + \zeta \hat a,\, A_{\max}\},
+\tilde a =
+\min\{\max\{(1 - \zeta) + \zeta \hat a,\, \varepsilon\},\, A_{\max}\},
 \qquad
-\tilde b = \min\{(1 - \zeta) + \zeta \hat b,\, B_{\max}\}.
+\tilde b =
+\min\{\max\{(1 - \zeta) + \zeta \hat b,\, \varepsilon\},\, B_{\max}\},
+\qquad
+\varepsilon = 0.01.
 $$
 
 For smaller $n$, $\zeta$ is smaller and the method stays closer to the uniform
-baseline. As $n$ grows, the estimated shape parameters receive more weight.
+baseline, whereas the estimated shape parameters receive more weight as $n$
+grows. The fixed floor $\varepsilon = 0.01$ is applied after shrinkage and
+before the upper caps, which keeps both adjusted shapes strictly positive.
+Unlike `lower`, which truncates $w_t$, the floor is not a method argument and
+does not change when the truncation interval is varied.
 
-The caps $A_{\max} = B_{\max} = 10000$ correspond to the arguments `a_max` and
-`b_max`, each with the inclusive range `[50, 25000]`. They keep the shape
-parameters bounded and act only as a numerical safeguard. Because the truncated
-$w_t$ together with bounded $\tilde a$ and $\tilde b$ keep
-$\log F_B(w_t; \tilde a, \tilde b)$ uniformly
-bounded, the exponent $c_1/n^{c_2}$ alone governs the asymptotic behavior, and
-$g_t \to 1$ regardless of the cap.
+The caps $A_{\max} = B_{\max} = 10000$ correspond to `a_max` and `b_max`, each
+with the inclusive range `[50, 25000]`. They keep the shape parameters bounded
+and can be changed independently for sensitivity analysis. Together with the
+fixed floor, the caps place $\tilde a$ and $\tilde b$ in a compact interval.
+Because $w_t$ is also truncated, $\log F_B(w_t; \tilde a, \tilde b)$ remains
+uniformly bounded, so the exponent $c_1/n^{c_2}$ governs the asymptotic
+behavior and $g_t \to 1$ regardless of the caps.
 
 When every truncated complement is identical, $s_w^2 = 0$ and the raw
 method-of-moments shape estimates diverge. In that degenerate low-leverage

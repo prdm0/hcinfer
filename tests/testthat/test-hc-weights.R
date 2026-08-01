@@ -81,8 +81,8 @@ test_that("HCbeta weights match the method of moments formula", {
   a_hat <- mu_hat * phi_hat
   b_hat <- (1 - mu_hat) * phi_hat
   zeta <- n / (n + 50)
-  a_tilde <- min((1 - zeta) + zeta * a_hat, 10000)
-  b_tilde <- min((1 - zeta) + zeta * b_hat, 10000)
+  a_tilde <- min(max((1 - zeta) + zeta * a_hat, 0.01), 10000)
+  b_tilde <- min(max((1 - zeta) + zeta * b_hat, 0.01), 10000)
   expected <- (n / (n - p)) *
     (1 / stats::pbeta(w, a_tilde, b_tilde))^(c1 / n^c2)
 
@@ -91,6 +91,77 @@ test_that("HCbeta weights match the method of moments formula", {
   expect_equal(result$weights, expected, ignore_attr = TRUE)
   expect_equal(result$method_params$a_tilde, a_tilde)
   expect_equal(result$method_params$b_tilde, b_tilde)
+})
+
+test_that("HCbeta enforces the fixed shape floor", {
+  n <- 6000L
+  lower <- 1e-10
+  upper <- 1 - 1e-10
+  c1 <- 7
+  c2 <- 0.75
+  fit <- lm(
+    y ~ 0 + x,
+    data = data.frame(
+      x = c(1, rep(0, n - 1L)),
+      y = sin(seq_len(n))
+    )
+  )
+  result <- vcov_hc(
+    fit,
+    type = "hcbeta",
+    lower = lower,
+    upper = upper
+  )
+
+  params <- result$method_params
+  a_pre_floor <- (1 - params$zeta) + params$zeta * params$a_hat
+  b_pre_floor <- (1 - params$zeta) + params$zeta * params$b_hat
+  leverage <- stats::hatvalues(fit)
+  w <- pmax(lower, pmin(1 - leverage, upper))
+  log_beta_cdf <- stats::pbeta(w, 0.01, 0.01, log.p = TRUE)
+  exponent <- pmin(-(c1 / n^c2) * log_beta_cdf, 700)
+  expected <- (n / (n - length(stats::coef(fit)))) * exp(exponent)
+
+  expect_lt(params$phi_hat, 0)
+  expect_lt(a_pre_floor, 0.01)
+  expect_lt(b_pre_floor, 0.01)
+  expect_identical(params$a_tilde, 0.01)
+  expect_identical(params$b_tilde, 0.01)
+  expect_equal(result$weights, expected, ignore_attr = TRUE)
+})
+
+test_that("HCbeta controls propagate through public APIs", {
+  fit <- local_public_schools_fit()
+  controls <- list(
+    c1 = 5,
+    c2 = 0.8,
+    lower = 0.02,
+    upper = 0.98,
+    a_max = 50,
+    b_max = 75
+  )
+
+  cov <- do.call(
+    vcov_hc,
+    c(list(object = fit, type = "hcbeta"), controls)
+  )
+  inference <- do.call(
+    hcinfer,
+    c(list(object = fit, type = "hcbeta"), controls)
+  )
+
+  expect_identical(cov$method_params[names(controls)], controls)
+  expect_identical(inference$method_params[names(controls)], controls)
+  expect_equal(cov$weights, inference$weights)
+})
+
+test_that("HCbeta rejects epsilon as a method argument", {
+  fit <- local_public_schools_fit()
+
+  expect_snapshot(
+    error = TRUE,
+    vcov_hc(fit, "hcbeta", epsilon = 0.02)
+  )
 })
 
 test_that("HCbeta with c1 equal to zero reduces to HC1 weights", {

@@ -50,14 +50,26 @@ method-specific arguments.
 For \code{"hc5"} and \code{"hc5m"}, \code{k}, \code{k1}, \code{k2}, and \code{k3} must be nonnegative,
 while \code{gamma1} and \code{gamma2} must be positive. For \code{"hcbeta"}, \code{c1} must be
 nonnegative, \code{c2} must be positive, and \code{lower} and \code{upper} must lie in
-\verb{(0, 1)} with \code{lower < upper}. The HCbeta truncation is
+\verb{(0, 1)} with \code{lower < upper}. The HCbeta leverage-complement truncation is
 \eqn{w_t = max(lower, min(1 - h_t, upper))}.
-Both \code{a_max} and \code{b_max} must be finite and lie in \verb{[50, 25000]}; they cap
-the shrunk Beta shape parameters \eqn{\tilde a} and \eqn{\tilde b} and
-default to 10000. The two caps can be set independently through \code{...} for
-sensitivity analysis. HCbeta remains defined when \eqn{h_t = 1} because it
-truncates \eqn{1 - h_t} before evaluating the Beta CDF. In contrast, HC2
-through HC5m require a strictly positive leverage complement.
+
+After shrinkage with \eqn{\zeta = n / (n + 50)}, the Beta shape parameters
+are clamped as
+\deqn{\tilde a =
+\min\{\max\{(1 - \zeta) + \zeta\hat a, \epsilon\}, A_{\max}\},}
+\deqn{\tilde b =
+\min\{\max\{(1 - \zeta) + \zeta\hat b, \epsilon\}, B_{\max}\}.}
+The value \eqn{\epsilon = 0.01} is fixed, applied after shrinkage and before
+the caps, and is not a method argument. It is distinct from \code{lower}, which
+truncates \eqn{w_t}; changing \code{lower} does not change \eqn{\epsilon}.
+
+Both \code{a_max} and \code{b_max} must be finite and lie in \verb{[50, 25000]}; they
+default to 10000 and can be set independently through \code{...} for sensitivity
+analysis. When the variance of the truncated complements is numerically
+degenerate, the adjusted shapes are set directly to their respective caps.
+HCbeta remains defined when \eqn{h_t = 1} because it truncates
+\eqn{1 - h_t} before evaluating the Beta CDF. In contrast, HC2 through HC5m
+require a strictly positive leverage complement.
 }
 \examples{
 schools <- PublicSchools |>
