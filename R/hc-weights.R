@@ -69,13 +69,14 @@ hcbeta_components <- function(leverage, n, p, args, call = rlang::caller_env()) 
   s2_w <- sum((w - mu_hat)^2) / (n - 1)
 
   zeta <- n / (n + 50)
+  epsilon <- 0.01
 
   if (is.finite(s2_w) && s2_w > .Machine$double.eps) {
     phi_hat <- mu_hat * (1 - mu_hat) / s2_w - 1
     a_hat <- mu_hat * phi_hat
     b_hat <- (1 - mu_hat) * phi_hat
-    a_tilde <- min((1 - zeta) + zeta * a_hat, args$a_max)
-    b_tilde <- min((1 - zeta) + zeta * b_hat, args$b_max)
+    a_tilde <- min(max((1 - zeta) + zeta * a_hat, epsilon), args$a_max)
+    b_tilde <- min(max((1 - zeta) + zeta * b_hat, epsilon), args$b_max)
   } else {
     # Degenerate leverage configuration: all truncated complements coincide, so
     # the method-of-moments variance vanishes and the raw shape estimates

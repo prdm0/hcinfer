@@ -55,14 +55,19 @@ dplyr::select(tests(result, parm = "income_scaled_sq"), term, std_error, p_value
 
 ## Inspect HCbeta parameters
 
-HCbeta stores both user-facing constants and estimated quantities in
-`method_params`.
+HCbeta stores its six user-facing controls and its estimated quantities in
+`method_params`. The adjustable controls are `c1`, `c2`, `lower`, `upper`,
+`a_max`, and `b_max`. The fixed shape floor $\varepsilon = 0.01$ is not stored
+as a control and is not accepted through `...`. It is applied after shrinkage
+and is distinct from `lower`, which truncates the leverage complements.
 
 ```{r}
 result$method_params
 ```
 
-The most useful entries for routine inspection are:
+The table below distinguishes the six controls from the estimated diagnostics.
+The first three rows cover all six adjustable values. The remaining rows report
+quantities computed from the fitted design.
 
 | Entry | Meaning |
 |-------|---------|
@@ -73,7 +78,8 @@ The most useful entries for routine inspection are:
 | `zeta` | Shrinkage weight used in the Beta parameter adjustment. |
 
 These values are diagnostics. In routine use, the defaults should usually be
-left unchanged.
+left unchanged. The fixed floor is absent because it is part of the HCbeta
+definition rather than a sensitivity control.
 
 ## Inspect leverage and weights
 
@@ -131,9 +137,15 @@ summary(hcbeta_cov)
 
 ## Run a sensitivity check
 
-The HCbeta constants can be passed through `...`, and the two shape caps can be
-supplied independently. A sensitivity check compares the default result with a
-small set of alternative settings.
+All six adjustable HCbeta controls can be passed through `...`, and the two
+shape caps can be supplied independently. The fixed shape floor cannot be
+changed. A sensitivity check compares the default result with a small set of
+alternative settings.
+
+Each comparison should vary only declared controls so that its interpretation
+remains tied to HCbeta. Changing `lower` or `upper` affects $w_t$ but leaves the
+fixed shape floor unchanged. Passing `epsilon` is rejected rather than defining
+a new estimator variant.
 
 ```{r}
 sensitivity_results <- list(
@@ -163,6 +175,7 @@ sensitivity
 This table helps identify whether the reported inference is sensitive to small
 changes in HCbeta tuning constants. The defaults remain the recommended starting
 point.
+The fixed shape floor is omitted because it cannot be tuned.
 
 ## Compare HCbeta with one classical estimator
 

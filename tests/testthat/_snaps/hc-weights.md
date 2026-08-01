@@ -1,3 +1,13 @@
+# HCbeta rejects epsilon as a method argument
+
+    Code
+      vcov_hc(fit, "hcbeta", epsilon = 0.02)
+    Condition
+      Error in `vcov_hc()`:
+      ! Invalid argument in `...`.
+      x Unexpected name: `epsilon`.
+      i Allowed names: `c1`, `c2`, `lower`, `upper`, `a_max`, and `b_max`.
+
 # HCbeta cap bounds are inclusive
 
     Code
