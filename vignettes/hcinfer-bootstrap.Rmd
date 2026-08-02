@@ -19,10 +19,10 @@ options(hcinfer.use_emoji = FALSE)
 The pairs (case) bootstrap is a resampling method for the coefficients of an
 ordinary least squares model. It resamples whole observations, refits the model
 many times, and summarizes the resulting spread of the estimates. Because it
-makes no assumption about the form of the error variance, it is a natural
-empirical companion to the analytic heteroskedasticity-consistent (HC) standard
-errors that `hcinfer` computes, and this vignette shows how to run it, read its
-output, and compare it with the HC estimators.
+makes no assumption about the form of the error variance, it provides an
+empirical cross-check on the analytic heteroskedasticity-consistent (HC)
+standard errors that `hcinfer` computes, and this vignette shows how to run it,
+read its output, and compare it with the HC estimators.
 
 ## The method
 
@@ -37,14 +37,17 @@ quantile times the bootstrap standard error.
 
 ## Data and model
 
+The model below uses the `PublicSchools2` data, which has complete
+observations for all 51 states, and includes a `south` indicator that the
+original `PublicSchools` data lack.
+
 ```{r}
 library(hcinfer)
 
-schools <- PublicSchools
+schools <- PublicSchools2
 schools$income_scaled <- schools$income / 10000
-schools$income_scaled_sq <- schools$income_scaled^2
 
-fit <- lm(expenditure ~ income_scaled + income_scaled_sq, data = schools)
+fit <- lm(expenditure ~ income_scaled + south, data = schools)
 fit
 ```
 
@@ -62,7 +65,9 @@ boot
 
 The `coef()`, `vcov()`, and `confint()` methods pull out the pieces you need.
 `coef()` returns the original OLS estimates, `vcov()` the bootstrap covariance
-matrix, and `confint()` the interval table.
+matrix, and `confint()` the interval table. Note the argument-name asymmetry:
+`boot_pairs()` sets the default interval type via `ci_type`, while
+`confint()` overrides it via `type`.
 
 ```{r}
 coef(boot)
@@ -75,7 +80,7 @@ the stored replicates, without rerunning the bootstrap.
 
 ```{r}
 confint(boot, level = 0.99, type = "basic")
-confint(boot, parm = "income_scaled_sq", level = 0.90)
+confint(boot, parm = "south", level = 0.90)
 ```
 
 ## Visualizing the intervals
@@ -83,7 +88,7 @@ confint(boot, parm = "income_scaled_sq", level = 0.90)
 `plot()` draws each coefficient as its estimate with its bootstrap interval,
 colored by whether the interval excludes zero.
 
-```{r, fig.alt = "Pairs bootstrap confidence intervals for the public-schools regression coefficients."}
+```{r bootstrap-ci-plot, fig.alt = "Pairs bootstrap confidence intervals for the public-schools regression coefficients."}
 plot(boot)
 ```
 
@@ -104,8 +109,8 @@ data.frame(
 )
 ```
 
-The bootstrap and HC standard errors should tell a similar story; large
-disagreements are worth investigating, often through high-leverage points.
+The bootstrap and HC standard errors should broadly agree; large disagreements
+are worth investigating, often at high-leverage points.
 
 ## Reproducibility
 

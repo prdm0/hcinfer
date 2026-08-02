@@ -16,20 +16,26 @@ articles:
     navbar: ~
     contents:
       - introduction
-  - title: Method guides
+  - title: Using hcinfer
+    navbar: ~
+    contents:
+      - hcinfer-hcbeta
+  - title: Methodology
     navbar: ~
     contents:
       - hcinfer-methodology
       - hcinfer-hcbeta-algorithm
+  - title: Comparisons and extensions
+    navbar: ~
+    contents:
       - hcinfer-comparison
-      - hcinfer-hcbeta
       - hcinfer-bootstrap
 
 home:
   title: Heteroskedasticity-consistent inference for linear models
   description: |
-    Elegant normal Wald inference with HC covariance estimators for ordinary
-    least squares models.
+    Normal Wald inference with heteroskedasticity-consistent covariance
+    estimators for ordinary least squares models.
 
 reference:
   - title: Inference

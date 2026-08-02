@@ -26,24 +26,23 @@ The classical leverage corrections write the adjustment factor as a power of the
 leverage complement $u_t = 1 - h_t$. Because $u_t \in [0, 1]$, it can be read as
 the value at $1 - h_t$ of the cumulative distribution function of a
 Uniform$(0, 1)$ random variable. HCbeta keeps this reading but replaces the
-uniform cdf with a Beta cdf $F_B(w_t; \tilde a, \tilde b)$ evaluated at a
-truncated complement $w_t$. The two shape parameters give the correction curve
-an extra degree of flexibility, so the adjustment can adapt to the observed
-leverage configuration instead of following a fixed exponent.
+uniform cdf with a Beta cdf evaluated at a truncated complement $w_t$. The two
+shape parameters give the correction curve an extra degree of flexibility, so the
+adjustment can adapt to the observed leverage configuration instead of following a
+fixed exponent.
 
-This flexibility is what tempers the overshooting that HC3, HC4, and HC4m can
+This flexibility aims to temper the overshooting that HC3, HC4, and HC4m can
 display under strong leverage, where small values of $1 - h_t$ raised to a fixed
 negative exponent produce very large factors. HCbeta calibrates the Beta shape
 parameters to the first two sample moments of $w_t$, so the resulting factor
 reflects the actual spread of the leverages rather than a worst case exponent.
 
-It is important to state what HCbeta does not assume. The Beta cdf is a
-calibration device, not a claim that the leverage complements follow a Beta
-distribution. The shape parameters are matched to the sample mean and variance
-of the truncated complements, and the construction would be unchanged if the
-leverages arose from another mechanism. The Beta family is used because its
-support is $[0, 1]$ and its two parameters are enough to bend the uniform
-baseline in either direction.
+HCbeta does not assume that the leverage complements follow a Beta distribution.
+The Beta cdf is a calibration device whose shape parameters are matched to the
+sample mean and variance of the truncated complements, and the construction would
+be unchanged if the leverages arose from another mechanism. The Beta family is
+used because its support is $[0, 1]$ and its two parameters are enough to bend
+the uniform baseline in either direction.
 
 ## The algorithm
 
@@ -105,8 +104,7 @@ evaluated at $w_t$ is bounded away from zero, so that
 $\inf_t F_B(w_t; \tilde a, \tilde b) \geq \delta$
 for some $\delta > 0$, and therefore
 $\sup_t |\log F_B(w_t; \tilde a, \tilde b)| \leq -\log\delta < \infty$. The caps
-are what make the parameter space compact, which is what keeps the log
-adjustments uniformly bounded.
+make the parameter space compact, keeping the log adjustments uniformly bounded.
 
 The caps are essential when the leverage variance vanishes. Under the standard
 fixed-design condition $\max_t h_t \to 0$, the complements eventually reach the
@@ -122,9 +120,9 @@ to zero while it multiplies the bounded log cdf. It follows that
 $\widehat\Omega_\beta$ and the HC0 residual matrix
 $\operatorname{diag}(\hat e_t^2)$ are asymptotically equivalent, so
 $\widehat\Psi_{HC\beta}$ and $\widehat\Psi_{HC0}$ share the same limit. HCbeta
-therefore inherits the consistency of HC0, while the finite sample factor $g_t$
-supplies the leverage correction that motivates the method without the
-overshooting that fixed exponent methods can produce under strong leverage.
+is asymptotically equivalent to HC0, so it inherits the same consistency, while
+the finite sample factor $g_t$ aims to temper the overshooting that fixed
+exponent methods can produce under strong leverage.
 
 ## Numerical implementation
 
@@ -138,10 +136,8 @@ and avoids the $\log(0) = -\infty$ produced when a cdf underflows. Finally, the
 exponent $-(c_1/n^{c_2})\log F_B(w_t; \tilde a, \tilde b)$ is capped at 700
 before exponentiation so that `exp()` cannot overflow to infinity.
 
-The published applications are unaffected by the caps because the default
-$A_{\max} = B_{\max} = 10000$ is far from binding on those designs. The quadratic
-public schools model illustrates this.
-The fixed floor therefore does not bind in this published application.
+In the public-schools model shown here, the default caps
+$A_{\max} = B_{\max} = 10000$ are far from binding.
 
 ```{r}
 library(hcinfer)
@@ -161,8 +157,8 @@ max(cov$weights)
 The adjusted shape parameters are well below the caps, and the largest
 adjustment factor matches the value reported for this model. By construction each
 factor is at least the HC1 scale $n/(n - p)$, because the capped exponent is
-nonnegative and the leading factor is exactly $n/(n - p)$.
-The final check below verifies this lower-bound property directly.
+nonnegative and the leading factor is exactly $n/(n - p)$. The code below
+verifies this lower-bound property.
 
 ```{r}
 n <- cov$n
