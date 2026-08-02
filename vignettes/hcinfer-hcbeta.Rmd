@@ -6,160 +6,125 @@ vignette: >
   %\VignetteEncoding{UTF-8}
 ---
 
-```{r, include = FALSE}
+```{r setup, include = FALSE}
 knitr::opts_chunk$set(
   collapse = TRUE,
-  comment = "#>"
+  comment = "#>",
+  fig.width = 7,
+  fig.height = 4.5
 )
-options(hcinfer.use_emoji = TRUE)
+options(hcinfer.use_emoji = FALSE)
 ```
 
-HCbeta is the default estimator in `hcinfer()`. This vignette shows how to use
-it, inspect the stored quantities, and run small sensitivity checks with its
-method-specific arguments.
+This vignette shows how to run HCbeta on the Crime2009 dataset, inspect its
+method parameters and diagnostic quantities, and run a small sensitivity check
+on its tuning controls. It assumes the introduction (`vignette("introduction",
+package = "hcinfer")`).
 
 ## Run HCbeta
 
 Fit an OLS model and request HCbeta explicitly. This is equivalent to the
 default `hcinfer(fit)` call.
 
-```{r}
+```{r run-hcbeta}
 library(hcinfer)
 
-schools <- PublicSchools |>
-  dplyr::mutate(
-    income_scaled = income / 10000,
-    income_scaled_sq = income_scaled^2
-  )
-
-fit <- lm(expenditure ~ income_scaled + income_scaled_sq, data = schools)
+fit <- lm(violent ~ hs_grad + poverty + single, data = Crime2009)
 result <- hcinfer(fit, type = "hcbeta")
 
 summary(result)
 ```
 
-## Extract coefficient test results
-
-Use `tests()` to extract the coefficient-level Wald results as a tibble.
-
-```{r}
-tests(result)
-```
-
-For example, extract the robust standard error and p-value for the quadratic
-income term.
-
-```{r}
-dplyr::select(tests(result, parm = "income_scaled_sq"), term, std_error, p_value)
-```
-
 ## Inspect HCbeta parameters
 
-HCbeta stores its six user-facing controls and its estimated quantities in
+HCbeta stores its six user-facing controls and eight estimated quantities in
 `method_params`. The adjustable controls are `c1`, `c2`, `lower`, `upper`,
-`a_max`, and `b_max`. The fixed shape floor $\varepsilon = 0.01$ is not stored
-as a control and is not accepted through `...`. It is applied after shrinkage
-and is distinct from `lower`, which truncates the leverage complements.
+`a_max`, and `b_max`. The remaining entries are computed from the fitted design
+by method of moments and shrinkage.
 
-```{r}
+```{r hcbeta-method-params}
 result$method_params
 ```
 
-The table below distinguishes the six controls from the estimated diagnostics.
-The first three rows cover all six adjustable values. The remaining rows report
-quantities computed from the fitted design.
+The table below maps every printed name to its role and, where applicable, to
+the corresponding mathematical symbol.
 
-| Entry | Meaning |
-|-------|---------|
-| `c1`, `c2` | Constants controlling the HCbeta exponent. |
-| `lower`, `upper` | Truncation limits for leverage complements. |
-| `a_max`, `b_max` | Upper caps for the adjusted Beta shape parameters (default 10000, valid range `[50, 25000]`). |
-| `a_tilde`, `b_tilde` | Adjusted Beta shape parameters. |
-| `zeta` | Shrinkage weight used in the Beta parameter adjustment. |
+| Entry | Symbol | Meaning |
+|-------|--------|---------|
+| `c1` | $c_1$ | Exponent constant (default 7) |
+| `c2` | $c_2$ | Exponent decay rate (default 0.75) |
+| `lower` | | Lower truncation limit for $w_t$ (default 0.01) |
+| `upper` | | Upper truncation limit for $w_t$ (default 0.99) |
+| `a_max` | $A_{\max}$ | Upper cap for $\tilde a$ (default 10000, valid range $[50,\;25000]$) |
+| `b_max` | $B_{\max}$ | Upper cap for $\tilde b$ (default 10000, valid range $[50,\;25000]$) |
+| `mu_hat` | $\hat\mu$ | Mean of the truncated leverage complements $w_t$ |
+| `s2_w` | $s_w^2$ | Variance of $w_t$ |
+| `phi_hat` | $\hat\phi$ | Estimated dispersion |
+| `a_hat` | $\hat a$ | Raw moment shape for the Beta family |
+| `b_hat` | $\hat b$ | Raw moment shape for the Beta family |
+| `zeta` | $\zeta$ | Shrinkage weight toward $a = b = 1$ |
+| `a_tilde` | $\tilde a$ | Adjusted shape after shrinkage and floor |
+| `b_tilde` | $\tilde b$ | Adjusted shape after shrinkage and floor |
 
-These values are diagnostics. In routine use, the defaults should usually be
-left unchanged. The fixed floor is absent because it is part of the HCbeta
-definition rather than a sensitivity control.
+A fixed shape floor $\varepsilon = 0.01$ is applied via $\max(\cdot,\;\varepsilon)$
+after shrinkage and before the $\min(\cdot,\;A_{\max})$ caps. It is part of the
+HCbeta definition, not a user argument, and is not accepted through `...`. It is
+distinct from `lower`, which truncates the leverage complements $w_t$ before the
+Beta CDF is evaluated.
 
 ## Inspect leverage and weights
 
 HCbeta, like the other estimators, stores leverage values and robust weights.
 This table shows the observations with the largest leverages.
 
-```{r}
-diagnostics <- tibble::tibble(
-  observation = result$observation,
-  leverage = result$leverage,
-  weight = result$weights,
-  residual = result$residuals
-) |>
-  dplyr::mutate(
-    state = schools$state[as.integer(observation)],
-    .before = leverage
-  )
+```{r hcbeta-leverage-top5}
+diagnostics <- data.frame(
+  state = Crime2009$state[as.integer(result$observation)],
+  leverage = unname(result$leverage),
+  weight = unname(result$weights),
+  residual = unname(result$residuals)
+)
 
-diagnostics |>
-  dplyr::arrange(dplyr::desc(leverage)) |>
-  dplyr::slice_head(n = 5)
+head(diagnostics[order(-diagnostics$leverage), ], 5)
 ```
 
-You can also sort by robust weight.
+You can also sort by robust weight to see which observations contribute most to
+the variance estimate.
 
-```{r}
-diagnostics |>
-  dplyr::arrange(dplyr::desc(weight)) |>
-  dplyr::slice_head(n = 5)
+```{r hcbeta-weight-top5}
+head(diagnostics[order(-diagnostics$weight), ], 5)
 ```
 
 The covariance object can be plotted directly to display adjustment factors
 against leverages.
 
-```{r, fig.width = 7, fig.height = 4, fig.alt = "Scatterplot of HCbeta adjustment factors against leverage values for the public-schools model."}
+```{r hcbeta-weight-plot, fig.alt = "Scatterplot of HCbeta adjustment factors against leverage values for the Crime2009 model."}
 plot(vcov_hc(fit, type = "hcbeta"))
-```
-
-## Use the covariance-only interface
-
-Use `vcov_hc()` when you only need the HCbeta covariance matrix and diagnostics.
-
-```{r}
-hcbeta_cov <- vcov_hc(fit, type = "hcbeta")
-hcbeta_cov
-vcov(hcbeta_cov)
-```
-
-The covariance object stores the same method parameters and diagnostics.
-
-```{r}
-hcbeta_cov$method_params
-summary(hcbeta_cov)
 ```
 
 ## Run a sensitivity check
 
-All six adjustable HCbeta controls can be passed through `...`, and the two
-shape caps can be supplied independently. The fixed shape floor cannot be
-changed. A sensitivity check compares the default result with a small set of
-alternative settings.
+All six adjustable HCbeta controls can be passed through `...`. The sensitivity
+check below compares the default result with a small set of alternative
+settings, each varying only declared controls so that the interpretation
+remains tied to HCbeta. For every setting it reports the robust standard error,
+p-value, and confidence interval for the focus coefficient `single`, together
+with the largest adjustment factor.
 
-Each comparison should vary only declared controls so that its interpretation
-remains tied to HCbeta. Changing `lower` or `upper` affects $w_t$ but leaves the
-fixed shape floor unchanged. Passing `epsilon` is rejected rather than defining
-a new estimator variant.
-
-```{r}
-sensitivity_results <- list(
-  default = hcinfer(fit, type = "hcbeta"),
-  c1_5 = hcinfer(fit, type = "hcbeta", c1 = 5),
-  tighter_truncation = hcinfer(fit, type = "hcbeta", lower = 0.02, upper = 0.98),
-  capped_shapes = hcinfer(fit, type = "hcbeta", a_max = 50)
+```{r hcbeta-sensitivity}
+settings <- list(
+  default            = list(),
+  stronger_exponent  = list(c1 = 10),
+  faster_decay       = list(c2 = 1.0),
+  tighter_truncation = list(lower = 0.05, upper = 0.90),
+  capped_shapes      = list(a_max = 50, b_max = 50)
 )
 
-sensitivity <- purrr::imap(sensitivity_results, \(res, setting) {
-  row <- tests(res, parm = "income_scaled_sq")
-  ci <- confint(res, parm = "income_scaled_sq")
-
-  tibble::tibble(
+sensitivity <- lapply(names(settings), function(setting) {
+  res <- do.call(hcinfer, c(list(fit, type = "hcbeta"), settings[[setting]]))
+  row <- tests(res, parm = "single")
+  ci <- confint(res, parm = "single")
+  data.frame(
     setting = setting,
     std_error = row$std_error,
     p_value = row$p_value,
@@ -168,51 +133,17 @@ sensitivity <- purrr::imap(sensitivity_results, \(res, setting) {
     max_weight = max(res$weights)
   )
 })
-sensitivity <- dplyr::bind_rows(sensitivity)
+sensitivity <- do.call(rbind, sensitivity)
 sensitivity
 ```
 
-This table helps identify whether the reported inference is sensitive to small
-changes in HCbeta tuning constants. The defaults remain the recommended starting
-point.
-The fixed shape floor is omitted because it cannot be tuned.
-
-## Compare HCbeta with one classical estimator
-
-For a quick comparison, put HCbeta next to a classical estimator such as HC3.
-
-```{r}
-hc3 <- hcinfer(fit, type = "hc3")
-
-extract_income <- function(res, method) {
-  row <- tests(res, parm = "income_scaled_sq")
-  ci <- confint(res, parm = "income_scaled_sq")
-  tibble::tibble(
-    method = method,
-    estimate = row$estimate,
-    std_error = row$std_error,
-    p_value = row$p_value,
-    conf_low = ci$conf_low,
-    conf_high = ci$conf_high
-  )
-}
-
-compare_hc3 <- dplyr::bind_rows(
-  extract_income(result, "hcbeta"),
-  extract_income(hc3, "hc3")
-)
-compare_hc3
-```
-
-## Practical workflow
-
-For routine analyses:
-
-1. Fit an OLS model with `lm()`.
-2. Run `hcinfer(fit)` or `hcinfer(fit, type = "hcbeta")`.
-3. Use `summary(result)` for readable output.
-4. Use `tests(result)`, `confint(result)`, `coef(result)`, and `vcov(result)` for extracted values.
-5. Inspect `result$weights`, `result$leverage`, and `result$method_params` when diagnostics are needed.
-
-Use `vignette("hcinfer-comparison")` when you want to compare HCbeta with other
-estimators implemented in the package.
+In this model the exponent constants `c1` and `c2` and the truncation window
+drive the HCbeta correction: raising `c1` to 10 pushes the robust SE upward,
+while increasing `c2` to 1.0 pulls it downward. Tightening the truncation
+bounds to $[0.05,\;0.90]$ also changes the result by restricting the range of
+leverage complements fed to the Beta CDF. In contrast, the shape caps `a_max`
+and `b_max` do not change the output when set to their minimum admissible value
+of 50, because the adjusted shapes $\tilde a \approx 3.4$ and $\tilde b \approx
+0.7$ sit far below that floor. This illustrates a practical guardrail: when the
+design lacks extreme leverage complements, the caps remain inactive and the
+inference is driven primarily by the exponent and truncation settings.
