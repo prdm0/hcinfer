@@ -16,10 +16,12 @@ knitr::opts_chunk$set(
 options(hcinfer.use_emoji = FALSE)
 ```
 
-This vignette shows how to run HCbeta on the Crime2009 dataset, inspect its
-method parameters and diagnostic quantities, and run a small sensitivity check
-on its tuning controls. It assumes the introduction (`vignette("introduction",
-package = "hcinfer")`).
+This vignette shows how to run HCbeta on the `Crime2009` dataset, the 2009 U.S.
+crime application from the HCbeta paper, which regresses the murder rate on
+high-school graduation, poverty, and single-parent household rates. It inspects
+HCbeta's method parameters and diagnostic quantities, and runs a small
+sensitivity check on its tuning controls. It assumes the introduction
+(`vignette("introduction", package = "hcinfer")`).
 
 ## Run HCbeta
 
@@ -29,7 +31,7 @@ default `hcinfer(fit)` call.
 ```{r run-hcbeta}
 library(hcinfer)
 
-fit <- lm(violent ~ hs_grad + poverty + single, data = Crime2009)
+fit <- lm(murder ~ hs_grad + poverty + single, data = Crime2009)
 result <- hcinfer(fit, type = "hcbeta")
 
 summary(result)

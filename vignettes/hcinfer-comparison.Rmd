@@ -23,13 +23,15 @@ diagnostics.
 
 ## Fit one model
 
-Comparisons should start from one fitted model. Here we use a house-price
-regression and focus on the lot-size coefficient.
+Comparisons should start from one fitted model. Here we use the Boston
+house-price model from the HCbeta paper (price regressed on lot size, number of
+bedrooms, and a bedrooms-by-size interaction) and focus on the lot-size
+coefficient.
 
 ```{r}
 library(hcinfer)
 
-fit <- lm(price ~ lotsize + sqrft + bdrms, data = Hprice)
+fit <- lm(price ~ lotsize + bdrms + bdrms:sqrft, data = Hprice)
 ```
 
 ## Run several methods

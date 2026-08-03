@@ -121,7 +121,7 @@
 #' data(Crime2009)
 #' Crime2009[Crime2009$state == "Alabama", ]
 #'
-#' fit <- lm(violent ~ poverty + single, data = Crime2009)
+#' fit <- lm(murder ~ hs_grad + poverty + single, data = Crime2009)
 #' hcinfer(fit, type = "hcbeta")
 #'
 "Crime2009"
@@ -157,7 +157,7 @@
 #' data(Hprice)
 #' head(Hprice)
 #'
-#' fit <- lm(price ~ lotsize + sqrft + bdrms, data = Hprice)
+#' fit <- lm(price ~ lotsize + bdrms + bdrms:sqrft, data = Hprice)
 #' hcinfer(fit, type = "hcbeta")
 #'
 "Hprice"
