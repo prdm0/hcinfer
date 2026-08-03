@@ -37,7 +37,7 @@ illustrate regression and heteroskedasticity-consistent inference.
 data(Hprice)
 head(Hprice)
 
-fit <- lm(price ~ lotsize + sqrft + bdrms, data = Hprice)
+fit <- lm(price ~ lotsize + bdrms + bdrms:sqrft, data = Hprice)
 hcinfer(fit, type = "hcbeta")
 
 }
