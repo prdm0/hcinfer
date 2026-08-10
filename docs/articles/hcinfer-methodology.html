@@ -26,7 +26,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">hcinfer</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.1.1.9000</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -40,10 +40,10 @@
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
   <ul class="dropdown-menu" aria-labelledby="dropdown-articles">
 <li><a class="dropdown-item" href="../articles/introduction.html">Introduction to hcinfer</a></li>
+    <li><a class="dropdown-item" href="../articles/hcinfer-hcbeta.html">Using HCbeta</a></li>
     <li><a class="dropdown-item" href="../articles/hcinfer-methodology.html">HC Estimator Methodology</a></li>
     <li><a class="dropdown-item" href="../articles/hcinfer-hcbeta-algorithm.html">The HCbeta algorithm and its consistency</a></li>
     <li><a class="dropdown-item" href="../articles/hcinfer-comparison.html">Comparing HC Estimators</a></li>
-    <li><a class="dropdown-item" href="../articles/hcinfer-hcbeta.html">Using HCbeta</a></li>
     <li><a class="dropdown-item" href="../articles/hcinfer-bootstrap.html">Pairs bootstrap inference with hcinfer</a></li>
   </ul>
 </li>
@@ -222,25 +222,7 @@ observation.</p>
 <h2 id="the-classical-hc-family">The classical HC family<a class="anchor" aria-label="anchor" href="#the-classical-hc-family"></a>
 </h2>
 <p>The supported classical estimators can be described by their
-adjustment factors <span class="math inline">g_t</span>. Let <span class="math inline">u_t = 1 - h_t</span>, <span class="math inline">\bar
-h = p/n</span>, and <span class="math inline">h_{max} = \max(h_1,
-\ldots, h_n)</span>.</p>
-<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://prdm0.github.io/hcinfer/">hcinfer</a></span><span class="op">)</span></span>
-<span></span>
-<span><span class="fu"><a href="../reference/hc_methods.html">hc_methods</a></span><span class="op">(</span><span class="op">)</span></span>
-<span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 9 × 4</span></span></span>
-<span><span class="co">#&gt;   type   label  description                                    default_arguments</span></span>
-<span><span class="co">#&gt;   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>                                          <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>            </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span> hc0    HC0    White heteroskedasticity-consistent estimator. none             </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span> hc1    HC1    HC0 with degrees-of-freedom scaling.           none             </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">3</span> hc2    HC2    Leverage-adjusted estimator with exponent 1.   none             </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">4</span> hc3    HC3    Leverage-adjusted estimator with exponent 2.   none             </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">5</span> hc4    HC4    Adaptive leverage correction by Cribari-Neto.  none             </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">6</span> hc4m   HC4m   Modified HC4 correction by Cribari-Neto and d… none             </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">7</span> hc5    HC5    High-leverage correction by Cribari-Neto, Sou… k = 0.7          </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">8</span> hc5m   HC5m   Modified HC5 correction by Li, Zhang, Zhang, … k = 0.7, k1 = 1,…</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">9</span> hcbeta HCbeta Beta-distribution leverage correction.         c1 = 7, c2 = 0.7…</span></span></code></pre></div>
+adjustment factors <span class="math inline">g_t</span>. Let <span class="math inline">u_t = 1 - h_t</span> and <span class="math inline">h_{max} = \max(h_1, \ldots, h_n)</span>.</p>
 <p>The main formulas are:</p>
 <p><span class="math display">
 \begin{aligned}
@@ -307,15 +289,17 @@ meant to correct. This can inflate standard errors and move the
 inference too far in the opposite direction from HC0.</p>
 <p>The pattern is visible in the public schools example used throughout
 the package.</p>
-<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">schools</span> <span class="op">&lt;-</span> <span class="va">PublicSchools</span></span>
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://prdm0.github.io/hcinfer/">hcinfer</a></span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">schools</span> <span class="op">&lt;-</span> <span class="va">PublicSchools</span></span>
 <span><span class="va">schools</span><span class="op">$</span><span class="va">income_scaled</span> <span class="op">&lt;-</span> <span class="va">schools</span><span class="op">$</span><span class="va">income</span> <span class="op">/</span> <span class="fl">10000</span></span>
 <span><span class="va">schools</span><span class="op">$</span><span class="va">income_scaled_sq</span> <span class="op">&lt;-</span> <span class="va">schools</span><span class="op">$</span><span class="va">income_scaled</span><span class="op">^</span><span class="fl">2</span></span>
 <span></span>
 <span><span class="va">fit</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/lm.html" class="external-link">lm</a></span><span class="op">(</span><span class="va">expenditure</span> <span class="op">~</span> <span class="va">income_scaled</span> <span class="op">+</span> <span class="va">income_scaled_sq</span>, data <span class="op">=</span> <span class="va">schools</span><span class="op">)</span></span>
 <span><span class="va">methods</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"hc3"</span>, <span class="st">"hc4"</span>, <span class="st">"hc4m"</span>, <span class="st">"hcbeta"</span><span class="op">)</span></span>
 <span></span>
-<span><span class="va">weight_data</span> <span class="op">&lt;-</span> <span class="fu">purrr</span><span class="fu">::</span><span class="fu"><a href="https://purrr.tidyverse.org/reference/map.html" class="external-link">map</a></span><span class="op">(</span><span class="va">methods</span>, <span class="kw">function</span><span class="op">(</span><span class="va">method</span><span class="op">)</span> <span class="op">{</span></span>
+<span><span class="va">weight_data</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">lapply</a></span><span class="op">(</span><span class="va">methods</span>, <span class="kw">function</span><span class="op">(</span><span class="va">method</span><span class="op">)</span> <span class="op">{</span></span>
 <span>  <span class="va">cov</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/vcov_hc.html">vcov_hc</a></span><span class="op">(</span><span class="va">fit</span>, type <span class="op">=</span> <span class="va">method</span><span class="op">)</span></span>
 <span></span>
 <span>  <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span></span>
@@ -373,94 +357,27 @@ the adjustment curve to depart from the uniform baseline.</p>
 <div class="section level2">
 <h2 id="hcbeta-construction">HCbeta construction<a class="anchor" aria-label="anchor" href="#hcbeta-construction"></a>
 </h2>
-<p>HCbeta uses the sandwich form with</p>
+<p>The leverage complement <span class="math inline">1 - h_t</span> is
+first truncated to <span class="math inline">w_t = \max\{\text{lower},
+\min(1 - h_t, \text{upper})\}</span>, where the default truncation
+interval is <span class="math inline">[0.01, 0.99]</span>. Beta shape
+parameters <span class="math inline">\tilde a</span> and <span class="math inline">\tilde b</span> are then calibrated from the
+truncated complements by the method of moments, shrunk toward the
+uniform case <span class="math inline">a = b = 1</span>, and clamped to
+a compact interval. With these ingredients in place, the HCbeta
+adjustment factor is</p>
 <p><span class="math display">
 g_t = \frac{n}{n - p}
 \left\{\frac{1}{F_B(w_t; \tilde a, \tilde b)}\right\}^{c_1/n^{c_2}},
 \qquad c_1 = 7,
 \qquad c_2 = 0.75.
 </span></p>
-<p>The construction has four steps.</p>
-<div class="section level3">
-<h3 id="step-1-truncate-leverage-complements">Step 1: truncate leverage complements<a class="anchor" aria-label="anchor" href="#step-1-truncate-leverage-complements"></a>
-</h3>
-<p>Define</p>
-<p><span class="math display">
-w_t = \max\{0.01, \min(1 - h_t, 0.99)\}.
-</span></p>
-<p>The lower bound prevents numerical explosion when <span class="math inline">h_t</span> is close to 1. The upper bound keeps the
-values away from the boundary when leverages become small in large
-samples. In <code>hcinfer</code>, these limits can be changed with
-<code>lower</code> and <code>upper</code>.</p>
-</div>
-<div class="section level3">
-<h3 id="step-2-estimate-beta-shape-parameters-by-moments">Step 2: estimate Beta shape parameters by moments<a class="anchor" aria-label="anchor" href="#step-2-estimate-beta-shape-parameters-by-moments"></a>
-</h3>
-<p>The method of moments estimates the mean and variance of the
-truncated complements:</p>
-<p><span class="math display">
-\hat\mu = \frac{1}{n}\sum_{t=1}^{n} w_t,
-\qquad
-s_w^2 = \frac{1}{n - 1}\sum_{t=1}^{n}(w_t - \hat\mu)^2.
-</span></p>
-<p>In the mean precision parameterization,</p>
-<p><span class="math display">
-\hat\phi = \frac{\hat\mu(1 - \hat\mu)}{s_w^2} - 1,
-\qquad
-\hat a = \hat\mu \hat\phi,
-\qquad
-\hat b = (1 - \hat\mu) \hat\phi.
-</span></p>
-<p>This is an estimating device, not a distributional assumption about
-the leverages.</p>
-</div>
-<div class="section level3">
-<h3 id="step-3-shrink-toward-the-uniform-cdf">Step 3: shrink toward the uniform cdf<a class="anchor" aria-label="anchor" href="#step-3-shrink-toward-the-uniform-cdf"></a>
-</h3>
-<p>Small samples can make moment estimates unstable. HCbeta shrinks the
-estimated shape parameters toward the uniform case <span class="math inline">a = b = 1</span>:</p>
-<p><span class="math display">
-\zeta = \frac{n}{n + 50},
-\qquad
-\tilde a = \min\{(1 - \zeta) + \zeta \hat a,\, A_{\max}\},
-\qquad
-\tilde b = \min\{(1 - \zeta) + \zeta \hat b,\, B_{\max}\}.
-</span></p>
-<p>For smaller <span class="math inline">n</span>, <span class="math inline">\zeta</span> is smaller and the method stays closer
-to the uniform baseline. As <span class="math inline">n</span> grows,
-the estimated shape parameters receive more weight.</p>
-<p>The caps <span class="math inline">A_{\max} = B_{\max} = 10000</span>
-correspond to the arguments <code>a_max</code> and <code>b_max</code>,
-each with the inclusive range <code>[50, 25000]</code>. They keep the
-shape parameters bounded and act only as a numerical safeguard. Because
-the truncated <span class="math inline">w_t</span> together with bounded
-<span class="math inline">\tilde a</span> and <span class="math inline">\tilde b</span> keep <span class="math inline">\log
-F_B(w_t; \tilde a, \tilde b)</span> uniformly bounded, the exponent
-<span class="math inline">c_1/n^{c_2}</span> alone governs the
-asymptotic behavior, and <span class="math inline">g_t \to 1</span>
-regardless of the cap.</p>
-<p>When every truncated complement is identical, <span class="math inline">s_w^2 = 0</span> and the raw method-of-moments shape
-estimates diverge. In that degenerate low-leverage regime,
-<code>hcinfer</code> sets <span class="math inline">\tilde a =
-A_{\max}</span> and <span class="math inline">\tilde b = B_{\max}</span>
-rather than aborting. The Beta cdf at the common upper truncation is
-then numerically one under the default caps, so the HCbeta factor
-reduces to the HC1 scale <span class="math inline">n/(n - p)</span> and
-remains well-defined as it converges to one.</p>
-</div>
-<div class="section level3">
-<h3 id="step-4-use-a-decaying-exponent">Step 4: use a decaying exponent<a class="anchor" aria-label="anchor" href="#step-4-use-a-decaying-exponent"></a>
-</h3>
-<p>The exponent <span class="math inline">c_1/n^{c_2}</span> decreases
-with <span class="math inline">n</span>. With the defaults, it is <span class="math inline">7/n^{0.75}</span>. This keeps the correction active
-in samples where leverage imbalance is more consequential and makes the
-adjustment vanish asymptotically. As <span class="math inline">n \to
-\infty</span> with fixed <span class="math inline">p</span>, <span class="math inline">g_t \to 1</span> and HCbeta recovers the HC0
-structure.</p>
-<p>When <span class="math inline">\tilde a = \tilde b = 1</span> and
-<span class="math inline">c_1 = 0</span>, HCbeta reduces exactly to HC1.
-This identity is a useful implementation check.</p>
-</div>
+<p>The exponent <span class="math inline">c_1/n^{c_2}</span> decays with
+<span class="math inline">n</span>, so the correction is most active in
+moderate samples and vanishes asymptotically. The full construction,
+including the moment equations, shrinkage, fixed floor, and caps, is
+given in
+<code><a href="../articles/hcinfer-hcbeta-algorithm.html">vignette("hcinfer-hcbeta-algorithm", package = "hcinfer")</a></code>.</p>
 </div>
 <div class="section level2">
 <h2 id="normal-wald-inference">Normal Wald inference<a class="anchor" aria-label="anchor" href="#normal-wald-inference"></a>
@@ -494,19 +411,9 @@ when</p>
 </h2>
 <p>HCbeta is the default estimator in <code><a href="../reference/hcinfer.html">hcinfer()</a></code>. It is
 designed to keep the leverage correction active without letting the
-largest adjustment factors grow too quickly in high leverage
-designs.</p>
-<p>For applied work, a useful workflow is:</p>
-<ol style="list-style-type: decimal">
-<li>Fit the OLS model with <code><a href="https://rdrr.io/r/stats/lm.html" class="external-link">lm()</a></code>.</li>
-<li>Run <code>hcinfer(fit)</code> for the default HCbeta analysis.</li>
-<li>Inspect <code>summary(result)</code> and the coefficient table from
-<code>tests(result)</code>.</li>
-<li>Use <code>plot(vcov_hc(fit))</code> to see leverage values and
-adjustment factors.</li>
-<li>Compare HCbeta with one or more classical estimators when
-conclusions depend on the reported standard errors.</li>
-</ol>
+largest adjustment factors grow too quickly in high leverage designs.
+For a step-by-step usage workflow, see
+<code><a href="../articles/introduction.html">vignette("introduction", package = "hcinfer")</a></code>.</p>
 <p>Large leverage is not, by itself, a reason to remove an observation.
 It indicates that squared residuals at that design point are compressed
 by the OLS projection. Influence diagnostics answer a different question
@@ -520,14 +427,9 @@ removed.</p>
 leverage. The leverages can be obtained from a QR decomposition of the
 model matrix by summing the squared entries in each row of the
 orthonormal factor.</p>
-<p>HCbeta uses <code><a href="https://rdrr.io/r/stats/Beta.html" class="external-link">stats::pbeta()</a></code> for the Beta cdf, and the
-incomplete beta function is not reimplemented inside the package. The
-cdf is evaluated on the log scale with
-<code>pbeta(w, a_tilde, b_tilde, log.p = TRUE)</code>, and the resulting
-exponent is capped at 700 before exponentiation. This prevents both
-<span class="math inline">\log(0) = -\infty</span> when the cdf
-underflows and floating-point overflow in <code><a href="https://rdrr.io/r/base/Log.html" class="external-link">exp()</a></code> for extreme
-shape parameters. The degrees of freedom factor <span class="math inline">n/(n - p)</span> is computed once.</p>
+<p>For details on the numerical implementation of the Beta cdf
+evaluation and exponent capping, see the numerical section of
+<code><a href="../articles/hcinfer-hcbeta-algorithm.html">vignette("hcinfer-hcbeta-algorithm", package = "hcinfer")</a></code>.</p>
 <p>Method-specific constants are passed through <code>...</code> in
 <code><a href="../reference/vcov_hc.html">vcov_hc()</a></code> and <code><a href="../reference/hcinfer.html">hcinfer()</a></code>. The HCbeta caps can
 be supplied independently through <code>...</code>, and unknown names

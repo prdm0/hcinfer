@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">hcinfer</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.1.1.9000</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -19,10 +19,10 @@
 <li class="nav-item dropdown">
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
   <ul class="dropdown-menu" aria-labelledby="dropdown-articles"><li><a class="dropdown-item" href="../articles/introduction.html">Introduction to hcinfer</a></li>
+    <li><a class="dropdown-item" href="../articles/hcinfer-hcbeta.html">Using HCbeta</a></li>
     <li><a class="dropdown-item" href="../articles/hcinfer-methodology.html">HC Estimator Methodology</a></li>
     <li><a class="dropdown-item" href="../articles/hcinfer-hcbeta-algorithm.html">The HCbeta algorithm and its consistency</a></li>
     <li><a class="dropdown-item" href="../articles/hcinfer-comparison.html">Comparing HC Estimators</a></li>
-    <li><a class="dropdown-item" href="../articles/hcinfer-hcbeta.html">Using HCbeta</a></li>
     <li><a class="dropdown-item" href="../articles/hcinfer-bootstrap.html">Pairs bootstrap inference with hcinfer</a></li>
   </ul></li>
 <li class="active nav-item"><a class="nav-link" href="../news/index.html">Changelog</a></li>
@@ -38,11 +38,13 @@
     </div>
 
     <div class="section level2">
-<h2 class="pkg-version" data-toc-text="development version" id="hcinfer-development-version">hcinfer (development version)<a class="anchor" aria-label="anchor" href="#hcinfer-development-version"></a></h2>
+<h2 class="pkg-version" data-toc-text="0.2.0" id="hcinfer-020">hcinfer 0.2.0<a class="anchor" aria-label="anchor" href="#hcinfer-020"></a></h2><p class="text-muted">CRAN release: 2026-08-04</p>
 <ul><li>Added <code><a href="../reference/boot_pairs.html">boot_pairs()</a></code> for pairs (case) bootstrap standard errors and confidence intervals of ordinary least squares coefficients. It resamples the observations with replacement, refits the model on each replicate, and summarizes the sampling distribution of the coefficients, providing an assumption-free empirical reference for the analytic heteroskedasticity-consistent standard errors from <code><a href="../reference/hcinfer.html">hcinfer()</a></code> and <code><a href="../reference/vcov_hc.html">vcov_hc()</a></code>. Percentile, basic, and normal intervals are available, the resampling is reproducible through the <code>seed</code> argument, and the replicate fits can optionally run in parallel via <code><a href="https://purrr.tidyverse.org/reference/in_parallel.html" class="external-link">purrr::in_parallel()</a></code> and <code>mirai</code> without changing the numeric result.</li>
 <li>Added <code><a href="https://rdrr.io/r/stats/coef.html" class="external-link">coef()</a></code>, <code><a href="https://rdrr.io/r/stats/vcov.html" class="external-link">vcov()</a></code>, <code><a href="https://rdrr.io/r/stats/confint.html" class="external-link">confint()</a></code>, <code><a href="https://rdrr.io/r/base/print.html" class="external-link">print()</a></code>, and <code><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot()</a></code> methods for the <code>hcinfer_boot</code> objects returned by <code><a href="../reference/boot_pairs.html">boot_pairs()</a></code>. <code><a href="https://rdrr.io/r/stats/vcov.html" class="external-link">vcov()</a></code> returns the bootstrap covariance matrix of the coefficients, <code><a href="https://rdrr.io/r/stats/confint.html" class="external-link">confint()</a></code> can recompute intervals at a different <code>level</code> or <code>type</code> directly from the stored replicates, and <code><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot()</a></code> draws the bootstrap confidence intervals, coloring each coefficient by whether its interval excludes or includes zero.</li>
 <li>
 <code><a href="../reference/hcinfer.html">hcinfer()</a></code> and <code><a href="../reference/vcov_hc.html">vcov_hc()</a></code> now accept independent HCbeta shape caps from 50 through 25000 inclusive, with defaults of 10000. HC0, HC1, and HCbeta also remain defined for an exact leverage value of one, while HC2, HC3, HC4, HC4m, HC5, and HC5m retain the positive leverage-complement requirement.</li>
+<li>
+<code><a href="../reference/hcinfer.html">hcinfer()</a></code> and <code><a href="../reference/vcov_hc.html">vcov_hc()</a></code> now enforce the fixed HCbeta shape floor of 0.01 after shrinkage and before the upper caps, including for nondefault leverage-complement truncation limits. The shape floor remains fixed when <code>lower</code> changes and is not a method argument.</li>
 </ul></div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.1.1" id="hcinfer-011">hcinfer 0.1.1<a class="anchor" aria-label="anchor" href="#hcinfer-011"></a></h2><p class="text-muted">CRAN release: 2026-07-13</p>

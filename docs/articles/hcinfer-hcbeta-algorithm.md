@@ -14,26 +14,25 @@ The classical leverage corrections write the adjustment factor as a
 power of the leverage complement u_t = 1 - h_t. Because u_t \in \[0,
 1\], it can be read as the value at 1 - h_t of the cumulative
 distribution function of a Uniform(0, 1) random variable. HCbeta keeps
-this reading but replaces the uniform cdf with a Beta cdf F_B(w_t;
-\tilde a, \tilde b) evaluated at a truncated complement w_t. The two
-shape parameters give the correction curve an extra degree of
-flexibility, so the adjustment can adapt to the observed leverage
-configuration instead of following a fixed exponent.
+this reading but replaces the uniform cdf with a Beta cdf evaluated at a
+truncated complement w_t. The two shape parameters give the correction
+curve an extra degree of flexibility, so the adjustment can adapt to the
+observed leverage configuration instead of following a fixed exponent.
 
-This flexibility is what tempers the overshooting that HC3, HC4, and
-HC4m can display under strong leverage, where small values of 1 - h_t
-raised to a fixed negative exponent produce very large factors. HCbeta
+This flexibility aims to temper the overshooting that HC3, HC4, and HC4m
+can display under strong leverage, where small values of 1 - h_t raised
+to a fixed negative exponent produce very large factors. HCbeta
 calibrates the Beta shape parameters to the first two sample moments of
 w_t, so the resulting factor reflects the actual spread of the leverages
 rather than a worst case exponent.
 
-It is important to state what HCbeta does not assume. The Beta cdf is a
-calibration device, not a claim that the leverage complements follow a
-Beta distribution. The shape parameters are matched to the sample mean
-and variance of the truncated complements, and the construction would be
-unchanged if the leverages arose from another mechanism. The Beta family
-is used because its support is \[0, 1\] and its two parameters are
-enough to bend the uniform baseline in either direction.
+HCbeta does not assume that the leverage complements follow a Beta
+distribution. The Beta cdf is a calibration device whose shape
+parameters are matched to the sample mean and variance of the truncated
+complements, and the construction would be unchanged if the leverages
+arose from another mechanism. The Beta family is used because its
+support is \[0, 1\] and its two parameters are enough to bend the
+uniform baseline in either direction.
 
 ## The algorithm
 
@@ -55,14 +54,16 @@ adjustment factor g_t in four steps.
     \hat\phi = \hat\mu(1 - \hat\mu)/s_w^2 - 1, \hat a = \hat\mu\hat\phi,
     and \hat b = (1 - \hat\mu)\hat\phi.
 
-3.  **Shrinkage with caps.** Shrink the estimates toward the uniform
-    case a = b = 1 and bound them from above, \zeta = n/(n + 50), \tilde
-    a = \min\\(1 - \zeta) + \zeta\hat a,\\ A\_{\max}\\, and \tilde b =
-    \min\\(1 - \zeta) + \zeta\hat b,\\ B\_{\max}\\, with defaults
-    A\_{\max} = B\_{\max} = 10000 set through the arguments `a_max` and
-    `b_max`, each of which accepts finite values in the inclusive range
-    `[50, 25000]`. Shrinkage stabilizes the small sample estimates, and
-    the caps keep the shape parameters in a bounded range.
+3.  **Shrinkage with a fixed floor and caps.** Shrink the estimates
+    toward the uniform case a = b = 1 using \zeta = n/(n + 50), then set
+    \tilde a = \min\\\max\\(1 - \zeta) + \zeta\hat a,\\ \varepsilon\\,\\
+    A\_{\max}\\ and \tilde b = \min\\\max\\(1 - \zeta) + \zeta\hat b,\\
+    \varepsilon\\,\\ B\_{\max}\\. The floor is fixed at \varepsilon =
+    0.01, while the defaults A\_{\max} = B\_{\max} = 10000 are set
+    through `a_max` and `b_max`, each of which accepts finite values in
+    the inclusive range `[50, 25000]`. The floor is applied after
+    shrinkage and before the caps. It is distinct from `lower`, which
+    truncates w_t, and it is not a method argument.
 
 4.  **Adjustment factor and sandwich.** Combine the Beta cdf with a
     decaying exponent, g_t = \frac{n}{n - p}\left\\1/F_B(w_t; \tilde a,
@@ -90,12 +91,12 @@ and does not introduce a new theorem.
 Two features keep the adjustment under control. First, the truncation to
 \[0.01, 0.99\] and the bounds on the shape parameters place \tilde a and
 \tilde b in a compact interval \[\varepsilon, \max(A\_{\max},
-B\_{\max})\] with \varepsilon \> 0. On that compact set the Beta cdf
-evaluated at w_t is bounded away from zero, so that \inf_t F_B(w_t;
-\tilde a, \tilde b) \geq \delta for some \delta \> 0, and therefore
-\sup_t \|\log F_B(w_t; \tilde a, \tilde b)\| \leq -\log\delta \< \infty.
-The caps are what make the parameter space compact, which is what keeps
-the log adjustments uniformly bounded.
+B\_{\max})\] with the fixed value \varepsilon = 0.01. On that compact
+set, the Beta cdf evaluated at w_t is bounded away from zero, so that
+\inf_t F_B(w_t; \tilde a, \tilde b) \geq \delta for some \delta \> 0,
+and therefore \sup_t \|\log F_B(w_t; \tilde a, \tilde b)\| \leq
+-\log\delta \< \infty. The caps make the parameter space compact,
+keeping the log adjustments uniformly bounded.
 
 The caps are essential when the leverage variance vanishes. Under the
 standard fixed-design condition \max_t h_t \to 0, the complements
@@ -112,27 +113,26 @@ to zero while it multiplies the bounded log cdf. It follows that
 \widehat\Omega\_\beta and the HC0 residual matrix
 \operatorname{diag}(\hat e_t^2) are asymptotically equivalent, so
 \widehat\Psi\_{HC\beta} and \widehat\Psi\_{HC0} share the same limit.
-HCbeta therefore inherits the consistency of HC0, while the finite
-sample factor g_t supplies the leverage correction that motivates the
-method without the overshooting that fixed exponent methods can produce
-under strong leverage.
+HCbeta is asymptotically equivalent to HC0, so it inherits the same
+consistency, while the finite sample factor g_t aims to temper the
+overshooting that fixed exponent methods can produce under strong
+leverage.
 
 ## Numerical implementation
 
-Three safeguards keep the computation of g_t numerically stable. First,
-the Beta cdf is evaluated on the log scale with
+Four safeguards keep the computation of g_t numerically stable. First,
+the post-shrinkage shape parameters are clamped to the fixed floor 0.01
+and their respective caps. Second, the moment branch is used only when
+`is.finite(s2_w) && s2_w > .Machine$double.eps`; otherwise, the shapes
+are set directly to their caps. Third, the Beta cdf is evaluated with
 `pbeta(w, a_tilde, b_tilde, log.p = TRUE)`, which returns \log F_B
-directly and avoids the \log(0) = -\infty that a naive `log(pbeta(...))`
-would produce when the cdf underflows for extreme shape parameters.
-Second, the exponent -(c_1/n^{c_2})\log F_B(w_t; \tilde a, \tilde b) is
-capped at 700 before exponentiation, so that
+directly and avoids the \log(0) = -\infty produced when a cdf
+underflows. Finally, the exponent -(c_1/n^{c_2})\log F_B(w_t; \tilde a,
+\tilde b) is capped at 700 before exponentiation so that
 [`exp()`](https://rdrr.io/r/base/Log.html) cannot overflow to infinity.
-Third, the degrees of freedom factor n/(n - p) is computed once and
-reused.
 
-The published applications are unaffected by the caps because the
-default A\_{\max} = B\_{\max} = 10000 is far from binding on those
-designs. The quadratic public schools model illustrates this.
+In the public-schools model shown here, the default caps A\_{\max} =
+B\_{\max} = 10000 are far from binding.
 
 ``` r
 
@@ -166,7 +166,7 @@ The adjusted shape parameters are well below the caps, and the largest
 adjustment factor matches the value reported for this model. By
 construction each factor is at least the HC1 scale n/(n - p), because
 the capped exponent is nonnegative and the leading factor is exactly
-n/(n - p).
+n/(n - p). The code below verifies this lower-bound property.
 
 ``` r
 

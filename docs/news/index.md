@@ -1,6 +1,8 @@
 # Changelog
 
-## hcinfer (development version)
+## hcinfer 0.2.0
+
+CRAN release: 2026-08-04
 
 - Added
   [`boot_pairs()`](https://prdm0.github.io/hcinfer/reference/boot_pairs.md)
@@ -40,6 +42,13 @@
   inclusive, with defaults of 10000. HC0, HC1, and HCbeta also remain
   defined for an exact leverage value of one, while HC2, HC3, HC4, HC4m,
   HC5, and HC5m retain the positive leverage-complement requirement.
+- [`hcinfer()`](https://prdm0.github.io/hcinfer/reference/hcinfer.md)
+  and
+  [`vcov_hc()`](https://prdm0.github.io/hcinfer/reference/vcov_hc.md)
+  now enforce the fixed HCbeta shape floor of 0.01 after shrinkage and
+  before the upper caps, including for nondefault leverage-complement
+  truncation limits. The shape floor remains fixed when `lower` changes
+  and is not a method argument.
 
 ## hcinfer 0.1.1
 

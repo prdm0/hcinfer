@@ -1,51 +1,23 @@
 # Comparing HC Estimators
 
-This vignette shows how to compare HC estimators with `hcinfer`. The
-focus is on the objects returned by the package: coefficient tables,
-confidence intervals, covariance matrices, robust weights, and leverage
-diagnostics.
+This vignette assumes the introduction
+([`vignette("introduction", package = "hcinfer")`](https://prdm0.github.io/hcinfer/articles/introduction.md))
+and compares several HC estimators on a single fitted model, using
+coefficient tables, confidence intervals, covariance matrices, robust
+weights, and leverage diagnostics.
 
-## List the available estimators
+## Fit one model
 
-Use
-[`hc_methods()`](https://prdm0.github.io/hcinfer/reference/hc_methods.md)
-to see the estimator names accepted by
-[`hcinfer()`](https://prdm0.github.io/hcinfer/reference/hcinfer.md) and
-[`vcov_hc()`](https://prdm0.github.io/hcinfer/reference/vcov_hc.md).
+Comparisons should start from one fitted model. Here we use the Boston
+house-price model from the HCbeta paper (price regressed on lot size,
+number of bedrooms, and a bedrooms-by-size interaction) and focus on the
+lot-size coefficient.
 
 ``` r
 
 library(hcinfer)
 
-hc_methods()
-#> # A tibble: 9 × 4
-#>   type   label  description                                    default_arguments
-#>   <chr>  <chr>  <chr>                                          <chr>            
-#> 1 hc0    HC0    White heteroskedasticity-consistent estimator. none             
-#> 2 hc1    HC1    HC0 with degrees-of-freedom scaling.           none             
-#> 3 hc2    HC2    Leverage-adjusted estimator with exponent 1.   none             
-#> 4 hc3    HC3    Leverage-adjusted estimator with exponent 2.   none             
-#> 5 hc4    HC4    Adaptive leverage correction by Cribari-Neto.  none             
-#> 6 hc4m   HC4m   Modified HC4 correction by Cribari-Neto and d… none             
-#> 7 hc5    HC5    High-leverage correction by Cribari-Neto, Sou… k = 0.7          
-#> 8 hc5m   HC5m   Modified HC5 correction by Li, Zhang, Zhang, … k = 0.7, k1 = 1,…
-#> 9 hcbeta HCbeta Beta-distribution leverage correction.         c1 = 7, c2 = 0.7…
-```
-
-## Fit one model
-
-Comparisons should start from one fitted model. Here we use the same OLS
-fit for all methods.
-
-``` r
-
-schools <- PublicSchools |>
-  dplyr::mutate(
-    income_scaled = income / 10000,
-    income_scaled_sq = income_scaled^2
-  )
-
-fit <- lm(expenditure ~ income_scaled + income_scaled_sq, data = schools)
+fit <- lm(price ~ lotsize + bdrms + bdrms:sqrft, data = Hprice)
 ```
 
 ## Run several methods
@@ -73,7 +45,7 @@ coefficient and adds the method name.
 
 ``` r
 
-extract_term <- function(result, method, term = "income_scaled_sq") {
+extract_term <- function(result, method, term = "lotsize") {
   row <- tests(result, parm = term)
   ci <- confint(result, parm = term)
 
@@ -92,13 +64,13 @@ comparison <- purrr::imap(results, extract_term)
 comparison <- dplyr::bind_rows(comparison)
 comparison
 #> # A tibble: 5 × 7
-#>   method estimate std_error p_value conf_low conf_high reject
-#>   <chr>     <dbl>     <dbl>   <dbl>    <dbl>     <dbl> <lgl> 
-#> 1 hc0       1587.      830.  0.0559    -39.7     3214. FALSE 
-#> 2 hc3       1587.     1995.  0.426   -2324.      5498. FALSE 
-#> 3 hc4       1587.     5489.  0.772   -9171.     12345. FALSE 
-#> 4 hc4m      1587.     2553.  0.534   -3417.      6591. FALSE 
-#> 5 hcbeta    1587.     1547.  0.305   -1446.      4620. FALSE
+#>   method estimate std_error p_value  conf_low conf_high reject
+#>   <chr>     <dbl>     <dbl>   <dbl>     <dbl>     <dbl> <lgl> 
+#> 1 hc0     0.00199   0.00109  0.0673 -0.000142   0.00412 FALSE 
+#> 2 hc3     0.00199   0.00670  0.767  -0.0111     0.0151  FALSE 
+#> 3 hc4     0.00199   0.0451   0.965  -0.0863     0.0903  FALSE 
+#> 4 hc4m    0.00199   0.0108   0.854  -0.0191     0.0231  FALSE 
+#> 5 hcbeta  0.00199   0.00214  0.354  -0.00222    0.00619 FALSE
 ```
 
 Add interval widths when the goal is to compare how conservative the
@@ -111,13 +83,13 @@ comparison <- comparison |>
 
 comparison
 #> # A tibble: 5 × 8
-#>   method estimate std_error p_value conf_low conf_high reject interval_width
-#>   <chr>     <dbl>     <dbl>   <dbl>    <dbl>     <dbl> <lgl>           <dbl>
-#> 1 hc0       1587.      830.  0.0559    -39.7     3214. FALSE           3254.
-#> 2 hc3       1587.     1995.  0.426   -2324.      5498. FALSE           7821.
-#> 3 hc4       1587.     5489.  0.772   -9171.     12345. FALSE          21516.
-#> 4 hc4m      1587.     2553.  0.534   -3417.      6591. FALSE          10009.
-#> 5 hcbeta    1587.     1547.  0.305   -1446.      4620. FALSE           6066.
+#>   method estimate std_error p_value  conf_low conf_high reject interval_width
+#>   <chr>     <dbl>     <dbl>   <dbl>     <dbl>     <dbl> <lgl>           <dbl>
+#> 1 hc0     0.00199   0.00109  0.0673 -0.000142   0.00412 FALSE         0.00426
+#> 2 hc3     0.00199   0.00670  0.767  -0.0111     0.0151  FALSE         0.0263 
+#> 3 hc4     0.00199   0.0451   0.965  -0.0863     0.0903  FALSE         0.177  
+#> 4 hc4m    0.00199   0.0108   0.854  -0.0191     0.0231  FALSE         0.0423 
+#> 5 hcbeta  0.00199   0.00214  0.354  -0.00222    0.00619 FALSE         0.00841
 ```
 
 ## Plot the robust standard errors
@@ -131,14 +103,14 @@ ggplot2::ggplot(comparison, ggplot2::aes(x = method, y = std_error)) +
   ggplot2::geom_col(fill = "#305c8a") +
   ggplot2::labs(
     x = "Estimator",
-    y = "Robust standard error for the quadratic income term"
+    y = "Robust standard error for the lot-size coefficient"
   ) +
   ggplot2::theme_minimal(base_size = 12)
 ```
 
-![Bar chart comparing robust standard errors for the quadratic income
-term across HC
-estimators.](hcinfer-comparison_files/figure-html/unnamed-chunk-7-1.png)
+![Bar chart comparing robust standard errors for the lot-size
+coefficient across HC
+estimators.](hcinfer-comparison_files/figure-html/comparison-se-plot-1.png)
 
 ## Compare confidence intervals directly
 
@@ -151,13 +123,13 @@ several methods side by side.
 comparison |>
   dplyr::select(method, conf_low, conf_high, interval_width)
 #> # A tibble: 5 × 4
-#>   method conf_low conf_high interval_width
-#>   <chr>     <dbl>     <dbl>          <dbl>
-#> 1 hc0       -39.7     3214.          3254.
-#> 2 hc3     -2324.      5498.          7821.
-#> 3 hc4     -9171.     12345.         21516.
-#> 4 hc4m    -3417.      6591.         10009.
-#> 5 hcbeta  -1446.      4620.          6066.
+#>   method  conf_low conf_high interval_width
+#>   <chr>      <dbl>     <dbl>          <dbl>
+#> 1 hc0    -0.000142   0.00412        0.00426
+#> 2 hc3    -0.0111     0.0151         0.0263 
+#> 3 hc4    -0.0863     0.0903         0.177  
+#> 4 hc4m   -0.0191     0.0231         0.0423 
+#> 5 hcbeta -0.00222    0.00619        0.00841
 ```
 
 ## Compare covariance objects
@@ -171,19 +143,20 @@ coefficient tests.
 cov_hc3 <- vcov_hc(fit, type = "hc3")
 cov_hc3
 #> 
-#> ── 🥪 HC3 robust covariance ────────────────────────────────────────────────────
-#> 📐 Model: `expenditure ~ income_scaled + income_scaled_sq`
-#> Dimension: 3 x 3
-#> Observations: 50
-#> Parameters: 3
-#> 🎯 Maximum leverage: 0.6508
-#> ⚖️ Maximum robust weight: 8.2009
+#> ── HC3 robust covariance ───────────────────────────────────────────────────────
+#> Model: `price ~ lotsize + bdrms + bdrms:sqrft`
+#> Dimension: 4 x 4
+#> Observations: 88
+#> Parameters: 4
+#> Maximum leverage: 0.8517
+#> Maximum robust weight: 45.4824
 #> Use `vcov()` to extract the stored covariance matrix.
 vcov(cov_hc3)
-#>                  (Intercept) income_scaled income_scaled_sq
-#> (Intercept)          1199026      -3256564          2180884
-#> income_scaled       -3256564       8853073         -5934046
-#> income_scaled_sq     2180884      -5934046          3980990
+#>               (Intercept)       lotsize         bdrms   bdrms:sqrft
+#> (Intercept)  8746.3251016 -5.211208e-01 -2919.1484384  7.562435e-01
+#> lotsize        -0.5211208  4.491379e-05     0.1647236 -5.637653e-05
+#> bdrms       -2919.1484384  1.647236e-01  1099.5622412 -3.040083e-01
+#> bdrms:sqrft     0.7562435 -5.637653e-05    -0.3040083  1.045768e-04
 ```
 
 Plot the adjustment factors against leverage values for a covariance
@@ -195,8 +168,8 @@ plot(cov_hc3)
 ```
 
 ![Scatterplot of HC3 adjustment factors against leverage values for the
-public-schools
-model.](hcinfer-comparison_files/figure-html/unnamed-chunk-10-1.png)
+Hprice
+model.](hcinfer-comparison_files/figure-html/comparison-hc3-plot-1.png)
 
 The covariance object also has a summary method.
 
@@ -204,44 +177,44 @@ The covariance object also has a summary method.
 
 summary(cov_hc3)
 #> 
-#> ── 🥪 HC3 robust covariance summary ────────────────────────────────────────────
+#> ── HC3 robust covariance summary ───────────────────────────────────────────────
 #> 
-#> ── 📐 Model ──
+#> ── Model ──
 #> 
-#> Formula: `expenditure ~ income_scaled + income_scaled_sq`
-#> Observations: 50 | Parameters: 3 | Residual df: 47
+#> Formula: `price ~ lotsize + bdrms + bdrms:sqrft`
+#> Observations: 88 | Parameters: 4 | Residual df: 84
 #> 
-#> ── 🎯 Leverage diagnostics ──
+#> ── Leverage diagnostics ──
 #> 
 #> # A tibble: 6 × 2
 #>   statistic value  
 #>   <chr>     <chr>  
-#> 1 minimum   0.02669
-#> 2 q1        0.03106
-#> 3 median    0.03912
-#> 4 mean      0.06   
-#> 5 q3        0.04962
-#> 6 maximum   0.6508
-#> Maximum leverage: observation 2 (index 2), value 0.6508
-#> Average leverage: 0.0600
-#> Concentration: 10.85 x average leverage
+#> 1 minimum   0.01498
+#> 2 q1        0.01772
+#> 3 median    0.02034
+#> 4 mean      0.04545
+#> 5 q3        0.02978
+#> 6 maximum   0.8517
+#> Maximum leverage: observation 77 (index 77), value 0.8517
+#> Average leverage: 0.0455
+#> Concentration: 18.74 x average leverage
 #> 
-#> ── ⚖️ Robust weights ──
+#> ── Robust weights ──
 #> 
 #> # A tibble: 6 × 2
 #>   statistic value
 #>   <chr>     <chr>
-#> 1 minimum   1.056
-#> 2 q1        1.065
-#> 3 median    1.083
-#> 4 mean      1.251
-#> 5 q3        1.107
-#> 6 maximum   8.201
-#> Maximum weight: observation 2 (index 2), value 8.2009
-#> Median weight: 1.0831
-#> Concentration: 7.57 x median weight
+#> 1 minimum   1.031
+#> 2 q1        1.036
+#> 3 median    1.042
+#> 4 mean      1.591
+#> 5 q3        1.062
+#> 6 maximum   45.48
+#> Maximum weight: observation 77 (index 77), value 45.4824
+#> Median weight: 1.0420
+#> Concentration: 43.65 x median weight
 #> 
-#> ── ⚙️ Method parameters ──
+#> ── Method parameters ──
 #> 
 #> No additional method parameters.
 ```
@@ -272,11 +245,11 @@ diagnostic_comparison
 #> # A tibble: 5 × 4
 #>   method max_leverage max_weight median_weight
 #>   <chr>         <dbl>      <dbl>         <dbl>
-#> 1 hc0           0.651       1             1   
-#> 2 hc3           0.651       8.20          1.08
-#> 3 hc4           0.651      67.3           1.03
-#> 4 hc4m          0.651      13.9           1.05
-#> 5 hcbeta        0.651       4.58          1.19
+#> 1 hc0           0.852       1             1   
+#> 2 hc3           0.852      45.5           1.04
+#> 3 hc4           0.852    2069.            1.01
+#> 4 hc4m          0.852     118.            1.02
+#> 5 hcbeta        0.852       4.42          1.13
 ```
 
 The next figure mirrors the empirical display in the HCbeta paper:
@@ -327,8 +300,8 @@ ggplot2::ggplot(weight_comparison, ggplot2::aes(x = leverage, y = weight)) +
 ```
 
 ![Faceted scatterplot of HC adjustment factors against leverage values
-for HC3, HC4, HC4m, and
-HCbeta.](hcinfer-comparison_files/figure-html/unnamed-chunk-13-1.png)
+for HC3, HC4, HC4m, and HCbeta in the Hprice
+model.](hcinfer-comparison_files/figure-html/comparison-weight-facets-1.png)
 
 ## What to report
 
@@ -340,13 +313,13 @@ standard error, p-value, and interval endpoints.
 comparison |>
   dplyr::select(method, estimate, std_error, p_value, conf_low, conf_high)
 #> # A tibble: 5 × 6
-#>   method estimate std_error p_value conf_low conf_high
-#>   <chr>     <dbl>     <dbl>   <dbl>    <dbl>     <dbl>
-#> 1 hc0       1587.      830.  0.0559    -39.7     3214.
-#> 2 hc3       1587.     1995.  0.426   -2324.      5498.
-#> 3 hc4       1587.     5489.  0.772   -9171.     12345.
-#> 4 hc4m      1587.     2553.  0.534   -3417.      6591.
-#> 5 hcbeta    1587.     1547.  0.305   -1446.      4620.
+#>   method estimate std_error p_value  conf_low conf_high
+#>   <chr>     <dbl>     <dbl>   <dbl>     <dbl>     <dbl>
+#> 1 hc0     0.00199   0.00109  0.0673 -0.000142   0.00412
+#> 2 hc3     0.00199   0.00670  0.767  -0.0111     0.0151 
+#> 3 hc4     0.00199   0.0451   0.965  -0.0863     0.0903 
+#> 4 hc4m    0.00199   0.0108   0.854  -0.0191     0.0231 
+#> 5 hcbeta  0.00199   0.00214  0.354  -0.00222    0.00619
 ```
 
 Use this comparison to document how sensitive your conclusion is to the

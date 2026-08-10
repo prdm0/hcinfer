@@ -63,14 +63,24 @@ Additional arguments in `...` are method-specific. The defaults are:
 For `"hc5"` and `"hc5m"`, `k`, `k1`, `k2`, and `k3` must be nonnegative,
 while `gamma1` and `gamma2` must be positive. For `"hcbeta"`, `c1` must
 be nonnegative, `c2` must be positive, and `lower` and `upper` must lie
-in `(0, 1)` with `lower < upper`. The HCbeta truncation is \\w_t =
-max(lower, min(1 - h_t, upper))\\. Both `a_max` and `b_max` must be
-finite and lie in `[50, 25000]`; they cap the shrunk Beta shape
-parameters \\\tilde a\\ and \\\tilde b\\ and default to 10000. The two
-caps can be set independently through `...` for sensitivity analysis.
-HCbeta remains defined when \\h_t = 1\\ because it truncates \\1 - h_t\\
-before evaluating the Beta CDF. In contrast, HC2 through HC5m require a
-strictly positive leverage complement.
+in `(0, 1)` with `lower < upper`. The HCbeta leverage-complement
+truncation is \\w_t = max(lower, min(1 - h_t, upper))\\.
+
+After shrinkage with \\\zeta = n / (n + 50)\\, the Beta shape parameters
+are clamped as \$\$\tilde a = \min\\\max\\(1 - \zeta) + \zeta\hat a,
+\epsilon\\, A\_{\max}\\,\$\$ \$\$\tilde b = \min\\\max\\(1 - \zeta) +
+\zeta\hat b, \epsilon\\, B\_{\max}\\.\$\$ The value \\\epsilon = 0.01\\
+is fixed, applied after shrinkage and before the caps, and is not a
+method argument. It is distinct from `lower`, which truncates \\w_t\\;
+changing `lower` does not change \\\epsilon\\.
+
+Both `a_max` and `b_max` must be finite and lie in `[50, 25000]`; they
+default to 10000 and can be set independently through `...` for
+sensitivity analysis. When the variance of the truncated complements is
+numerically degenerate, the adjusted shapes are set directly to their
+respective caps. HCbeta remains defined when \\h_t = 1\\ because it
+truncates \\1 - h_t\\ before evaluating the Beta CDF. In contrast, HC2
+through HC5m require a strictly positive leverage complement.
 
 ## References
 

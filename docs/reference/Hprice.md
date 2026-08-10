@@ -76,11 +76,11 @@ head(Hprice)
 #> 5  373    319.     4    6095  2514        1   5.92    5.77     8.72   7.83
 #> 6  466.   414.     5    8566  2754        1   6.14    6.03     9.06   7.92
 
-fit <- lm(price ~ lotsize + sqrft + bdrms, data = Hprice)
+fit <- lm(price ~ lotsize + bdrms + bdrms:sqrft, data = Hprice)
 hcinfer(fit, type = "hcbeta")
 #> 
 #> ── 🔎 HCbeta robust inference ──────────────────────────────────────────────────
-#> 📐 Model: `price ~ lotsize + sqrft + bdrms`
+#> 📐 Model: `price ~ lotsize + bdrms + bdrms:sqrft`
 #> Observations: 88 | Parameters: 4
 #> 🥪 Robust covariance: HCbeta
 #> Confidence level: 95.0% | Normal critical value: 1.9600

@@ -26,7 +26,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">hcinfer</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.1.1.9000</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -40,10 +40,10 @@
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
   <ul class="dropdown-menu" aria-labelledby="dropdown-articles">
 <li><a class="dropdown-item" href="../articles/introduction.html">Introduction to hcinfer</a></li>
+    <li><a class="dropdown-item" href="../articles/hcinfer-hcbeta.html">Using HCbeta</a></li>
     <li><a class="dropdown-item" href="../articles/hcinfer-methodology.html">HC Estimator Methodology</a></li>
     <li><a class="dropdown-item" href="../articles/hcinfer-hcbeta-algorithm.html">The HCbeta algorithm and its consistency</a></li>
     <li><a class="dropdown-item" href="../articles/hcinfer-comparison.html">Comparing HC Estimators</a></li>
-    <li><a class="dropdown-item" href="../articles/hcinfer-hcbeta.html">Using HCbeta</a></li>
     <li><a class="dropdown-item" href="../articles/hcinfer-bootstrap.html">Pairs bootstrap inference with hcinfer</a></li>
   </ul>
 </li>
@@ -70,15 +70,16 @@
 
     
     
-<p>This vignette gives a compact overview of <code>hcinfer</code>. It
-uses only base R for data preparation, then shows the main functions,
-extraction methods, and plots.</p>
+<p>This vignette gives a compact overview of <code>hcinfer</code>; no
+prior reading is needed.</p>
 <div class="section level2">
-<h2 id="data-and-model">Data and Model<a class="anchor" aria-label="anchor" href="#data-and-model"></a>
+<h2 id="data-and-model">Data and model<a class="anchor" aria-label="anchor" href="#data-and-model"></a>
 </h2>
 <p>The examples use the <code>PublicSchools</code> data included with
 the package. The model is the quadratic income model used in the HCbeta
-application.</p>
+application; the <code><a href="https://rdrr.io/r/stats/lm.html" class="external-link">lm()</a></code> call omits observations with missing
+model variables (Wisconsin expenditure is missing, so the model fits 50
+of the 51 observations).</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://prdm0.github.io/hcinfer/">hcinfer</a></span><span class="op">)</span></span>
 <span></span>
@@ -96,11 +97,9 @@ application.</p>
 <span><span class="co">#&gt; Coefficients:</span></span>
 <span><span class="co">#&gt;      (Intercept)     income_scaled  income_scaled_sq  </span></span>
 <span><span class="co">#&gt;            832.9           -1834.2            1587.0</span></span></code></pre></div>
-<p>The call to <code><a href="https://rdrr.io/r/stats/lm.html" class="external-link">lm()</a></code> omits observations with missing model
-variables.</p>
 </div>
 <div class="section level2">
-<h2 id="available-estimators">Available Estimators<a class="anchor" aria-label="anchor" href="#available-estimators"></a>
+<h2 id="available-estimators">Available estimators<a class="anchor" aria-label="anchor" href="#available-estimators"></a>
 </h2>
 <p>Use <code><a href="../reference/hc_methods.html">hc_methods()</a></code> to list the estimators and their
 default arguments.</p>
@@ -118,13 +117,9 @@ default arguments.</p>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;">7</span> hc5    HC5    High-leverage correction by Cribari-Neto, Sou… k = 0.7          </span></span>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;">8</span> hc5m   HC5m   Modified HC5 correction by Li, Zhang, Zhang, … k = 0.7, k1 = 1,…</span></span>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;">9</span> hcbeta HCbeta Beta-distribution leverage correction.         c1 = 7, c2 = 0.7…</span></span></code></pre></div>
-<p>The available types are <code>"hc0"</code>, <code>"hc1"</code>,
-<code>"hc2"</code>, <code>"hc3"</code>, <code>"hc4"</code>,
-<code>"hc4m"</code>, <code>"hc5"</code>, <code>"hc5m"</code>, and
-<code>"hcbeta"</code>.</p>
 </div>
 <div class="section level2">
-<h2 id="robust-inference">Robust Inference<a class="anchor" aria-label="anchor" href="#robust-inference"></a>
+<h2 id="robust-inference">Robust inference<a class="anchor" aria-label="anchor" href="#robust-inference"></a>
 </h2>
 <p>Use <code><a href="../reference/hcinfer.html">hcinfer()</a></code> to perform heteroskedasticity-robust
 inference for an <code><a href="https://rdrr.io/r/stats/lm.html" class="external-link">lm()</a></code> object. The default estimator is
@@ -249,7 +244,7 @@ heteroskedasticity-robust diagnostics.</p>
 <span><span class="co">#&gt; diagnostics.</span></span></code></pre></div>
 </div>
 <div class="section level2">
-<h2 id="test-extraction">Test Extraction<a class="anchor" aria-label="anchor" href="#test-extraction"></a>
+<h2 id="test-extraction">Test extraction<a class="anchor" aria-label="anchor" href="#test-extraction"></a>
 </h2>
 <p>Use <code><a href="../reference/tests.html">tests()</a></code> to extract coefficient-level Wald tests as a
 tibble.</p>
@@ -286,7 +281,7 @@ recomputed.</p>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;">3</span> income_scaled_sq    <span style="text-decoration: underline;">1</span>587.          0     <span style="text-decoration: underline;">1</span>547.   1.03    0.305   0.1 FALSE</span></span></code></pre></div>
 </div>
 <div class="section level2">
-<h2 id="confidence-interval-extraction">Confidence Interval Extraction<a class="anchor" aria-label="anchor" href="#confidence-interval-extraction"></a>
+<h2 id="confidence-interval-extraction">Confidence interval extraction<a class="anchor" aria-label="anchor" href="#confidence-interval-extraction"></a>
 </h2>
 <p>Use <code><a href="https://rdrr.io/r/stats/confint.html" class="external-link">confint()</a></code> to extract heteroskedasticity-robust
 confidence intervals.</p>
@@ -312,7 +307,7 @@ confidence intervals.</p>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span> income_scaled_sq    -<span style="color: #BB0000;">958.</span>     <span style="text-decoration: underline;">4</span>132.   0.9</span></span></code></pre></div>
 </div>
 <div class="section level2">
-<h2 id="coefficients-and-covariance-matrices">Coefficients and Covariance Matrices<a class="anchor" aria-label="anchor" href="#coefficients-and-covariance-matrices"></a>
+<h2 id="coefficients-and-covariance-matrices">Coefficients and covariance matrices<a class="anchor" aria-label="anchor" href="#coefficients-and-covariance-matrices"></a>
 </h2>
 <p>The <code><a href="https://rdrr.io/r/stats/coef.html" class="external-link">coef()</a></code> method returns the OLS estimates stored in
 <code>result</code>.</p>
@@ -337,7 +332,7 @@ diagonal entries.</p>
 <span><span class="co">#&gt;         850.6572        2308.6541        1547.4583</span></span></code></pre></div>
 </div>
 <div class="section level2">
-<h2 id="covariance-only-workflow">Covariance-Only Workflow<a class="anchor" aria-label="anchor" href="#covariance-only-workflow"></a>
+<h2 id="covariance-only-workflow">Covariance-only workflow<a class="anchor" aria-label="anchor" href="#covariance-only-workflow"></a>
 </h2>
 <p>Use <code><a href="../reference/vcov_hc.html">vcov_hc()</a></code> when you only need the
 heteroskedasticity-robust covariance matrix and diagnostics.</p>
@@ -441,48 +436,30 @@ constants.</p>
 robust confidence intervals.</p>
 <div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">result</span><span class="op">)</span></span></code></pre></div>
-<p><img src="introduction_files/figure-html/unnamed-chunk-18-1.png" class="r-plt" alt="Robust confidence intervals for the public-schools regression coefficients." width="672"></p>
+<p><img src="introduction_files/figure-html/intro-ci-plot-1.png" class="r-plt" alt="Robust confidence intervals for the public-schools regression coefficients." width="672"></p>
 <p>Select one coefficient with <code>parm</code>.</p>
 <div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">result</span>, parm <span class="op">=</span> <span class="st">"income_scaled_sq"</span><span class="op">)</span></span></code></pre></div>
-<p><img src="introduction_files/figure-html/unnamed-chunk-19-1.png" class="r-plt" alt="Robust confidence interval for the quadratic income coefficient." width="672"></p>
+<p><img src="introduction_files/figure-html/intro-ci-single-plot-1.png" class="r-plt" alt="Robust confidence interval for the quadratic income coefficient." width="672"></p>
 <p>Use <code><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot()</a></code> on a <code><a href="../reference/vcov_hc.html">vcov_hc()</a></code> object to show
 leverage values and HC adjustment factors.</p>
 <div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">cov_hcbeta</span><span class="op">)</span></span></code></pre></div>
-<p><img src="introduction_files/figure-html/unnamed-chunk-20-1.png" class="r-plt" alt="HCbeta adjustment factors plotted against leverage values for the public-schools regression." width="672"></p>
+<p><img src="introduction_files/figure-html/intro-vcov-plot-1.png" class="r-plt" alt="HCbeta adjustment factors plotted against leverage values for the public-schools regression." width="672"></p>
 <p>Set <code>label_top</code> to control how many observations with the
 largest adjustment factors are labeled.</p>
 <div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="fu"><a href="../reference/vcov_hc.html">vcov_hc</a></span><span class="op">(</span><span class="va">fit</span>, type <span class="op">=</span> <span class="st">"hc3"</span><span class="op">)</span>, label_top <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span></code></pre></div>
-<p><img src="introduction_files/figure-html/unnamed-chunk-21-1.png" class="r-plt" alt="HC3 adjustment factors plotted against leverage values with the two largest weights labeled." width="672"></p>
+<p><img src="introduction_files/figure-html/intro-hc3-plot-1.png" class="r-plt" alt="HC3 adjustment factors plotted against leverage values with the two largest weights labeled." width="672"></p>
 </div>
 <div class="section level2">
-<h2 id="a-small-comparison">A Small Comparison<a class="anchor" aria-label="anchor" href="#a-small-comparison"></a>
+<h2 id="typical-workflow">Typical workflow<a class="anchor" aria-label="anchor" href="#typical-workflow"></a>
 </h2>
-<p>The following base R code compares HCbeta and HC3 for the quadratic
-income coefficient.</p>
+<p>The routine analysis fits a model, passes it to
+<code><a href="../reference/hcinfer.html">hcinfer()</a></code>, and inspects the results with
+<code><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary()</a></code>, <code><a href="../reference/tests.html">tests()</a></code>, <code><a href="https://rdrr.io/r/stats/confint.html" class="external-link">confint()</a></code>,
+and <code><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot()</a></code>.</p>
 <div class="sourceCode" id="cb21"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">test_hcbeta</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/tests.html">tests</a></span><span class="op">(</span><span class="va">result</span>, parm <span class="op">=</span> <span class="st">"income_scaled_sq"</span><span class="op">)</span></span>
-<span><span class="va">test_hc3</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/tests.html">tests</a></span><span class="op">(</span><span class="va">result_hc3</span>, parm <span class="op">=</span> <span class="st">"income_scaled_sq"</span><span class="op">)</span></span>
-<span></span>
-<span><span class="va">comparison</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span></span>
-<span>  estimator <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"HCbeta"</span>, <span class="st">"HC3"</span><span class="op">)</span>,</span>
-<span>  estimate <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">test_hcbeta</span><span class="op">$</span><span class="va">estimate</span>, <span class="va">test_hc3</span><span class="op">$</span><span class="va">estimate</span><span class="op">)</span>,</span>
-<span>  robust_se <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">test_hcbeta</span><span class="op">$</span><span class="va">std_error</span>, <span class="va">test_hc3</span><span class="op">$</span><span class="va">std_error</span><span class="op">)</span>,</span>
-<span>  p_value <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">test_hcbeta</span><span class="op">$</span><span class="va">p_value</span>, <span class="va">test_hc3</span><span class="op">$</span><span class="va">p_value</span><span class="op">)</span></span>
-<span><span class="op">)</span></span>
-<span></span>
-<span><span class="va">comparison</span></span>
-<span><span class="co">#&gt;   estimator estimate robust_se   p_value</span></span>
-<span><span class="co">#&gt; 1    HCbeta 1587.042  1547.458 0.3050896</span></span>
-<span><span class="co">#&gt; 2       HC3 1587.042  1995.242 0.4263730</span></span></code></pre></div>
-</div>
-<div class="section level2">
-<h2 id="typical-workflow">Typical Workflow<a class="anchor" aria-label="anchor" href="#typical-workflow"></a>
-</h2>
-<p>For routine use, the workflow is short.</p>
-<div class="sourceCode" id="cb22"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">fit</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/lm.html" class="external-link">lm</a></span><span class="op">(</span><span class="va">y</span> <span class="op">~</span> <span class="va">x1</span> <span class="op">+</span> <span class="va">x2</span>, data <span class="op">=</span> <span class="va">data</span><span class="op">)</span></span>
 <span><span class="va">result</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/hcinfer.html">hcinfer</a></span><span class="op">(</span><span class="va">fit</span>, type <span class="op">=</span> <span class="st">"hcbeta"</span><span class="op">)</span></span>
 <span></span>

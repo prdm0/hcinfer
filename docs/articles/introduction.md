@@ -1,13 +1,15 @@
 # Introduction to hcinfer
 
-This vignette gives a compact overview of `hcinfer`. It uses only base R
-for data preparation, then shows the main functions, extraction methods,
-and plots.
+This vignette gives a compact overview of `hcinfer`; no prior reading is
+needed.
 
-## Data and Model
+## Data and model
 
 The examples use the `PublicSchools` data included with the package. The
-model is the quadratic income model used in the HCbeta application.
+model is the quadratic income model used in the HCbeta application; the
+[`lm()`](https://rdrr.io/r/stats/lm.html) call omits observations with
+missing model variables (Wisconsin expenditure is missing, so the model
+fits 50 of the 51 observations).
 
 ``` r
 
@@ -29,10 +31,7 @@ fit
 #>            832.9           -1834.2            1587.0
 ```
 
-The call to [`lm()`](https://rdrr.io/r/stats/lm.html) omits observations
-with missing model variables.
-
-## Available Estimators
+## Available estimators
 
 Use
 [`hc_methods()`](https://prdm0.github.io/hcinfer/reference/hc_methods.md)
@@ -55,10 +54,7 @@ hc_methods()
 #> 9 hcbeta HCbeta Beta-distribution leverage correction.         c1 = 7, c2 = 0.7…
 ```
 
-The available types are `"hc0"`, `"hc1"`, `"hc2"`, `"hc3"`, `"hc4"`,
-`"hc4m"`, `"hc5"`, `"hc5m"`, and `"hcbeta"`.
-
-## Robust Inference
+## Robust inference
 
 Use [`hcinfer()`](https://prdm0.github.io/hcinfer/reference/hcinfer.md)
 to perform heteroskedasticity-robust inference for an
@@ -193,7 +189,7 @@ result_hc3
 #> diagnostics.
 ```
 
-## Test Extraction
+## Test extraction
 
 Use [`tests()`](https://prdm0.github.io/hcinfer/reference/tests.md) to
 extract coefficient-level Wald tests as a tibble.
@@ -239,7 +235,7 @@ tests(result, alpha = 0.10)
 #> 3 income_scaled_sq    1587.          0     1547.   1.03    0.305   0.1 FALSE
 ```
 
-## Confidence Interval Extraction
+## Confidence interval extraction
 
 Use [`confint()`](https://rdrr.io/r/stats/confint.html) to extract
 heteroskedasticity-robust confidence intervals.
@@ -271,7 +267,7 @@ confint(result, parm = "income_scaled_sq", level = 0.90)
 #> 1 income_scaled_sq    -958.     4132.   0.9
 ```
 
-## Coefficients and Covariance Matrices
+## Coefficients and covariance matrices
 
 The [`coef()`](https://rdrr.io/r/stats/coef.html) method returns the OLS
 estimates stored in `result`.
@@ -306,7 +302,7 @@ sqrt(diag(robust_vcov))
 #>         850.6572        2308.6541        1547.4583
 ```
 
-## Covariance-Only Workflow
+## Covariance-only workflow
 
 Use [`vcov_hc()`](https://prdm0.github.io/hcinfer/reference/vcov_hc.md)
 when you only need the heteroskedasticity-robust covariance matrix and
@@ -426,7 +422,7 @@ plot(result)
 ```
 
 ![Robust confidence intervals for the public-schools regression
-coefficients.](introduction_files/figure-html/unnamed-chunk-18-1.png)
+coefficients.](introduction_files/figure-html/intro-ci-plot-1.png)
 
 Select one coefficient with `parm`.
 
@@ -436,7 +432,7 @@ plot(result, parm = "income_scaled_sq")
 ```
 
 ![Robust confidence interval for the quadratic income
-coefficient.](introduction_files/figure-html/unnamed-chunk-19-1.png)
+coefficient.](introduction_files/figure-html/intro-ci-single-plot-1.png)
 
 Use [`plot()`](https://rdrr.io/r/graphics/plot.default.html) on a
 [`vcov_hc()`](https://prdm0.github.io/hcinfer/reference/vcov_hc.md)
@@ -449,7 +445,7 @@ plot(cov_hcbeta)
 
 ![HCbeta adjustment factors plotted against leverage values for the
 public-schools
-regression.](introduction_files/figure-html/unnamed-chunk-20-1.png)
+regression.](introduction_files/figure-html/intro-vcov-plot-1.png)
 
 Set `label_top` to control how many observations with the largest
 adjustment factors are labeled.
@@ -461,34 +457,17 @@ plot(vcov_hc(fit, type = "hc3"), label_top = 2)
 
 ![HC3 adjustment factors plotted against leverage values with the two
 largest weights
-labeled.](introduction_files/figure-html/unnamed-chunk-21-1.png)
+labeled.](introduction_files/figure-html/intro-hc3-plot-1.png)
 
-## A Small Comparison
+## Typical workflow
 
-The following base R code compares HCbeta and HC3 for the quadratic
-income coefficient.
-
-``` r
-
-test_hcbeta <- tests(result, parm = "income_scaled_sq")
-test_hc3 <- tests(result_hc3, parm = "income_scaled_sq")
-
-comparison <- data.frame(
-  estimator = c("HCbeta", "HC3"),
-  estimate = c(test_hcbeta$estimate, test_hc3$estimate),
-  robust_se = c(test_hcbeta$std_error, test_hc3$std_error),
-  p_value = c(test_hcbeta$p_value, test_hc3$p_value)
-)
-
-comparison
-#>   estimator estimate robust_se   p_value
-#> 1    HCbeta 1587.042  1547.458 0.3050896
-#> 2       HC3 1587.042  1995.242 0.4263730
-```
-
-## Typical Workflow
-
-For routine use, the workflow is short.
+The routine analysis fits a model, passes it to
+[`hcinfer()`](https://prdm0.github.io/hcinfer/reference/hcinfer.md), and
+inspects the results with
+[`summary()`](https://rdrr.io/r/base/summary.html),
+[`tests()`](https://prdm0.github.io/hcinfer/reference/tests.md),
+[`confint()`](https://rdrr.io/r/stats/confint.html), and
+[`plot()`](https://rdrr.io/r/graphics/plot.default.html).
 
 ``` r
 

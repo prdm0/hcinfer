@@ -13,7 +13,7 @@ values, method parameters, and model metadata."><meta property="og:image" conten
 
     <a class="navbar-brand me-2" href="../index.html">hcinfer</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.1.1.9000</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -25,10 +25,10 @@ values, method parameters, and model metadata."><meta property="og:image" conten
 <li class="nav-item dropdown">
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
   <ul class="dropdown-menu" aria-labelledby="dropdown-articles"><li><a class="dropdown-item" href="../articles/introduction.html">Introduction to hcinfer</a></li>
+    <li><a class="dropdown-item" href="../articles/hcinfer-hcbeta.html">Using HCbeta</a></li>
     <li><a class="dropdown-item" href="../articles/hcinfer-methodology.html">HC Estimator Methodology</a></li>
     <li><a class="dropdown-item" href="../articles/hcinfer-hcbeta-algorithm.html">The HCbeta algorithm and its consistency</a></li>
     <li><a class="dropdown-item" href="../articles/hcinfer-comparison.html">Comparing HC Estimators</a></li>
-    <li><a class="dropdown-item" href="../articles/hcinfer-hcbeta.html">Using HCbeta</a></li>
     <li><a class="dropdown-item" href="../articles/hcinfer-bootstrap.html">Pairs bootstrap inference with hcinfer</a></li>
   </ul></li>
 <li class="nav-item"><a class="nav-link" href="../news/index.html">Changelog</a></li>
@@ -98,14 +98,24 @@ method-specific arguments.</p></li>
 </ul><p>For <code>"hc5"</code> and <code>"hc5m"</code>, <code>k</code>, <code>k1</code>, <code>k2</code>, and <code>k3</code> must be nonnegative,
 while <code>gamma1</code> and <code>gamma2</code> must be positive. For <code>"hcbeta"</code>, <code>c1</code> must be
 nonnegative, <code>c2</code> must be positive, and <code>lower</code> and <code>upper</code> must lie in
-<code>(0, 1)</code> with <code>lower &lt; upper</code>. The HCbeta truncation is
-\(w_t = max(lower, min(1 - h_t, upper))\).
-Both <code>a_max</code> and <code>b_max</code> must be finite and lie in <code>[50, 25000]</code>; they cap
-the shrunk Beta shape parameters \(\tilde a\) and \(\tilde b\) and
-default to 10000. The two caps can be set independently through <code>...</code> for
-sensitivity analysis. HCbeta remains defined when \(h_t = 1\) because it
-truncates \(1 - h_t\) before evaluating the Beta CDF. In contrast, HC2
-through HC5m require a strictly positive leverage complement.</p>
+<code>(0, 1)</code> with <code>lower &lt; upper</code>. The HCbeta leverage-complement truncation is
+\(w_t = max(lower, min(1 - h_t, upper))\).</p>
+<p>After shrinkage with \(\zeta = n / (n + 50)\), the Beta shape parameters
+are clamped as
+$$\tilde a =
+\min\{\max\{(1 - \zeta) + \zeta\hat a, \epsilon\}, A_{\max}\},$$
+$$\tilde b =
+\min\{\max\{(1 - \zeta) + \zeta\hat b, \epsilon\}, B_{\max}\}.$$
+The value \(\epsilon = 0.01\) is fixed, applied after shrinkage and before
+the caps, and is not a method argument. It is distinct from <code>lower</code>, which
+truncates \(w_t\); changing <code>lower</code> does not change \(\epsilon\).</p>
+<p>Both <code>a_max</code> and <code>b_max</code> must be finite and lie in <code>[50, 25000]</code>; they
+default to 10000 and can be set independently through <code>...</code> for sensitivity
+analysis. When the variance of the truncated complements is numerically
+degenerate, the adjusted shapes are set directly to their respective caps.
+HCbeta remains defined when \(h_t = 1\) because it truncates
+\(1 - h_t\) before evaluating the Beta CDF. In contrast, HC2 through HC5m
+require a strictly positive leverage complement.</p>
     </div>
     <div class="section level2">
     <h2 id="references">References<a class="anchor" aria-label="anchor" href="#references"></a></h2>

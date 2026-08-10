@@ -69,12 +69,12 @@ Crime2009[Crime2009$state == "Alabama", ]
 #>   <chr>     <dbl>  <dbl>   <dbl>   <dbl>  <dbl> <dbl> <dbl>
 #> 1 Alabama    460.    7.1    82.1    17.5     29    70  48.6
 
-fit <- lm(violent ~ poverty + single, data = Crime2009)
+fit <- lm(murder ~ hs_grad + poverty + single, data = Crime2009)
 hcinfer(fit, type = "hcbeta")
 #> 
 #> ── 🔎 HCbeta robust inference ──────────────────────────────────────────────────
-#> 📐 Model: `violent ~ poverty + single`
-#> Observations: 51 | Parameters: 3
+#> 📐 Model: `murder ~ hs_grad + poverty + single`
+#> Observations: 51 | Parameters: 4
 #> 🥪 Robust covariance: HCbeta
 #> Confidence level: 95.0% | Normal critical value: 1.9600
 #> 💡 Use `summary()` for p-values, test results, confidence intervals, and

@@ -26,7 +26,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">hcinfer</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.1.1.9000</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -40,10 +40,10 @@
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
   <ul class="dropdown-menu" aria-labelledby="dropdown-articles">
 <li><a class="dropdown-item" href="../articles/introduction.html">Introduction to hcinfer</a></li>
+    <li><a class="dropdown-item" href="../articles/hcinfer-hcbeta.html">Using HCbeta</a></li>
     <li><a class="dropdown-item" href="../articles/hcinfer-methodology.html">HC Estimator Methodology</a></li>
     <li><a class="dropdown-item" href="../articles/hcinfer-hcbeta-algorithm.html">The HCbeta algorithm and its consistency</a></li>
     <li><a class="dropdown-item" href="../articles/hcinfer-comparison.html">Comparing HC Estimators</a></li>
-    <li><a class="dropdown-item" href="../articles/hcinfer-hcbeta.html">Using HCbeta</a></li>
     <li><a class="dropdown-item" href="../articles/hcinfer-bootstrap.html">Pairs bootstrap inference with hcinfer</a></li>
   </ul>
 </li>
@@ -85,24 +85,24 @@ power of the leverage complement <span class="math inline">u_t = 1 -
 h_t</span>. Because <span class="math inline">u_t \in [0, 1]</span>, it
 can be read as the value at <span class="math inline">1 - h_t</span> of
 the cumulative distribution function of a Uniform<span class="math inline">(0, 1)</span> random variable. HCbeta keeps this
-reading but replaces the uniform cdf with a Beta cdf <span class="math inline">F_B(w_t; \tilde a, \tilde b)</span> evaluated at a
+reading but replaces the uniform cdf with a Beta cdf evaluated at a
 truncated complement <span class="math inline">w_t</span>. The two shape
 parameters give the correction curve an extra degree of flexibility, so
 the adjustment can adapt to the observed leverage configuration instead
 of following a fixed exponent.</p>
-<p>This flexibility is what tempers the overshooting that HC3, HC4, and
+<p>This flexibility aims to temper the overshooting that HC3, HC4, and
 HC4m can display under strong leverage, where small values of <span class="math inline">1 - h_t</span> raised to a fixed negative exponent
 produce very large factors. HCbeta calibrates the Beta shape parameters
 to the first two sample moments of <span class="math inline">w_t</span>,
 so the resulting factor reflects the actual spread of the leverages
 rather than a worst case exponent.</p>
-<p>It is important to state what HCbeta does not assume. The Beta cdf is
-a calibration device, not a claim that the leverage complements follow a
-Beta distribution. The shape parameters are matched to the sample mean
-and variance of the truncated complements, and the construction would be
-unchanged if the leverages arose from another mechanism. The Beta family
-is used because its support is <span class="math inline">[0, 1]</span>
-and its two parameters are enough to bend the uniform baseline in either
+<p>HCbeta does not assume that the leverage complements follow a Beta
+distribution. The Beta cdf is a calibration device whose shape
+parameters are matched to the sample mean and variance of the truncated
+complements, and the construction would be unchanged if the leverages
+arose from another mechanism. The Beta family is used because its
+support is <span class="math inline">[0, 1]</span> and its two
+parameters are enough to bend the uniform baseline in either
 direction.</p>
 </div>
 <div class="section level2">
@@ -124,16 +124,19 @@ variance of the truncated complements, <span class="math inline">\hat\mu
 (n - 1)^{-1}\sum_{t=1}^{n}(w_t - \hat\mu)^2</span>, and map them to Beta
 shape parameters through the mean precision parameterization, <span class="math inline">\hat\phi = \hat\mu(1 - \hat\mu)/s_w^2 - 1</span>,
 <span class="math inline">\hat a = \hat\mu\hat\phi</span>, and <span class="math inline">\hat b = (1 - \hat\mu)\hat\phi</span>.</p></li>
-<li><p><strong>Shrinkage with caps.</strong> Shrink the estimates toward
-the uniform case <span class="math inline">a = b = 1</span> and bound
-them from above, <span class="math inline">\zeta = n/(n + 50)</span>,
-<span class="math inline">\tilde a = \min\{(1 - \zeta) + \zeta\hat a,\,
-A_{\max}\}</span>, and <span class="math inline">\tilde b = \min\{(1 -
-\zeta) + \zeta\hat b,\, B_{\max}\}</span>, with defaults <span class="math inline">A_{\max} = B_{\max} = 10000</span> set through the
-arguments <code>a_max</code> and <code>b_max</code>, each of which
-accepts finite values in the inclusive range <code>[50, 25000]</code>.
-Shrinkage stabilizes the small sample estimates, and the caps keep the
-shape parameters in a bounded range.</p></li>
+<li><p><strong>Shrinkage with a fixed floor and caps.</strong> Shrink
+the estimates toward the uniform case <span class="math inline">a = b =
+1</span> using <span class="math inline">\zeta = n/(n + 50)</span>, then
+set <span class="math inline">\tilde a = \min\{\max\{(1 - \zeta) +
+\zeta\hat a,\, \varepsilon\},\,
+A_{\max}\}</span> and <span class="math inline">\tilde b =
+\min\{\max\{(1 - \zeta) + \zeta\hat b,\, \varepsilon\},\,
+B_{\max}\}</span>. The floor is fixed at <span class="math inline">\varepsilon = 0.01</span>, while the defaults <span class="math inline">A_{\max} = B_{\max} = 10000</span> are set through
+<code>a_max</code> and <code>b_max</code>, each of which accepts finite
+values in the inclusive range <code>[50, 25000]</code>. The floor is
+applied after shrinkage and before the caps. It is distinct from
+<code>lower</code>, which truncates <span class="math inline">w_t</span>, and it is not a method
+argument.</p></li>
 <li><p><strong>Adjustment factor and sandwich.</strong> Combine the Beta
 cdf with a decaying exponent, <span class="math inline">g_t = \frac{n}{n
 - p}\left\{1/F_B(w_t; \tilde a, \tilde b)\right\}^{c_1/n^{c_2}}</span>,
@@ -164,12 +167,12 @@ and does not introduce a new theorem.</p>
 to <span class="math inline">[0.01, 0.99]</span> and the bounds on the
 shape parameters place <span class="math inline">\tilde a</span> and
 <span class="math inline">\tilde b</span> in a compact interval <span class="math inline">[\varepsilon, \max(A_{\max}, B_{\max})]</span> with
-<span class="math inline">\varepsilon &gt; 0</span>. On that compact set
-the Beta cdf evaluated at <span class="math inline">w_t</span> is
-bounded away from zero, so that <span class="math inline">\inf_t
-F_B(w_t; \tilde a, \tilde b) \geq \delta</span> for some <span class="math inline">\delta &gt; 0</span>, and therefore <span class="math inline">\sup_t |\log F_B(w_t; \tilde a, \tilde b)| \leq
--\log\delta &lt; \infty</span>. The caps are what make the parameter
-space compact, which is what keeps the log adjustments uniformly
+the fixed value <span class="math inline">\varepsilon = 0.01</span>. On
+that compact set, the Beta cdf evaluated at <span class="math inline">w_t</span> is bounded away from zero, so that <span class="math inline">\inf_t F_B(w_t; \tilde a, \tilde b) \geq
+\delta</span> for some <span class="math inline">\delta &gt; 0</span>,
+and therefore <span class="math inline">\sup_t |\log F_B(w_t; \tilde a,
+\tilde b)| \leq -\log\delta &lt; \infty</span>. The caps make the
+parameter space compact, keeping the log adjustments uniformly
 bounded.</p>
 <p>The caps are essential when the leverage variance vanishes. Under the
 standard fixed-design condition <span class="math inline">\max_t h_t \to
@@ -183,28 +186,26 @@ because the exponent <span class="math inline">c_1/n^{c_2}</span> tends
 to zero while it multiplies the bounded log cdf. It follows that <span class="math inline">\widehat\Omega_\beta</span> and the HC0 residual
 matrix <span class="math inline">\operatorname{diag}(\hat e_t^2)</span>
 are asymptotically equivalent, so <span class="math inline">\widehat\Psi_{HC\beta}</span> and <span class="math inline">\widehat\Psi_{HC0}</span> share the same limit.
-HCbeta therefore inherits the consistency of HC0, while the finite
-sample factor <span class="math inline">g_t</span> supplies the leverage
-correction that motivates the method without the overshooting that fixed
-exponent methods can produce under strong leverage.</p>
+HCbeta is asymptotically equivalent to HC0, so it inherits the same
+consistency, while the finite sample factor <span class="math inline">g_t</span> aims to temper the overshooting that
+fixed exponent methods can produce under strong leverage.</p>
 </div>
 <div class="section level2">
 <h2 id="numerical-implementation">Numerical implementation<a class="anchor" aria-label="anchor" href="#numerical-implementation"></a>
 </h2>
-<p>Three safeguards keep the computation of <span class="math inline">g_t</span> numerically stable. First, the Beta cdf
-is evaluated on the log scale with
+<p>Four safeguards keep the computation of <span class="math inline">g_t</span> numerically stable. First, the
+post-shrinkage shape parameters are clamped to the fixed floor 0.01 and
+their respective caps. Second, the moment branch is used only when
+<code>is.finite(s2_w) &amp;&amp; s2_w &gt; .Machine$double.eps</code>;
+otherwise, the shapes are set directly to their caps. Third, the Beta
+cdf is evaluated with
 <code>pbeta(w, a_tilde, b_tilde, log.p = TRUE)</code>, which returns
-<span class="math inline">\log F_B</span> directly and avoids the <span class="math inline">\log(0) = -\infty</span> that a naive
-<code>log(pbeta(...))</code> would produce when the cdf underflows for
-extreme shape parameters. Second, the exponent <span class="math inline">-(c_1/n^{c_2})\log F_B(w_t; \tilde a, \tilde
-b)</span> is capped at 700 before exponentiation, so that
-<code><a href="https://rdrr.io/r/base/Log.html" class="external-link">exp()</a></code> cannot overflow to infinity. Third, the degrees of
-freedom factor <span class="math inline">n/(n - p)</span> is computed
-once and reused.</p>
-<p>The published applications are unaffected by the caps because the
-default <span class="math inline">A_{\max} = B_{\max} = 10000</span> is
-far from binding on those designs. The quadratic public schools model
-illustrates this.</p>
+<span class="math inline">\log F_B</span> directly and avoids the <span class="math inline">\log(0) = -\infty</span> produced when a cdf
+underflows. Finally, the exponent <span class="math inline">-(c_1/n^{c_2})\log F_B(w_t; \tilde a, \tilde
+b)</span> is capped at 700 before exponentiation so that
+<code><a href="https://rdrr.io/r/base/Log.html" class="external-link">exp()</a></code> cannot overflow to infinity.</p>
+<p>In the public-schools model shown here, the default caps <span class="math inline">A_{\max} = B_{\max} = 10000</span> are far from
+binding.</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://prdm0.github.io/hcinfer/">hcinfer</a></span><span class="op">)</span></span>
 <span></span>
@@ -233,7 +234,8 @@ illustrates this.</p>
 <p>The adjusted shape parameters are well below the caps, and the
 largest adjustment factor matches the value reported for this model. By
 construction each factor is at least the HC1 scale <span class="math inline">n/(n - p)</span>, because the capped exponent is
-nonnegative and the leading factor is exactly <span class="math inline">n/(n - p)</span>.</p>
+nonnegative and the leading factor is exactly <span class="math inline">n/(n - p)</span>. The code below verifies this
+lower-bound property.</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">n</span> <span class="op">&lt;-</span> <span class="va">cov</span><span class="op">$</span><span class="va">n</span></span>
 <span><span class="va">p</span> <span class="op">&lt;-</span> <span class="va">cov</span><span class="op">$</span><span class="va">p</span></span>

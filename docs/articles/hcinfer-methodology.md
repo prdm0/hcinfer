@@ -147,27 +147,7 @@ observation.
 ## The classical HC family
 
 The supported classical estimators can be described by their adjustment
-factors g_t. Let u_t = 1 - h_t, \bar h = p/n, and h\_{max} = \max(h_1,
-\ldots, h_n).
-
-``` r
-
-library(hcinfer)
-
-hc_methods()
-#> # A tibble: 9 × 4
-#>   type   label  description                                    default_arguments
-#>   <chr>  <chr>  <chr>                                          <chr>            
-#> 1 hc0    HC0    White heteroskedasticity-consistent estimator. none             
-#> 2 hc1    HC1    HC0 with degrees-of-freedom scaling.           none             
-#> 3 hc2    HC2    Leverage-adjusted estimator with exponent 1.   none             
-#> 4 hc3    HC3    Leverage-adjusted estimator with exponent 2.   none             
-#> 5 hc4    HC4    Adaptive leverage correction by Cribari-Neto.  none             
-#> 6 hc4m   HC4m   Modified HC4 correction by Cribari-Neto and d… none             
-#> 7 hc5    HC5    High-leverage correction by Cribari-Neto, Sou… k = 0.7          
-#> 8 hc5m   HC5m   Modified HC5 correction by Li, Zhang, Zhang, … k = 0.7, k1 = 1,…
-#> 9 hcbeta HCbeta Beta-distribution leverage correction.         c1 = 7, c2 = 0.7…
-```
+factors g_t. Let u_t = 1 - h_t and h\_{max} = \max(h_1, \ldots, h_n).
 
 The main formulas are:
 
@@ -222,6 +202,8 @@ package.
 
 ``` r
 
+library(hcinfer)
+
 schools <- PublicSchools
 schools$income_scaled <- schools$income / 10000
 schools$income_scaled_sq <- schools$income_scaled^2
@@ -229,7 +211,7 @@ schools$income_scaled_sq <- schools$income_scaled^2
 fit <- lm(expenditure ~ income_scaled + income_scaled_sq, data = schools)
 methods <- c("hc3", "hc4", "hc4m", "hcbeta")
 
-weight_data <- purrr::map(methods, function(method) {
+weight_data <- lapply(methods, function(method) {
   cov <- vcov_hc(fit, type = method)
 
   data.frame(
@@ -290,79 +272,22 @@ from the uniform baseline.
 
 ## HCbeta construction
 
-HCbeta uses the sandwich form with
+The leverage complement 1 - h_t is first truncated to w_t =
+\max\\\text{lower}, \min(1 - h_t, \text{upper})\\, where the default
+truncation interval is \[0.01, 0.99\]. Beta shape parameters \tilde a
+and \tilde b are then calibrated from the truncated complements by the
+method of moments, shrunk toward the uniform case a = b = 1, and clamped
+to a compact interval. With these ingredients in place, the HCbeta
+adjustment factor is
 
 g_t = \frac{n}{n - p} \left\\\frac{1}{F_B(w_t; \tilde a, \tilde
 b)}\right\\^{c_1/n^{c_2}}, \qquad c_1 = 7, \qquad c_2 = 0.75.
 
-The construction has four steps.
-
-### Step 1: truncate leverage complements
-
-Define
-
-w_t = \max\\0.01, \min(1 - h_t, 0.99)\\.
-
-The lower bound prevents numerical explosion when h_t is close to 1. The
-upper bound keeps the values away from the boundary when leverages
-become small in large samples. In `hcinfer`, these limits can be changed
-with `lower` and `upper`.
-
-### Step 2: estimate Beta shape parameters by moments
-
-The method of moments estimates the mean and variance of the truncated
-complements:
-
-\hat\mu = \frac{1}{n}\sum\_{t=1}^{n} w_t, \qquad s_w^2 = \frac{1}{n -
-1}\sum\_{t=1}^{n}(w_t - \hat\mu)^2.
-
-In the mean precision parameterization,
-
-\hat\phi = \frac{\hat\mu(1 - \hat\mu)}{s_w^2} - 1, \qquad \hat a =
-\hat\mu \hat\phi, \qquad \hat b = (1 - \hat\mu) \hat\phi.
-
-This is an estimating device, not a distributional assumption about the
-leverages.
-
-### Step 3: shrink toward the uniform cdf
-
-Small samples can make moment estimates unstable. HCbeta shrinks the
-estimated shape parameters toward the uniform case a = b = 1:
-
-\zeta = \frac{n}{n + 50}, \qquad \tilde a = \min\\(1 - \zeta) + \zeta
-\hat a,\\ A\_{\max}\\, \qquad \tilde b = \min\\(1 - \zeta) + \zeta \hat
-b,\\ B\_{\max}\\.
-
-For smaller n, \zeta is smaller and the method stays closer to the
-uniform baseline. As n grows, the estimated shape parameters receive
-more weight.
-
-The caps A\_{\max} = B\_{\max} = 10000 correspond to the arguments
-`a_max` and `b_max`, each with the inclusive range `[50, 25000]`. They
-keep the shape parameters bounded and act only as a numerical safeguard.
-Because the truncated w_t together with bounded \tilde a and \tilde b
-keep \log F_B(w_t; \tilde a, \tilde b) uniformly bounded, the exponent
-c_1/n^{c_2} alone governs the asymptotic behavior, and g_t \to 1
-regardless of the cap.
-
-When every truncated complement is identical, s_w^2 = 0 and the raw
-method-of-moments shape estimates diverge. In that degenerate
-low-leverage regime, `hcinfer` sets \tilde a = A\_{\max} and \tilde b =
-B\_{\max} rather than aborting. The Beta cdf at the common upper
-truncation is then numerically one under the default caps, so the HCbeta
-factor reduces to the HC1 scale n/(n - p) and remains well-defined as it
-converges to one.
-
-### Step 4: use a decaying exponent
-
-The exponent c_1/n^{c_2} decreases with n. With the defaults, it is
-7/n^{0.75}. This keeps the correction active in samples where leverage
-imbalance is more consequential and makes the adjustment vanish
-asymptotically. As n \to \infty with fixed p, g_t \to 1 and HCbeta
-recovers the HC0 structure.
-
-When \tilde a = \tilde b = 1 and c_1 = 0, HCbeta reduces exactly to HC1.
-This identity is a useful implementation check.
+The exponent c_1/n^{c_2} decays with n, so the correction is most active
+in moderate samples and vanishes asymptotically. The full construction,
+including the moment equations, shrinkage, fixed floor, and caps, is
+given in
+[`vignette("hcinfer-hcbeta-algorithm", package = "hcinfer")`](https://prdm0.github.io/hcinfer/articles/hcinfer-hcbeta-algorithm.md).
 
 ## Normal Wald inference
 
@@ -395,17 +320,8 @@ HCbeta is the default estimator in
 [`hcinfer()`](https://prdm0.github.io/hcinfer/reference/hcinfer.md). It
 is designed to keep the leverage correction active without letting the
 largest adjustment factors grow too quickly in high leverage designs.
-
-For applied work, a useful workflow is:
-
-1.  Fit the OLS model with [`lm()`](https://rdrr.io/r/stats/lm.html).
-2.  Run `hcinfer(fit)` for the default HCbeta analysis.
-3.  Inspect `summary(result)` and the coefficient table from
-    `tests(result)`.
-4.  Use `plot(vcov_hc(fit))` to see leverage values and adjustment
-    factors.
-5.  Compare HCbeta with one or more classical estimators when
-    conclusions depend on the reported standard errors.
+For a step-by-step usage workflow, see
+[`vignette("introduction", package = "hcinfer")`](https://prdm0.github.io/hcinfer/articles/introduction.md).
 
 Large leverage is not, by itself, a reason to remove an observation. It
 indicates that squared residuals at that design point are compressed by
@@ -420,14 +336,9 @@ leverage. The leverages can be obtained from a QR decomposition of the
 model matrix by summing the squared entries in each row of the
 orthonormal factor.
 
-HCbeta uses [`stats::pbeta()`](https://rdrr.io/r/stats/Beta.html) for
-the Beta cdf, and the incomplete beta function is not reimplemented
-inside the package. The cdf is evaluated on the log scale with
-`pbeta(w, a_tilde, b_tilde, log.p = TRUE)`, and the resulting exponent
-is capped at 700 before exponentiation. This prevents both \log(0) =
--\infty when the cdf underflows and floating-point overflow in
-[`exp()`](https://rdrr.io/r/base/Log.html) for extreme shape parameters.
-The degrees of freedom factor n/(n - p) is computed once.
+For details on the numerical implementation of the Beta cdf evaluation
+and exponent capping, see the numerical section of
+[`vignette("hcinfer-hcbeta-algorithm", package = "hcinfer")`](https://prdm0.github.io/hcinfer/articles/hcinfer-hcbeta-algorithm.md).
 
 Method-specific constants are passed through `...` in
 [`vcov_hc()`](https://prdm0.github.io/hcinfer/reference/vcov_hc.md) and
