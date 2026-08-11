@@ -16,9 +16,11 @@ release](https://img.shields.io/github/v/release/prdm0/hcinfer?label=release)](h
 experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://lifecycle.r-lib.org/articles/stages.html#experimental)
 <!-- badges: end -->
 
-`hcinfer` computes heteroskedasticity-consistent covariance estimators
-and normal Wald inference for ordinary least squares models. The
-currently implemented covariance matrix estimators are listed below.
+`hcinfer` provides heteroskedasticity-consistent covariance estimators
+and normal Wald inference for ordinary least squares models, together
+with feasible generalized least squares under multiplicative
+heteroskedasticity for linear regressions. The currently implemented
+covariance matrix estimators are listed below.
 
 ## Implemented estimators
 
@@ -112,6 +114,30 @@ plot(cov_hcbeta)
 
 <img src="man/figures/README-readme-diagnostics-plot-1.png" alt="HCbeta adjustment factors plotted against leverage values for the public-schools regression." width="672" />
 
+## Feasible GLS under multiplicative heteroskedasticity
+
+`gls_mult()` fits a linear model by feasible generalized least squares
+when the conditional variance is modelled as an exponential function of
+dispersion regressors. Maximum likelihood is the default, and Harvey's
+two-step estimator is also available.
+
+``` r
+fit <- lm(expenditure ~ income, data = PublicSchools)
+
+# Maximum likelihood FGLS (default); AIC()/BIC() work via logLik()
+gls_fit <- gls_mult(fit)
+coef(gls_fit)                       # mean coefficients
+coef(gls_fit, model = "dispersion") # log-variance coefficients
+AIC(gls_fit); BIC(gls_fit)
+
+# Harvey two-step estimator
+gls_mult(fit, method = "two_step")
+```
+
+Maximum likelihood fits support `logLik()`, `AIC()`, and `BIC()` (with
+`df = p + q`), whereas the two-step fit does not, because its likelihood
+is not maximized.
+
 ## Learn more
 
 The package documentation is organized as a progressive learning path.
@@ -122,9 +148,11 @@ sensitivity controls.
 `vignette("hcinfer-methodology", package = "hcinfer")` presents the
 statistical methodology behind all HC estimators and the HCbeta
 motivation. `vignette("hcinfer-comparison", package = "hcinfer")`
-compares HCbeta with classical HC estimators on real data. Finally,
+compares HCbeta with classical HC estimators on real data.
 `vignette("hcinfer-bootstrap", package = "hcinfer")` describes the
 bootstrap companion for resampling-based inference.
+Finally, `vignette("hcinfer-gls", package = "hcinfer")` explains feasible
+generalized least squares under multiplicative heteroskedasticity.
 
 ## References
 

@@ -4,6 +4,7 @@
 <url><loc>https://prdm0.github.io/hcinfer/LICENSE.html</loc></url>
 <url><loc>https://prdm0.github.io/hcinfer/articles/hcinfer-bootstrap.html</loc></url>
 <url><loc>https://prdm0.github.io/hcinfer/articles/hcinfer-comparison.html</loc></url>
+<url><loc>https://prdm0.github.io/hcinfer/articles/hcinfer-gls.html</loc></url>
 <url><loc>https://prdm0.github.io/hcinfer/articles/hcinfer-hcbeta-algorithm.html</loc></url>
 <url><loc>https://prdm0.github.io/hcinfer/articles/hcinfer-hcbeta.html</loc></url>
 <url><loc>https://prdm0.github.io/hcinfer/articles/hcinfer-methodology.html</loc></url>
@@ -19,6 +20,8 @@
 <url><loc>https://prdm0.github.io/hcinfer/reference/boot_pairs.html</loc></url>
 <url><loc>https://prdm0.github.io/hcinfer/reference/coef.hcinfer.html</loc></url>
 <url><loc>https://prdm0.github.io/hcinfer/reference/confint.hcinfer.html</loc></url>
+<url><loc>https://prdm0.github.io/hcinfer/reference/gls_mult-methods.html</loc></url>
+<url><loc>https://prdm0.github.io/hcinfer/reference/gls_mult.html</loc></url>
 <url><loc>https://prdm0.github.io/hcinfer/reference/hc_methods.html</loc></url>
 <url><loc>https://prdm0.github.io/hcinfer/reference/hcinfer-package.html</loc></url>
 <url><loc>https://prdm0.github.io/hcinfer/reference/hcinfer.html</loc></url>

@@ -1,14 +1,15 @@
-pandoc: 3.9.0.2
-pkgdown: 2.2.0
+pandoc: 3.10.1
+pkgdown: 2.2.1
 pkgdown_sha: ~
 articles:
   hcinfer-bootstrap: hcinfer-bootstrap.html
   hcinfer-comparison: hcinfer-comparison.html
+  hcinfer-gls: hcinfer-gls.html
   hcinfer-hcbeta-algorithm: hcinfer-hcbeta-algorithm.html
   hcinfer-hcbeta: hcinfer-hcbeta.html
   hcinfer-methodology: hcinfer-methodology.html
   introduction: introduction.html
-last_built: 2026-08-05T13:03Z
+last_built: 2026-08-11T14:33Z
 urls:
   reference: https://prdm0.github.io/hcinfer/reference
   article: https://prdm0.github.io/hcinfer/articles

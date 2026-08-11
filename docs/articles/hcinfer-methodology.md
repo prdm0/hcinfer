@@ -97,42 +97,7 @@ compressed.
 
 The figure below shows the approximation as a function of h_t.
 
-``` r
-
-compression <- data.frame(
-  leverage = seq(0, 0.9, length.out = 100)
-)
-compression$fraction <- 1 - compression$leverage
-
-high_leverage_point <- data.frame(
-  leverage = 0.65,
-  fraction = 0.35
-)
-
-ggplot2::ggplot(compression, ggplot2::aes(x = leverage, y = fraction)) +
-  ggplot2::geom_line(color = "#2c5f8a", linewidth = 1) +
-  ggplot2::geom_point(
-    data = high_leverage_point,
-    color = "#c0392b",
-    size = 2.6
-  ) +
-  ggplot2::annotate(
-    "text",
-    x = 0.65,
-    y = 0.42,
-    label = "h[t] == 0.65",
-    parse = TRUE,
-    hjust = 0.5,
-    color = "#7f1d1d"
-  ) +
-  ggplot2::scale_x_continuous(limits = c(0, 0.9)) +
-  ggplot2::scale_y_continuous(limits = c(0, 1)) +
-  ggplot2::labs(
-    x = expression(h[t]),
-    y = expression("Approximate fraction captured, " * 1 - h[t])
-  ) +
-  ggplot2::theme_minimal(base_size = 12)
-```
+`compression`` ``<-`` `[`data.frame`](https://rdrr.io/r/base/data.frame.html)`(`` `` leverage ``=`` `[`seq`](https://rdrr.io/r/base/seq.html)`(``0``, ``0.9``, length.out ``=`` ``100``)`` ``)`` ``compression``$``fraction`` ``<-`` ``1`` ``-`` ``compression``$``leverage`` `` ``high_leverage_point`` ``<-`` `[`data.frame`](https://rdrr.io/r/base/data.frame.html)`(`` `` leverage ``=`` ``0.65``,`` `` fraction ``=`` ``0.35`` ``)`` `` ``ggplot2``::`[`ggplot`](https://ggplot2.tidyverse.org/reference/ggplot.html)`(``compression``, ``ggplot2``::`[`aes`](https://ggplot2.tidyverse.org/reference/aes.html)`(``x ``=`` ``leverage``, y ``=`` ``fraction``)``)`` ``+`` `` ``ggplot2``::`[`geom_line`](https://ggplot2.tidyverse.org/reference/geom_path.html)`(``color ``=`` ``"#2c5f8a"``, linewidth ``=`` ``1``)`` ``+`` `` ``ggplot2``::`[`geom_point`](https://ggplot2.tidyverse.org/reference/geom_point.html)`(`` `` data ``=`` ``high_leverage_point``,`` `` color ``=`` ``"#c0392b"``,`` `` size ``=`` ``2.6`` `` ``)`` ``+`` `` ``ggplot2``::`[`annotate`](https://ggplot2.tidyverse.org/reference/annotate.html)`(`` `` ``"text"``,`` `` x ``=`` ``0.65``,`` `` y ``=`` ``0.42``,`` `` label ``=`` ``"h[t] == 0.65"``,`` `` parse ``=`` ``TRUE``,`` `` hjust ``=`` ``0.5``,`` `` color ``=`` ``"#7f1d1d"`` `` ``)`` ``+`` `` ``ggplot2``::`[`scale_x_continuous`](https://ggplot2.tidyverse.org/reference/scale_continuous.html)`(``limits ``=`` `[`c`](https://rdrr.io/r/base/c.html)`(``0``, ``0.9``)``)`` ``+`` `` ``ggplot2``::`[`scale_y_continuous`](https://ggplot2.tidyverse.org/reference/scale_continuous.html)`(``limits ``=`` `[`c`](https://rdrr.io/r/base/c.html)`(``0``, ``1``)``)`` ``+`` `` ``ggplot2``::`[`labs`](https://ggplot2.tidyverse.org/reference/labs.html)`(`` `` x ``=`` `[`expression`](https://rdrr.io/r/base/expression.html)`(``h``[``t``]``)``,`` `` y ``=`` `[`expression`](https://rdrr.io/r/base/expression.html)`(``"Approximate fraction captured, "`` ``*`` ``1`` ``-`` ``h``[``t``]``)`` `` ``)`` ``+`` `` ``ggplot2``::`[`theme_minimal`](https://ggplot2.tidyverse.org/reference/ggtheme.html)`(``base_size ``=`` ``12``)`
 
 ![Line plot showing that the fraction of local variance captured by the
 squared OLS residual decreases from 1 to 0 as leverage increases from 0
@@ -200,45 +165,7 @@ from HC0.
 The pattern is visible in the public schools example used throughout the
 package.
 
-``` r
-
-library(hcinfer)
-
-schools <- PublicSchools
-schools$income_scaled <- schools$income / 10000
-schools$income_scaled_sq <- schools$income_scaled^2
-
-fit <- lm(expenditure ~ income_scaled + income_scaled_sq, data = schools)
-methods <- c("hc3", "hc4", "hc4m", "hcbeta")
-
-weight_data <- lapply(methods, function(method) {
-  cov <- vcov_hc(fit, type = method)
-
-  data.frame(
-    method = cov$label,
-    leverage = unname(cov$leverage),
-    weight = unname(cov$weights)
-  )
-})
-weight_data <- do.call(rbind, weight_data)
-weight_data$method <- factor(
-  weight_data$method,
-  levels = c("HC3", "HC4", "HC4m", "HCbeta")
-)
-
-ggplot2::ggplot(weight_data, ggplot2::aes(x = leverage, y = weight)) +
-  ggplot2::geom_point(color = "#2c5f8a", alpha = 0.85, size = 1.8) +
-  ggplot2::facet_wrap(~method, scales = "free_y", ncol = 2) +
-  ggplot2::labs(
-    x = expression(h[t]),
-    y = expression(g[t])
-  ) +
-  ggplot2::theme_minimal(base_size = 12) +
-  ggplot2::theme(
-    panel.grid.minor = ggplot2::element_blank(),
-    strip.text = ggplot2::element_text(face = "bold")
-  )
-```
+[`library`](https://rdrr.io/r/base/library.html)`(`[`hcinfer`](https://prdm0.github.io/hcinfer/)`)`` `` ``schools`` ``<-`` ``PublicSchools`` ``schools``$``income_scaled`` ``<-`` ``schools``$``income`` ``/`` ``10000`` ``schools``$``income_scaled_sq`` ``<-`` ``schools``$``income_scaled``^``2`` `` ``fit`` ``<-`` `[`lm`](https://rdrr.io/r/stats/lm.html)`(``expenditure`` ``~`` ``income_scaled`` ``+`` ``income_scaled_sq``, data ``=`` ``schools``)`` ``methods`` ``<-`` `[`c`](https://rdrr.io/r/base/c.html)`(``"hc3"``, ``"hc4"``, ``"hc4m"``, ``"hcbeta"``)`` `` ``weight_data`` ``<-`` `[`lapply`](https://rdrr.io/r/base/lapply.html)`(``methods``, ``function``(``method``)`` ``{`` `` ``cov`` ``<-`` `[`vcov_hc`](https://prdm0.github.io/hcinfer/reference/vcov_hc.md)`(``fit``, type ``=`` ``method``)`` `` `` `[`data.frame`](https://rdrr.io/r/base/data.frame.html)`(`` `` method ``=`` ``cov``$``label``,`` `` leverage ``=`` `[`unname`](https://rdrr.io/r/base/unname.html)`(``cov``$``leverage``)``,`` `` weight ``=`` `[`unname`](https://rdrr.io/r/base/unname.html)`(``cov``$``weights``)`` `` ``)`` ``}``)`` ``weight_data`` ``<-`` `[`do.call`](https://rdrr.io/r/base/do.call.html)`(``rbind``, ``weight_data``)`` ``weight_data``$``method`` ``<-`` `[`factor`](https://rdrr.io/r/base/factor.html)`(`` `` ``weight_data``$``method``,`` `` levels ``=`` `[`c`](https://rdrr.io/r/base/c.html)`(``"HC3"``, ``"HC4"``, ``"HC4m"``, ``"HCbeta"``)`` ``)`` `` ``ggplot2``::`[`ggplot`](https://ggplot2.tidyverse.org/reference/ggplot.html)`(``weight_data``, ``ggplot2``::`[`aes`](https://ggplot2.tidyverse.org/reference/aes.html)`(``x ``=`` ``leverage``, y ``=`` ``weight``)``)`` ``+`` `` ``ggplot2``::`[`geom_point`](https://ggplot2.tidyverse.org/reference/geom_point.html)`(``color ``=`` ``"#2c5f8a"``, alpha ``=`` ``0.85``, size ``=`` ``1.8``)`` ``+`` `` ``ggplot2``::`[`facet_wrap`](https://ggplot2.tidyverse.org/reference/facet_wrap.html)`(``~``method``, scales ``=`` ``"free_y"``, ncol ``=`` ``2``)`` ``+`` `` ``ggplot2``::`[`labs`](https://ggplot2.tidyverse.org/reference/labs.html)`(`` `` x ``=`` `[`expression`](https://rdrr.io/r/base/expression.html)`(``h``[``t``]``)``,`` `` y ``=`` `[`expression`](https://rdrr.io/r/base/expression.html)`(``g``[``t``]``)`` `` ``)`` ``+`` `` ``ggplot2``::`[`theme_minimal`](https://ggplot2.tidyverse.org/reference/ggtheme.html)`(``base_size ``=`` ``12``)`` ``+`` `` ``ggplot2``::`[`theme`](https://ggplot2.tidyverse.org/reference/theme.html)`(`` `` panel.grid.minor ``=`` ``ggplot2``::`[`element_blank`](https://ggplot2.tidyverse.org/reference/element.html)`(``)``,`` `` strip.text ``=`` ``ggplot2``::`[`element_text`](https://ggplot2.tidyverse.org/reference/element.html)`(``face ``=`` ``"bold"``)`` `` ``)`
 
 ![Faceted scatterplot comparing HC adjustment factors against leverage
 for HC3, HC4, HC4m, and HCbeta in the public schools

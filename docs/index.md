@@ -1,8 +1,10 @@
 # hcinfer
 
-`hcinfer` computes heteroskedasticity-consistent covariance estimators
-and normal Wald inference for ordinary least squares models. The
-currently implemented covariance matrix estimators are listed below.
+`hcinfer` provides heteroskedasticity-consistent covariance estimators
+and normal Wald inference for ordinary least squares models, together
+with feasible generalized least squares under multiplicative
+heteroskedasticity for linear regressions. The currently implemented
+covariance matrix estimators are listed below.
 
 ## Implemented estimators
 
@@ -25,32 +27,11 @@ and lists the covariance matrix estimators currently implemented in
 
 ## Installation
 
-``` r
-
-# Official CRAN installation of the package
-install.packages("hcinfer")
-
-# r-universe installation
-install.packages('hcinfer', repos = c('https://prdm0.r-universe.dev', 'https://cloud.r-project.org'))
-
-# Development version installation from GitHub
-remotes::install_github("prdm0/hcinfer", force = TRUE)
-```
+`# Official CRAN installation of the package`` `[`install.packages`](https://rdrr.io/r/utils/install.packages.html)`(``"hcinfer"``)`` `` ``# r-universe installation`` `[`install.packages`](https://rdrr.io/r/utils/install.packages.html)`(``'hcinfer'``, repos ``=`` `[`c`](https://rdrr.io/r/base/c.html)`(``'https://prdm0.r-universe.dev'``, ``'https://cloud.r-project.org'``)``)`` `` ``# Development version installation from GitHub`` ``remotes``::`[`install_github`](https://remotes.r-lib.org/reference/install_github.html)`(``"prdm0/hcinfer"``, force ``=`` ``TRUE``)`
 
 ## Basic use
 
-``` r
-
-library(hcinfer)
-
-schools <- PublicSchools
-schools$income_scaled <- schools$income / 10000
-schools$income_scaled_sq <- schools$income_scaled^2
-
-fit <- lm(expenditure ~ income_scaled + income_scaled_sq, data = schools)
-
-result <- hcinfer(fit)
-```
+[`library`](https://rdrr.io/r/base/library.html)`(`[`hcinfer`](https://prdm0.github.io/hcinfer/)`)`` `` ``schools`` ``<-`` ``PublicSchools`` ``schools``$``income_scaled`` ``<-`` ``schools``$``income`` ``/`` ``10000`` ``schools``$``income_scaled_sq`` ``<-`` ``schools``$``income_scaled``^``2`` `` ``fit`` ``<-`` `[`lm`](https://rdrr.io/r/stats/lm.html)`(``expenditure`` ``~`` ``income_scaled`` ``+`` ``income_scaled_sq``, data ``=`` ``schools``)`` `` ``result`` ``<-`` `[`hcinfer`](https://prdm0.github.io/hcinfer/reference/hcinfer.md)`(``fit``)`
 
 The default estimator is HCbeta. Use
 [`tests()`](https://prdm0.github.io/hcinfer/reference/tests.md) and
@@ -61,23 +42,7 @@ HCbeta exposes six tuning controls (`c1`, `c2`, `lower`, `upper`,
 `a_max`, `b_max`); see
 [`vignette("hcinfer-hcbeta", package = "hcinfer")`](https://prdm0.github.io/hcinfer/articles/hcinfer-hcbeta.md).
 
-``` r
-
-tests(result)
-#> # A tibble: 3 × 8
-#>   term             estimate null_value std_error z_value p_value alpha reject
-#>   <chr>               <dbl>      <dbl>     <dbl>   <dbl>   <dbl> <dbl> <lgl> 
-#> 1 (Intercept)          833.          0      851.   0.979   0.328  0.05 FALSE 
-#> 2 income_scaled      -1834.          0     2309.  -0.794   0.427  0.05 FALSE 
-#> 3 income_scaled_sq    1587.          0     1547.   1.03    0.305  0.05 FALSE
-confint(result)
-#> # A tibble: 3 × 4
-#>   term             conf_low conf_high level
-#>   <chr>               <dbl>     <dbl> <dbl>
-#> 1 (Intercept)         -834.     2500.  0.95
-#> 2 income_scaled      -6359.     2691.  0.95
-#> 3 income_scaled_sq   -1446.     4620.  0.95
-```
+[`tests`](https://prdm0.github.io/hcinfer/reference/tests.md)`(``result``)`` ``#> # A tibble: 3 × 8`` ``#> term estimate null_value std_error z_value p_value alpha reject`` ``#> <chr> <dbl> <dbl> <dbl> <dbl> <dbl> <dbl> <lgl> `` ``#> 1 (Intercept) 833. 0 851. 0.979 0.328 0.05 FALSE `` ``#> 2 income_scaled -1834. 0 2309. -0.794 0.427 0.05 FALSE `` ``#> 3 income_scaled_sq 1587. 0 1547. 1.03 0.305 0.05 FALSE`` `[`confint`](https://rdrr.io/r/stats/confint.html)`(``result``)`` ``#> # A tibble: 3 × 4`` ``#> term conf_low conf_high level`` ``#> <chr> <dbl> <dbl> <dbl>`` ``#> 1 (Intercept) -834. 2500. 0.95`` ``#> 2 income_scaled -6359. 2691. 0.95`` ``#> 3 income_scaled_sq -1446. 4620. 0.95`
 
 ## Confidence intervals
 
@@ -85,10 +50,7 @@ The [`plot()`](https://rdrr.io/r/graphics/plot.default.html) method
 displays the robust confidence intervals and marks the null value used
 in the tests.
 
-``` r
-
-plot(result)
-```
+[`plot`](https://rdrr.io/r/graphics/plot.default.html)`(``result``)`
 
 ![Robust confidence intervals for the public-schools regression
 coefficients.](reference/figures/README-readme-ci-plot-1.png)
@@ -100,15 +62,27 @@ when you only need the robust covariance matrix and its diagnostics. The
 [`plot()`](https://rdrr.io/r/graphics/plot.default.html) method for this
 object shows leverage values and HC adjustment factors.
 
-``` r
-
-cov_hcbeta <- vcov_hc(fit)
-plot(cov_hcbeta)
-```
+`cov_hcbeta`` ``<-`` `[`vcov_hc`](https://prdm0.github.io/hcinfer/reference/vcov_hc.md)`(``fit``)`` `[`plot`](https://rdrr.io/r/graphics/plot.default.html)`(``cov_hcbeta``)`
 
 ![HCbeta adjustment factors plotted against leverage values for the
 public-schools
 regression.](reference/figures/README-readme-diagnostics-plot-1.png)
+
+## Feasible GLS under multiplicative heteroskedasticity
+
+[`gls_mult()`](https://prdm0.github.io/hcinfer/reference/gls_mult.md)
+fits a linear model by feasible generalized least squares when the
+conditional variance is modelled as an exponential function of
+dispersion regressors. Maximum likelihood is the default, and Harvey’s
+two-step estimator is also available.
+
+`fit`` ``<-`` `[`lm`](https://rdrr.io/r/stats/lm.html)`(``expenditure`` ``~`` ``income``, data ``=`` ``PublicSchools``)`` `` ``# Maximum likelihood FGLS (default); AIC()/BIC() work via logLik()`` ``gls_fit`` ``<-`` `[`gls_mult`](https://prdm0.github.io/hcinfer/reference/gls_mult.md)`(``fit``)`` `[`coef`](https://rdrr.io/r/stats/coef.html)`(``gls_fit``)`` ``# mean coefficients`` `[`coef`](https://rdrr.io/r/stats/coef.html)`(``gls_fit``, model ``=`` ``"dispersion"``)`` ``# log-variance coefficients`` `[`AIC`](https://rdrr.io/r/stats/AIC.html)`(``gls_fit``)``; `[`BIC`](https://rdrr.io/r/stats/AIC.html)`(``gls_fit``)`` `` ``# Harvey two-step estimator`` `[`gls_mult`](https://prdm0.github.io/hcinfer/reference/gls_mult.md)`(``fit``, method ``=`` ``"two_step"``)`
+
+Maximum likelihood fits support
+[`logLik()`](https://rdrr.io/r/stats/logLik.html),
+[`AIC()`](https://rdrr.io/r/stats/AIC.html), and
+[`BIC()`](https://rdrr.io/r/stats/AIC.html) (with `df = p + q`), whereas
+the two-step fit does not, because its likelihood is not maximized.
 
 ## Learn more
 
@@ -122,9 +96,13 @@ sensitivity controls.
 presents the statistical methodology behind all HC estimators and the
 HCbeta motivation.
 [`vignette("hcinfer-comparison", package = "hcinfer")`](https://prdm0.github.io/hcinfer/articles/hcinfer-comparison.md)
-compares HCbeta with classical HC estimators on real data. Finally,
+compares HCbeta with classical HC estimators on real data.
 [`vignette("hcinfer-bootstrap", package = "hcinfer")`](https://prdm0.github.io/hcinfer/articles/hcinfer-bootstrap.md)
 describes the bootstrap companion for resampling-based inference.
+Finally,
+[`vignette("hcinfer-gls", package = "hcinfer")`](https://prdm0.github.io/hcinfer/articles/hcinfer-gls.md)
+explains feasible generalized least squares under multiplicative
+heteroskedasticity.
 
 ## References
 

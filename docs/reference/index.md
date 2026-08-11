@@ -34,6 +34,23 @@
 - [`hc_methods()`](https://prdm0.github.io/hcinfer/reference/hc_methods.md)
   : Available heteroskedasticity-consistent estimators
 
+## Feasible generalized least squares
+
+- [`gls_mult()`](https://prdm0.github.io/hcinfer/reference/gls_mult.md)
+  : Feasible GLS under multiplicative heteroskedasticity
+- [`coef(`*`<gls_mult>`*`)`](https://prdm0.github.io/hcinfer/reference/gls_mult-methods.md)
+  [`vcov(`*`<gls_mult>`*`)`](https://prdm0.github.io/hcinfer/reference/gls_mult-methods.md)
+  [`confint(`*`<gls_mult>`*`)`](https://prdm0.github.io/hcinfer/reference/gls_mult-methods.md)
+  [`tests(`*`<gls_mult>`*`)`](https://prdm0.github.io/hcinfer/reference/gls_mult-methods.md)
+  [`nobs(`*`<gls_mult>`*`)`](https://prdm0.github.io/hcinfer/reference/gls_mult-methods.md)
+  [`fitted(`*`<gls_mult>`*`)`](https://prdm0.github.io/hcinfer/reference/gls_mult-methods.md)
+  [`residuals(`*`<gls_mult>`*`)`](https://prdm0.github.io/hcinfer/reference/gls_mult-methods.md)
+  [`logLik(`*`<gls_mult>`*`)`](https://prdm0.github.io/hcinfer/reference/gls_mult-methods.md)
+  [`print(`*`<gls_mult>`*`)`](https://prdm0.github.io/hcinfer/reference/gls_mult-methods.md)
+  [`summary(`*`<gls_mult>`*`)`](https://prdm0.github.io/hcinfer/reference/gls_mult-methods.md)
+  [`print(`*`<summary_gls_mult>`*`)`](https://prdm0.github.io/hcinfer/reference/gls_mult-methods.md)
+  : Methods for multiplicative heteroskedasticity GLS fits
+
 ## Data
 
 - [`PublicSchools`](https://prdm0.github.io/hcinfer/reference/PublicSchools.md)

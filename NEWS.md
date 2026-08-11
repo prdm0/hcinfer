@@ -1,3 +1,7 @@
+# hcinfer (development version)
+
+* Added `gls_mult()` for feasible generalized least squares estimation under multiplicative heteroskedasticity, with `method = "ml"` (default) and `method = "two_step"`; new `coef()` and `vcov()` methods access the mean and dispersion coefficients via `model =`, and `confint()`, `tests()`, `summary()`, `print()`, `fitted()`, and `residuals()` methods support applied inference, while `logLik()` and `nobs()` enable `AIC()` and `BIC()` for maximum likelihood fits. The package `Description` now also covers feasible generalized least squares following Harvey (1976) and Cribari-Neto and Pereira (2019).
+
 # hcinfer 0.2.0
 
 * Added `boot_pairs()` for pairs (case) bootstrap standard errors and confidence intervals of ordinary least squares coefficients. It resamples the observations with replacement, refits the model on each replicate, and summarizes the sampling distribution of the coefficients, providing an assumption-free empirical reference for the analytic heteroskedasticity-consistent standard errors from `hcinfer()` and `vcov_hc()`. Percentile, basic, and normal intervals are available, the resampling is reproducible through the `seed` argument, and the replicate fits can optionally run in parallel via `purrr::in_parallel()` and `mirai` without changing the numeric result.
