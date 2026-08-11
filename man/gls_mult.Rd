@@ -48,7 +48,10 @@ profile log-likelihood. The accepted locally optimized stationary fit
 must satisfy the scale-invariant score check described in Details. The
 optimizer itself is chosen with \code{method}; \code{control$method} is rejected.}
 
-\item{...}{Unused. Passing arguments raises an error.}
+\item{...}{Reserved and required to be empty. It is not forwarded to
+\code{\link[stats:optim]{stats::optim()}} because that function passes its own \code{...} to the private
+objective and gradient functions, not to optimizer controls. Choose the
+algorithm with \code{method} and tune it with \code{control}.}
 }
 \value{
 An object of class \code{gls_mult} and \code{hcinfer_object}. Important components are:

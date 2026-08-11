@@ -5,8 +5,12 @@
 - Added
   [`gls_mult()`](https://prdm0.github.io/hcinfer/reference/gls_mult.md)
   for feasible generalized least squares estimation under multiplicative
-  heteroskedasticity, with `method = "ml"` (default) and
-  `method = "two_step"`; new
+  heteroskedasticity. The `estimator` argument chooses the fit, either
+  `"ml"` (default, Gaussian maximum likelihood) or `"two_step"`
+  (Harvey’s corrected auxiliary regression), and for maximum likelihood
+  the `method` argument selects the
+  [`stats::optim()`](https://rdrr.io/r/stats/optim.html) algorithm:
+  `"BFGS"` (default), `"Nelder-Mead"`, `"CG"`, or `"L-BFGS-B"`. New
   [`coef()`](https://rdrr.io/r/stats/coef.html) and
   [`vcov()`](https://rdrr.io/r/stats/vcov.html) methods access the mean
   and dispersion coefficients via `model =`, and

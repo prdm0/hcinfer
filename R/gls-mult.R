@@ -955,7 +955,10 @@ gls_mult_variance_matrix <- function(
 #'   profile log-likelihood. The accepted locally optimized stationary fit
 #'   must satisfy the scale-invariant score check described in Details. The
 #'   optimizer itself is chosen with `method`; `control$method` is rejected.
-#' @param ... Unused. Passing arguments raises an error.
+#' @param ... Reserved and required to be empty. It is not forwarded to
+#'   [stats::optim()] because that function passes its own `...` to the private
+#'   objective and gradient functions, not to optimizer controls. Choose the
+#'   algorithm with `method` and tune it with `control`.
 #'
 #' @return
 #' An object of class `gls_mult` and `hcinfer_object`. Important components are:

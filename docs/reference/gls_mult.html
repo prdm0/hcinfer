@@ -60,7 +60,8 @@ inference by making an explicit, testable variance-model assumption.</p>
     <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">gls_mult</span><span class="op">(</span></span>
 <span>  <span class="va">object</span>,</span>
 <span>  variance <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  method <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"ml"</span>, <span class="st">"two_step"</span><span class="op">)</span>,</span>
+<span>  estimator <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"ml"</span>, <span class="st">"two_step"</span><span class="op">)</span>,</span>
+<span>  method <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"BFGS"</span>, <span class="st">"Nelder-Mead"</span>, <span class="st">"CG"</span>, <span class="st">"L-BFGS-B"</span><span class="op">)</span>,</span>
 <span>  alpha <span class="op">=</span> <span class="fl">0.05</span>,</span>
 <span>  null <span class="op">=</span> <span class="fl">0</span>,</span>
 <span>  control <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="op">)</span>,</span>
@@ -83,10 +84,18 @@ or a one-sided formula specifying the dispersion regressors. The formula
 must generate exactly one all-ones intercept column.</p></dd>
 
 
+<dt id="arg-estimator">estimator<a class="anchor" aria-label="anchor" href="#arg-estimator"></a></dt>
+<dd><p>Estimator. <code>"ml"</code> (default) locally optimizes the Gaussian
+profile likelihood; <code>"two_step"</code> applies Harvey's corrected auxiliary
+regression once.</p></dd>
+
+
 <dt id="arg-method">method<a class="anchor" aria-label="anchor" href="#arg-method"></a></dt>
-<dd><p>Fitting method. <code>"ml"</code> locally optimizes the Gaussian profile
-likelihood and is the default. <code>"two_step"</code> applies Harvey's corrected
-auxiliary regression once.</p></dd>
+<dd><p>Optimization algorithm passed to <code><a href="https://rdrr.io/r/stats/optim.html" class="external-link">stats::optim()</a></code> for the
+<code>"ml"</code> estimator: one of <code>"BFGS"</code> (default), <code>"Nelder-Mead"</code>, <code>"CG"</code>, or
+<code>"L-BFGS-B"</code>. It is ignored by <code>"two_step"</code>. <code>"BFGS"</code> uses the analytic
+profile gradient and is recommended; whatever the algorithm, the accepted
+fit must pass the stationarity check described in Details.</p></dd>
 
 
 <dt id="arg-alpha">alpha<a class="anchor" aria-label="anchor" href="#arg-alpha"></a></dt>
@@ -106,11 +115,15 @@ maximum likelihood, <code>control$maxit</code> must be a positive integer and a
 supplied <code>control$fnscale</code> must be one finite positive number. Negative
 scaling is invalid because <code>gls_mult()</code> already minimizes the negative
 profile log-likelihood. The accepted locally optimized stationary fit
-must satisfy the scale-invariant score check described in Details.</p></dd>
+must satisfy the scale-invariant score check described in Details. The
+optimizer itself is chosen with <code>method</code>; <code>control$method</code> is rejected.</p></dd>
 
 
 <dt id="arg--">...<a class="anchor" aria-label="anchor" href="#arg--"></a></dt>
-<dd><p>Unused. Passing arguments raises an error.</p></dd>
+<dd><p>Reserved and required to be empty. It is not forwarded to
+<code><a href="https://rdrr.io/r/stats/optim.html" class="external-link">stats::optim()</a></code> because that function passes its own <code>...</code> to the private
+objective and gradient functions, not to optimizer controls. Choose the
+algorithm with <code>method</code> and tune it with <code>control</code>.</p></dd>
 
 </dl></div>
     <div class="section level2">
@@ -183,7 +196,7 @@ aligned by the exact rows used to estimate the mean model.</p>
 <h3 id="two-step-estimator">Two-step estimator<a class="anchor" aria-label="anchor" href="#two-step-estimator"></a></h3>
 
 
-<p>With <code>method = "two_step"</code>, the function first regresses
+<p>With <code>estimator = "two_step"</code>, the function first regresses
 \(\log(\hat e_t^2)\) on \(Z\), where \(\hat e_t\) are the OLS
 residuals. If \(\widetilde\gamma\) denotes this raw auxiliary estimate,
 the intercept is corrected as</p>
@@ -220,8 +233,9 @@ do not support <code><a href="https://rdrr.io/r/stats/logLik.html" class="extern
 <h3 id="maximum-likelihood">Maximum likelihood<a class="anchor" aria-label="anchor" href="#maximum-likelihood"></a></h3>
 
 
-<p>With the default <code>method = "ml"</code>, the corrected two-step estimate initializes
-BFGS optimization of the Gaussian log-likelihood. The joint log-likelihood
+<p>With the default <code>estimator = "ml"</code>, the corrected two-step estimate
+initializes optimization of the Gaussian log-likelihood by the algorithm
+chosen with <code>method</code> (BFGS by default). The joint log-likelihood
 of the mean and dispersion blocks is</p>
 <p>$$\ell(\beta,\gamma) =
 -\frac{n}{2}\log(2\pi)
@@ -229,10 +243,11 @@ of the mean and dispersion blocks is</p>
 -\frac{1}{2}\sum_t
 \exp(-z_t^\top\gamma)(y_t-x_t^\top\beta)^2.$$</p>
 <p>For every trial value of \(\gamma\), \(\beta\) is profiled out by
-weighted least squares, yielding \(\widehat\beta(\gamma)\), and BFGS
-optimizes the resulting profile log-likelihood
-\(\ell_p(\gamma) = \ell(\widehat\beta(\gamma),\gamma)\) with its analytic
-gradient through <code><a href="https://rdrr.io/r/stats/optim.html" class="external-link">stats::optim()</a></code>. The asymptotic expected information has
+weighted least squares, yielding \(\widehat\beta(\gamma)\), and the chosen
+optimizer maximizes the resulting profile log-likelihood
+\(\ell_p(\gamma) = \ell(\widehat\beta(\gamma),\gamma)\) through
+<code><a href="https://rdrr.io/r/stats/optim.html" class="external-link">stats::optim()</a></code>, using the analytic profile gradient when the algorithm is
+gradient based. The asymptotic expected information has
 zero cross-information between \(\beta\) and \(\gamma\), with blocks</p>
 <p>$$\mathcal I_{\beta\beta}=X^\top W X,\qquad
 \mathcal I_{\gamma\gamma}=\frac{1}{2}Z^\top Z.$$</p>
@@ -257,7 +272,7 @@ and reproduces the <code>lm</code> coefficients, log-likelihood, AIC, and BIC.</
 The reported mean covariance is model-based and relies on correct
 specification of the multiplicative variance model. It is not an HC
 sandwich covariance, and no robust GLS covariance is computed.</p>
-<p>For <code>method = "ml"</code>, a fit is accepted as a locally optimized stationary
+<p>For <code>estimator = "ml"</code>, a fit is accepted as a locally optimized stationary
 solution only when <code><a href="https://rdrr.io/r/stats/optim.html" class="external-link">stats::optim()</a></code> returns convergence code zero and the
 scale-invariant profile-score norm
 \(\sqrt{s(\widehat\gamma)^\top (Z^\top Z)^{-1} s(\widehat\gamma)}\), where
@@ -313,7 +328,7 @@ feasible GLS under multiplicative heteroskedasticity.</p></div>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> ── <span style="font-weight: bold;">⚙️ Dispersion model</span> ──</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Specification: `Z = X (the mean model matrix)`</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Fitting method: Maximum likelihood</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Fitting method: Maximum likelihood (BFGS)</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Variance function: exp(z' gamma)</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> ── <span style="font-weight: bold;">🥪 Model-based inference</span> ──</span>
@@ -373,7 +388,7 @@ feasible GLS under multiplicative heteroskedasticity.</p></div>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> ── <span style="font-weight: bold;">⚙️ Dispersion model</span> ──</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Specification: `Z = X (the mean model matrix)`</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Fitting method: Maximum likelihood</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Fitting method: Maximum likelihood (BFGS)</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Variance function: exp(z' gamma)</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> ── <span style="font-weight: bold;">🥪 Model-based inference</span> ──</span>
@@ -450,10 +465,15 @@ feasible GLS under multiplicative heteroskedasticity.</p></div>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/stats/AIC.html" class="external-link">BIC</a></span><span class="op">(</span><span class="va">result</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] 553.9568</span>
 <span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="va">two_step</span> <span class="op">&lt;-</span> <span class="fu">gls_mult</span><span class="op">(</span><span class="va">fit</span>, method <span class="op">=</span> <span class="st">"two_step"</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">two_step</span> <span class="op">&lt;-</span> <span class="fu">gls_mult</span><span class="op">(</span><span class="va">fit</span>, estimator <span class="op">=</span> <span class="st">"two_step"</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/stats/coef.html" class="external-link">coef</a></span><span class="op">(</span><span class="va">two_step</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   (Intercept) income_scaled </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     -31.72321     525.59326 </span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="va">nelder_mead</span> <span class="op">&lt;-</span> <span class="fu">gls_mult</span><span class="op">(</span><span class="va">fit</span>, method <span class="op">=</span> <span class="st">"Nelder-Mead"</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/stats/coef.html" class="external-link">coef</a></span><span class="op">(</span><span class="va">nelder_mead</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   (Intercept) income_scaled </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     -58.08789     563.24160 </span>
 <span class="r-in"><span></span></span>
 </code></pre></div>
     </div>

@@ -13,7 +13,8 @@ assumption.
 gls_mult(
   object,
   variance = NULL,
-  method = c("ml", "two_step"),
+  estimator = c("ml", "two_step"),
+  method = c("BFGS", "Nelder-Mead", "CG", "L-BFGS-B"),
   alpha = 0.05,
   null = 0,
   control = list(),
@@ -34,11 +35,21 @@ gls_mult(
   one-sided formula specifying the dispersion regressors. The formula
   must generate exactly one all-ones intercept column.
 
+- estimator:
+
+  Estimator. `"ml"` (default) locally optimizes the Gaussian profile
+  likelihood; `"two_step"` applies Harvey's corrected auxiliary
+  regression once.
+
 - method:
 
-  Fitting method. `"ml"` locally optimizes the Gaussian profile
-  likelihood and is the default. `"two_step"` applies Harvey's corrected
-  auxiliary regression once.
+  Optimization algorithm passed to
+  [`stats::optim()`](https://rdrr.io/r/stats/optim.html) for the `"ml"`
+  estimator: one of `"BFGS"` (default), `"Nelder-Mead"`, `"CG"`, or
+  `"L-BFGS-B"`. It is ignored by `"two_step"`. `"BFGS"` uses the
+  analytic profile gradient and is recommended; whatever the algorithm,
+  the accepted fit must pass the stationarity check described in
+  Details.
 
 - alpha:
 
@@ -60,11 +71,16 @@ gls_mult(
   number. Negative scaling is invalid because `gls_mult()` already
   minimizes the negative profile log-likelihood. The accepted locally
   optimized stationary fit must satisfy the scale-invariant score check
-  described in Details.
+  described in Details. The optimizer itself is chosen with `method`;
+  `control$method` is rejected.
 
 - ...:
 
-  Unused. Passing arguments raises an error.
+  Reserved and required to be empty. It is not forwarded to
+  [`stats::optim()`](https://rdrr.io/r/stats/optim.html) because that
+  function passes its own `...` to the private objective and gradient
+  functions, not to optimizer controls. Choose the algorithm with
+  `method` and tune it with `control`.
 
 ## Value
 
@@ -137,7 +153,7 @@ aligned by the exact rows used to estimate the mean model.
 
 ### Two-step estimator
 
-With `method = "two_step"`, the function first regresses \\\log(\hat
+With `estimator = "two_step"`, the function first regresses \\\log(\hat
 e_t^2)\\ on \\Z\\, where \\\hat e_t\\ are the OLS residuals. If
 \\\widetilde\gamma\\ denotes this raw auxiliary estimate, the intercept
 is corrected as
@@ -181,21 +197,23 @@ not maximized, so two-step objects do not support
 
 ### Maximum likelihood
 
-With the default `method = "ml"`, the corrected two-step estimate
-initializes BFGS optimization of the Gaussian log-likelihood. The joint
-log-likelihood of the mean and dispersion blocks is
+With the default `estimator = "ml"`, the corrected two-step estimate
+initializes optimization of the Gaussian log-likelihood by the algorithm
+chosen with `method` (BFGS by default). The joint log-likelihood of the
+mean and dispersion blocks is
 
 \$\$\ell(\beta,\gamma) = -\frac{n}{2}\log(2\pi) -\frac{1}{2}\sum_t
 z_t^\top\gamma -\frac{1}{2}\sum_t
 \exp(-z_t^\top\gamma)(y_t-x_t^\top\beta)^2.\$\$
 
 For every trial value of \\\gamma\\, \\\beta\\ is profiled out by
-weighted least squares, yielding \\\widehat\beta(\gamma)\\, and BFGS
-optimizes the resulting profile log-likelihood \\\ell_p(\gamma) =
-\ell(\widehat\beta(\gamma),\gamma)\\ with its analytic gradient through
-[`stats::optim()`](https://rdrr.io/r/stats/optim.html). The asymptotic
-expected information has zero cross-information between \\\beta\\ and
-\\\gamma\\, with blocks
+weighted least squares, yielding \\\widehat\beta(\gamma)\\, and the
+chosen optimizer maximizes the resulting profile log-likelihood
+\\\ell_p(\gamma) = \ell(\widehat\beta(\gamma),\gamma)\\ through
+[`stats::optim()`](https://rdrr.io/r/stats/optim.html), using the
+analytic profile gradient when the algorithm is gradient based. The
+asymptotic expected information has zero cross-information between
+\\\beta\\ and \\\gamma\\, with blocks
 
 \$\$\mathcal I\_{\beta\beta}=X^\top W X,\qquad \mathcal
 I\_{\gamma\gamma}=\frac{1}{2}Z^\top Z.\$\$
@@ -224,8 +242,8 @@ The reported mean covariance is model-based and relies on correct
 specification of the multiplicative variance model. It is not an HC
 sandwich covariance, and no robust GLS covariance is computed.
 
-For `method = "ml"`, a fit is accepted as a locally optimized stationary
-solution only when
+For `estimator = "ml"`, a fit is accepted as a locally optimized
+stationary solution only when
 [`stats::optim()`](https://rdrr.io/r/stats/optim.html) returns
 convergence code zero and the scale-invariant profile-score norm
 \\\sqrt{s(\widehat\gamma)^\top (Z^\top Z)^{-1} s(\widehat\gamma)}\\,
@@ -286,7 +304,7 @@ result
 #> ── ⚙️ Dispersion model ──
 #> 
 #> Specification: `Z = X (the mean model matrix)`
-#> Fitting method: Maximum likelihood
+#> Fitting method: Maximum likelihood (BFGS)
 #> Variance function: exp(z' gamma)
 #> 
 #> ── 🥪 Model-based inference ──
@@ -346,7 +364,7 @@ summary(result)
 #> ── ⚙️ Dispersion model ──
 #> 
 #> Specification: `Z = X (the mean model matrix)`
-#> Fitting method: Maximum likelihood
+#> Fitting method: Maximum likelihood (BFGS)
 #> Variance function: exp(z' gamma)
 #> 
 #> ── 🥪 Model-based inference ──
@@ -423,8 +441,13 @@ AIC(result)
 BIC(result)
 #> [1] 553.9568
 
-two_step <- gls_mult(fit, method = "two_step")
+two_step <- gls_mult(fit, estimator = "two_step")
 coef(two_step)
 #>   (Intercept) income_scaled 
 #>     -31.72321     525.59326 
+
+nelder_mead <- gls_mult(fit, method = "Nelder-Mead")
+coef(nelder_mead)
+#>   (Intercept) income_scaled 
+#>     -58.08789     563.24160 
 ```

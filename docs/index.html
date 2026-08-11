@@ -224,7 +224,7 @@ heteroskedasticity, for linear regression models.
 <span><span class="fu"><a href="https://rdrr.io/r/stats/AIC.html" class="external-link">AIC</a></span><span class="op">(</span><span class="va">gls_fit</span><span class="op">)</span>; <span class="fu"><a href="https://rdrr.io/r/stats/AIC.html" class="external-link">BIC</a></span><span class="op">(</span><span class="va">gls_fit</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># Harvey two-step estimator</span></span>
-<span><span class="fu"><a href="reference/gls_mult.html">gls_mult</a></span><span class="op">(</span><span class="va">fit</span>, method <span class="op">=</span> <span class="st">"two_step"</span><span class="op">)</span></span></code></pre></div>
+<span><span class="fu"><a href="reference/gls_mult.html">gls_mult</a></span><span class="op">(</span><span class="va">fit</span>, estimator <span class="op">=</span> <span class="st">"two_step"</span><span class="op">)</span></span></code></pre></div>
 <p>Maximum likelihood fits support <code><a href="https://rdrr.io/r/stats/logLik.html" class="external-link">logLik()</a></code>, <code><a href="https://rdrr.io/r/stats/AIC.html" class="external-link">AIC()</a></code>, and <code><a href="https://rdrr.io/r/stats/AIC.html" class="external-link">BIC()</a></code> (with <code>df = p + q</code>), whereas the two-step fit does not, because its likelihood is not maximized.</p>
 </div>
 <div class="section level2">
