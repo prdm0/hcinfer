@@ -1,6 +1,6 @@
 # hcinfer (development version)
 
-* Added `gls_mult()` for feasible generalized least squares estimation under multiplicative heteroskedasticity, with `method = "ml"` (default) and `method = "two_step"`; new `coef()` and `vcov()` methods access the mean and dispersion coefficients via `model =`, and `confint()`, `tests()`, `summary()`, `print()`, `fitted()`, and `residuals()` methods support applied inference, while `logLik()` and `nobs()` enable `AIC()` and `BIC()` for maximum likelihood fits. The package `Description` now also covers feasible generalized least squares following Harvey (1976) and Cribari-Neto and Pereira (2019).
+* Added `gls_mult()` for feasible generalized least squares estimation under multiplicative heteroskedasticity. The `estimator` argument chooses the fit, either `"ml"` (default, Gaussian maximum likelihood) or `"two_step"` (Harvey's corrected auxiliary regression), and for maximum likelihood the `method` argument selects the `stats::optim()` algorithm: `"BFGS"` (default), `"Nelder-Mead"`, `"CG"`, or `"L-BFGS-B"`. New `coef()` and `vcov()` methods access the mean and dispersion coefficients via `model =`, and `confint()`, `tests()`, `summary()`, `print()`, `fitted()`, and `residuals()` methods support applied inference, while `logLik()` and `nobs()` enable `AIC()` and `BIC()` for maximum likelihood fits. The package `Description` now also covers feasible generalized least squares following Harvey (1976) and Cribari-Neto and Pereira (2019).
 
 # hcinfer 0.2.0
 

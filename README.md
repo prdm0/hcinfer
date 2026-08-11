@@ -118,7 +118,7 @@ plot(cov_hcbeta)
 
 `gls_mult()` fits a linear model by feasible generalized least squares
 when the conditional variance is modelled as an exponential function of
-dispersion regressors. Maximum likelihood is the default, and Harvey's
+dispersion regressors. Maximum likelihood is the default, and Harvey’s
 two-step estimator is also available.
 
 ``` r
@@ -131,7 +131,7 @@ coef(gls_fit, model = "dispersion") # log-variance coefficients
 AIC(gls_fit); BIC(gls_fit)
 
 # Harvey two-step estimator
-gls_mult(fit, method = "two_step")
+gls_mult(fit, estimator = "two_step")
 ```
 
 Maximum likelihood fits support `logLik()`, `AIC()`, and `BIC()` (with
@@ -150,8 +150,8 @@ statistical methodology behind all HC estimators and the HCbeta
 motivation. `vignette("hcinfer-comparison", package = "hcinfer")`
 compares HCbeta with classical HC estimators on real data.
 `vignette("hcinfer-bootstrap", package = "hcinfer")` describes the
-bootstrap companion for resampling-based inference.
-Finally, `vignette("hcinfer-gls", package = "hcinfer")` explains feasible
+bootstrap companion for resampling-based inference. Finally,
+`vignette("hcinfer-gls", package = "hcinfer")` explains feasible
 generalized least squares under multiplicative heteroskedasticity.
 
 ## References

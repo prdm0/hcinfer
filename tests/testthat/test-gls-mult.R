@@ -10,7 +10,7 @@ test_that("Harvey correction constants use their exact identities", {
 
 test_that("two-step GLS matches a literal Harvey calculation", {
   fit <- lm(expenditure ~ income, data = PublicSchools)
-  result <- gls_mult(fit, method = "two_step")
+  result <- gls_mult(fit, estimator = "two_step")
   X <- stats::model.matrix(fit)
   y <- stats::model.response(stats::model.frame(fit))
   Z <- X
@@ -50,7 +50,7 @@ test_that("two-step GLS matches a literal Harvey calculation", {
 
 test_that("two-step PublicSchools results retain the prototype anchor", {
   fit <- lm(expenditure ~ income, data = PublicSchools)
-  result <- gls_mult(fit, method = "two_step")
+  result <- gls_mult(fit, estimator = "two_step")
 
   expect_equal(
     unname(result$coefficients),
@@ -128,7 +128,7 @@ test_that("multivariate profile likelihood and gradient match direct oracles", {
 
 test_that("intercept-only ML reproduces the Gaussian lm likelihood", {
   fit <- lm(expenditure ~ income, data = PublicSchools)
-  result <- gls_mult(fit, variance = ~1, method = "ml")
+  result <- gls_mult(fit, variance = ~1, estimator = "ml")
 
   expect_equal(
     unname(coef(result)),
@@ -182,12 +182,12 @@ test_that("response rescaling preserves the variance-unit identities", {
   control <- list(reltol = 1e-13, maxit = 10000)
   dollars <- gls_mult(
     lm(expenditure ~ income_scaled + south, data = schools),
-    method = "ml",
+    estimator = "ml",
     control = control
   )
   thousands <- gls_mult(
     lm(expenditure_thousands ~ income_scaled + south, data = schools),
-    method = "ml",
+    estimator = "ml",
     control = control
   )
 
@@ -338,8 +338,8 @@ test_that("stored Wald results match independent normal oracles", {
   alpha <- 0.1
   null <- c(-25, 0.04)
 
-  for (method in c("ml", "two_step")) {
-    result <- gls_mult(fit, method = method, alpha = alpha, null = null)
+  for (estimator in c("ml", "two_step")) {
+    result <- gls_mult(fit, estimator = estimator, alpha = alpha, null = null)
     mean_standard_errors <- sqrt(diag(vcov(result)))
     mean_z <- (coef(result) - null) / mean_standard_errors
     mean_p <- 2 * pnorm(abs(mean_z), lower.tail = FALSE)
@@ -402,8 +402,8 @@ test_that("stored Wald results match independent normal oracles", {
 
 test_that("dispersion covariance follows the selected fitting method", {
   fit <- lm(expenditure ~ income, data = PublicSchools)
-  two_step <- gls_mult(fit, method = "two_step")
-  ml <- gls_mult(fit, method = "ml")
+  two_step <- gls_mult(fit, estimator = "two_step")
+  ml <- gls_mult(fit, estimator = "ml")
   Z <- stats::model.matrix(fit)
   inverse_crossprod <- solve(crossprod(Z))
 
@@ -424,9 +424,35 @@ test_that("dispersion covariance follows the selected fitting method", {
   )
 })
 
+test_that("method selects the optimizer while estimator selects the fit", {
+  fit <- lm(expenditure ~ income, data = PublicSchools)
+  withr::local_options(
+    list(hcinfer.use_emoji = FALSE, cli.num_colors = 1)
+  )
+
+  expect_error(gls_mult(fit, method = "AAS"))
+  expect_snapshot(error = TRUE, gls_mult(fit, method = "ml"))
+  expect_snapshot(error = TRUE, gls_mult(fit, control = list(method = "AAS")))
+
+  default_fit <- gls_mult(fit)
+  expect_identical(default_fit$estimator, "ml")
+  expect_identical(default_fit$method, "BFGS")
+
+  control <- list(reltol = 1e-13, maxit = 10000)
+  bfgs <- gls_mult(fit, control = control)
+  nelder_mead <- gls_mult(fit, method = "Nelder-Mead", control = control)
+  expect_identical(nelder_mead$estimator, "ml")
+  expect_identical(nelder_mead$method, "Nelder-Mead")
+  expect_equal(coef(nelder_mead), coef(bfgs), tolerance = 1e-4)
+
+  two_step <- gls_mult(fit, estimator = "two_step")
+  expect_identical(two_step$estimator, "two_step")
+  expect_null(two_step$method)
+})
+
 test_that("information criteria reject a two-step fit", {
   fit <- lm(expenditure ~ income, data = PublicSchools)
-  result <- gls_mult(fit, method = "two_step")
+  result <- gls_mult(fit, estimator = "two_step")
 
   expect_snapshot(error = TRUE, logLik(result))
   expect_snapshot(error = TRUE, AIC(result))
@@ -441,7 +467,7 @@ test_that("dispersion formulas preserve the mean estimation sample", {
   outside <- gls_mult(
     fit,
     variance = ~dispersion_income,
-    method = "two_step"
+    estimator = "two_step"
   )
   estimation_rows <- row.names(model.frame(fit))
   expected_Z <- model.matrix(
@@ -471,7 +497,7 @@ test_that("dispersion formulas preserve the mean estimation sample", {
   aligned <- gls_mult(
     aligned_fit,
     variance = ~z,
-    method = "two_step"
+    estimator = "two_step"
   )
   estimation_rows <- row.names(model.frame(aligned_fit))
   aligned_Z <- model.matrix(
@@ -494,7 +520,7 @@ test_that("dispersion formulas preserve the mean estimation sample", {
   excluded <- gls_mult(
     excluded_fit,
     variance = ~z,
-    method = "two_step"
+    estimator = "two_step"
   )
   excluded_rows <- row.names(model.frame(excluded_fit))
   expect_identical(excluded$n, nrow(model.frame(excluded_fit)))
@@ -510,7 +536,7 @@ test_that("dispersion formulas preserve the mean estimation sample", {
   factor_result <- gls_mult(
     factor_fit,
     variance = ~group,
-    method = "two_step"
+    estimator = "two_step"
   )
   expect_identical(factor_result$variance_terms, c("(Intercept)", "groupb"))
   expect_identical(factor_result$q, 2L)
@@ -525,7 +551,7 @@ test_that("dispersion formulas preserve the mean estimation sample", {
   environment_result <- gls_mult(
     environment_fit,
     variance = ~z,
-    method = "two_step"
+    estimator = "two_step"
   )
   source_Z <- model.matrix(~z, data = environment_data)
   expect_equal(
@@ -540,7 +566,7 @@ test_that("dispersion formulas preserve the mean estimation sample", {
     gls_mult(
       environment_only_fit,
       variance = ~z,
-      method = "two_step"
+      estimator = "two_step"
     ),
     "do not contain all dispersion regressors"
   )
@@ -554,7 +580,7 @@ test_that("dispersion formulas preserve the mean estimation sample", {
   rm(unavailable_data)
   expect_snapshot(
     error = TRUE,
-    gls_mult(unavailable_fit, variance = ~z, method = "two_step")
+    gls_mult(unavailable_fit, variance = ~z, estimator = "two_step")
   )
 
   misaligned_data <- data.frame(
@@ -567,7 +593,7 @@ test_that("dispersion formulas preserve the mean estimation sample", {
   row.names(misaligned_data) <- paste0("new", 1:12)
   expect_snapshot(
     error = TRUE,
-    gls_mult(misaligned_fit, variance = ~z, method = "two_step")
+    gls_mult(misaligned_fit, variance = ~z, estimator = "two_step")
   )
 })
 
@@ -609,7 +635,7 @@ test_that("gls_mult reports unsupported and unidentified fits", {
     gls_mult(
       dispersion_rank_fit,
       variance = ~ z + I(2 * z),
-      method = "two_step"
+      estimator = "two_step"
     )
   )
 
@@ -617,33 +643,33 @@ test_that("gls_mult reports unsupported and unidentified fits", {
   missing_fit <- lm(y ~ x, data = missing_data)
   expect_snapshot(
     error = TRUE,
-    gls_mult(missing_fit, variance = ~z, method = "two_step")
+    gls_mult(missing_fit, variance = ~z, estimator = "two_step")
   )
 
   no_intercept_fit <- lm(y ~ 0 + x, data = rank_data)
   expect_snapshot(
     error = TRUE,
-    gls_mult(no_intercept_fit, method = "two_step")
+    gls_mult(no_intercept_fit, estimator = "two_step")
   )
 
   zero_residual_fit <- lm(y ~ x, data = rank_data)
   zero_residual_fit$residuals[1] <- 0
   expect_snapshot(
     error = TRUE,
-    gls_mult(zero_residual_fit, method = "two_step")
+    gls_mult(zero_residual_fit, estimator = "two_step")
   )
 
   missing_residual_fit <- lm(y ~ x, data = rank_data)
   missing_residual_fit$residuals[1] <- NA_real_
   expect_snapshot(
     error = TRUE,
-    gls_mult(missing_residual_fit, method = "two_step")
+    gls_mult(missing_residual_fit, estimator = "two_step")
   )
 
   public_fit <- lm(expenditure ~ income, data = PublicSchools)
   expect_snapshot(
     error = TRUE,
-    gls_mult(public_fit, method = "ml", control = list(maxit = 1))
+    gls_mult(public_fit, estimator = "ml", control = list(maxit = 1))
   )
 })
 
@@ -655,7 +681,7 @@ test_that("ML remains stable for large representable log-variances", {
   result <- gls_mult(
     fit,
     variance = ~1,
-    method = "ml",
+    estimator = "ml",
     control = list(reltol = 1e-16)
   )
   X <- model.matrix(fit)
@@ -705,15 +731,15 @@ test_that("ML remains stable for large representable log-variances", {
 test_that("maximum likelihood rejects a nonpositive iteration budget", {
   fit <- lm(expenditure ~ income, data = PublicSchools)
   expect_error(
-    gls_mult(fit, method = "ml", control = list(maxit = 0)),
+    gls_mult(fit, estimator = "ml", control = list(maxit = 0)),
     "positive integer"
   )
   expect_error(
-    gls_mult(fit, method = "ml", control = list(maxit = -1)),
+    gls_mult(fit, estimator = "ml", control = list(maxit = -1)),
     "positive integer"
   )
   expect_error(
-    gls_mult(fit, method = "ml", control = list(maxit = 2.5)),
+    gls_mult(fit, estimator = "ml", control = list(maxit = 2.5)),
     "positive integer"
   )
 })
@@ -731,24 +757,24 @@ test_that("maximum likelihood requires positive finite objective scaling", {
   )
   for (fnscale in invalid_values) {
     expect_error(
-      gls_mult(fit, method = "ml", control = list(fnscale = fnscale)),
+      gls_mult(fit, estimator = "ml", control = list(fnscale = fnscale)),
       "`control$fnscale` must be one finite positive number.",
       fixed = TRUE
     )
   }
   expect_snapshot(
     error = TRUE,
-    gls_mult(fit, method = "ml", control = list(fnscale = -1))
+    gls_mult(fit, estimator = "ml", control = list(fnscale = -1))
   )
   expect_no_error(
-    gls_mult(fit, method = "two_step", control = list(fnscale = -1))
+    gls_mult(fit, estimator = "two_step", control = list(fnscale = -1))
   )
 
   control <- list(reltol = 1e-13, maxit = 10000)
-  default_scale <- gls_mult(fit, method = "ml", control = control)
+  default_scale <- gls_mult(fit, estimator = "ml", control = control)
   doubled_scale <- gls_mult(
     fit,
-    method = "ml",
+    estimator = "ml",
     control = c(control, list(fnscale = 2))
   )
   expect_equal(
@@ -768,7 +794,7 @@ test_that("maximum likelihood rejects a nonstationary point", {
   # reltol = 10 makes BFGS stop immediately with convergence code 0 at a
   # nonstationary point (invariant score norm ~1.61 >> tolerance 1e-2).
   expect_error(
-    gls_mult(fit, method = "ml", control = list(reltol = 10)),
+    gls_mult(fit, estimator = "ml", control = list(reltol = 10)),
     "did not reach a stationary point"
   )
 })
@@ -778,12 +804,12 @@ test_that("dispersion-regressor rescaling does not change the ML fit", {
   fit <- lm(expenditure ~ income, data = d)
   # Rescaling a dispersion regressor must not trip the stationarity guard
   # under the default optimizer settings.
-  expect_no_error(gls_mult(fit, variance = ~income10, method = "ml"))
+  expect_no_error(gls_mult(fit, variance = ~income10, estimator = "ml"))
   # Tighten the optimizer so both parameterizations reach corresponding
   # stationary fits.
   control <- list(reltol = 1e-13)
-  base_fit <- gls_mult(fit, variance = ~income, method = "ml", control = control)
-  scaled_fit <- gls_mult(fit, variance = ~income10, method = "ml", control = control)
+  base_fit <- gls_mult(fit, variance = ~income, estimator = "ml", control = control)
+  scaled_fit <- gls_mult(fit, variance = ~income10, estimator = "ml", control = control)
   expect_equal(
     unname(coef(base_fit)),
     unname(coef(scaled_fit)),
@@ -798,8 +824,8 @@ test_that("dispersion-regressor rescaling does not change the ML fit", {
 
 test_that("base AIC and BIC compare multiple ML fits", {
   fit <- lm(expenditure ~ income, data = PublicSchools)
-  full <- gls_mult(fit, method = "ml")
-  homosk <- gls_mult(fit, variance = ~1, method = "ml")
+  full <- gls_mult(fit, estimator = "ml")
+  homosk <- gls_mult(fit, variance = ~1, estimator = "ml")
   aic_table <- AIC(full, homosk)
   bic_table <- BIC(full, homosk)
   expect_s3_class(aic_table, "data.frame")
@@ -811,7 +837,7 @@ test_that("base AIC and BIC compare multiple ML fits", {
 
 test_that("maximum likelihood matches an independent profile optimizer", {
   fit <- lm(expenditure ~ income, data = PublicSchools)
-  ml <- gls_mult(fit, method = "ml")
+  ml <- gls_mult(fit, estimator = "ml")
   y <- model.response(model.frame(fit))
   x10 <- model.matrix(fit)[, "income"] / 10000
   Xs <- cbind("(Intercept)" = 1, income10 = x10)

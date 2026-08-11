@@ -1,3 +1,21 @@
+# method selects the optimizer while estimator selects the fit
+
+    Code
+      gls_mult(fit, method = "ml")
+    Condition
+      Error in `gls_mult()`:
+      ! `method` now selects the optimizer, not the estimator.
+      i Use `estimator = "ml"`; `method` must be one of "BFGS", "Nelder-Mead", "CG", or "L-BFGS-B".
+
+---
+
+    Code
+      gls_mult(fit, control = list(method = "AAS"))
+    Condition
+      Error in `gls_mult()`:
+      ! `control$method` is not a valid `stats::optim()` control element.
+      i Choose the optimizer with the `method` argument; `control` only tunes it (e.g. `maxit`, `reltol`).
+
 # information criteria reject a two-step fit
 
     Code
@@ -5,7 +23,7 @@
     Condition
       Error in `logLik()`:
       ! Information criteria require the maximum likelihood fit.
-      i Refit with `gls_mult(..., method = "ml")` to use `logLik()`, `AIC()`, and `BIC()`.
+      i Refit with `gls_mult(..., estimator = "ml")` to use `logLik()`, `AIC()`, and `BIC()`.
 
 ---
 
@@ -14,12 +32,12 @@
     Condition
       Error in `ll()`:
       ! Information criteria require the maximum likelihood fit.
-      i Refit with `gls_mult(..., method = "ml")` to use `logLik()`, `AIC()`, and `BIC()`.
+      i Refit with `gls_mult(..., estimator = "ml")` to use `logLik()`, `AIC()`, and `BIC()`.
 
 # dispersion formulas preserve the mean estimation sample
 
     Code
-      gls_mult(unavailable_fit, variance = ~z, method = "two_step")
+      gls_mult(unavailable_fit, variance = ~z, estimator = "two_step")
     Condition
       Error in `gls_mult()`:
       ! The original data for the mean model could not be recovered.
@@ -30,7 +48,7 @@
 ---
 
     Code
-      gls_mult(misaligned_fit, variance = ~z, method = "two_step")
+      gls_mult(misaligned_fit, variance = ~z, estimator = "two_step")
     Condition
       Error in `gls_mult()`:
       ! The dispersion data do not contain the complete estimation sample.
@@ -85,7 +103,7 @@
 ---
 
     Code
-      gls_mult(dispersion_rank_fit, variance = ~ z + I(2 * z), method = "two_step")
+      gls_mult(dispersion_rank_fit, variance = ~ z + I(2 * z), estimator = "two_step")
     Condition
       Error in `gls_mult()`:
       ! The dispersion model matrix must have full column rank.
@@ -94,7 +112,7 @@
 ---
 
     Code
-      gls_mult(missing_fit, variance = ~z, method = "two_step")
+      gls_mult(missing_fit, variance = ~z, estimator = "two_step")
     Condition
       Error in `gls_mult()`:
       ! The dispersion model matrix must contain only finite values.
@@ -103,7 +121,7 @@
 ---
 
     Code
-      gls_mult(no_intercept_fit, method = "two_step")
+      gls_mult(no_intercept_fit, estimator = "two_step")
     Condition
       Error in `gls_mult()`:
       ! The dispersion model needs exactly one all-ones intercept column.
@@ -112,7 +130,7 @@
 ---
 
     Code
-      gls_mult(zero_residual_fit, method = "two_step")
+      gls_mult(zero_residual_fit, estimator = "two_step")
     Condition
       Error in `gls_mult()`:
       ! OLS residuals must be finite and nonzero.
@@ -121,7 +139,7 @@
 ---
 
     Code
-      gls_mult(missing_residual_fit, method = "two_step")
+      gls_mult(missing_residual_fit, estimator = "two_step")
     Condition
       Error in `gls_mult()`:
       ! OLS residuals must be finite and nonzero.
@@ -130,7 +148,7 @@
 ---
 
     Code
-      gls_mult(public_fit, method = "ml", control = list(maxit = 1))
+      gls_mult(public_fit, estimator = "ml", control = list(maxit = 1))
     Condition
       Error in `gls_mult()`:
       ! Maximum likelihood optimization did not converge.
@@ -139,7 +157,7 @@
 # maximum likelihood requires positive finite objective scaling
 
     Code
-      gls_mult(fit, method = "ml", control = list(fnscale = -1))
+      gls_mult(fit, estimator = "ml", control = list(fnscale = -1))
     Condition
       Error in `gls_mult()`:
       ! `control$fnscale` must be one finite positive number.

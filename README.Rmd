@@ -115,7 +115,7 @@ coef(gls_fit, model = "dispersion") # log-variance coefficients
 AIC(gls_fit); BIC(gls_fit)
 
 # Harvey two-step estimator
-gls_mult(fit, method = "two_step")
+gls_mult(fit, estimator = "two_step")
 ```
 
 Maximum likelihood fits support `logLik()`, `AIC()`, and `BIC()` (with

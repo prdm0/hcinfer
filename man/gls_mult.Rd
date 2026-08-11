@@ -7,7 +7,8 @@
 gls_mult(
   object,
   variance = NULL,
-  method = c("ml", "two_step"),
+  estimator = c("ml", "two_step"),
+  method = c("BFGS", "Nelder-Mead", "CG", "L-BFGS-B"),
   alpha = 0.05,
   null = 0,
   control = list(),
@@ -22,9 +23,15 @@ by \code{\link[stats:lm]{stats::lm()}} without an offset.}
 or a one-sided formula specifying the dispersion regressors. The formula
 must generate exactly one all-ones intercept column.}
 
-\item{method}{Fitting method. \code{"ml"} locally optimizes the Gaussian profile
-likelihood and is the default. \code{"two_step"} applies Harvey's corrected
-auxiliary regression once.}
+\item{estimator}{Estimator. \code{"ml"} (default) locally optimizes the Gaussian
+profile likelihood; \code{"two_step"} applies Harvey's corrected auxiliary
+regression once.}
+
+\item{method}{Optimization algorithm passed to \code{\link[stats:optim]{stats::optim()}} for the
+\code{"ml"} estimator: one of \code{"BFGS"} (default), \code{"Nelder-Mead"}, \code{"CG"}, or
+\code{"L-BFGS-B"}. It is ignored by \code{"two_step"}. \code{"BFGS"} uses the analytic
+profile gradient and is recommended; whatever the algorithm, the accepted
+fit must pass the stationarity check described in Details.}
 
 \item{alpha}{Significance level for normal Wald tests. The confidence level
 is \code{1 - alpha}.}
@@ -38,7 +45,8 @@ maximum likelihood, \code{control$maxit} must be a positive integer and a
 supplied \code{control$fnscale} must be one finite positive number. Negative
 scaling is invalid because \code{gls_mult()} already minimizes the negative
 profile log-likelihood. The accepted locally optimized stationary fit
-must satisfy the scale-invariant score check described in Details.}
+must satisfy the scale-invariant score check described in Details. The
+optimizer itself is chosen with \code{method}; \code{control$method} is rejected.}
 
 \item{...}{Unused. Passing arguments raises an error.}
 }
@@ -103,7 +111,7 @@ aligned by the exact rows used to estimate the mean model.
 
 \subsection{Two-step estimator}{
 
-With \code{method = "two_step"}, the function first regresses
+With \code{estimator = "two_step"}, the function first regresses
 \eqn{\log(\hat e_t^2)} on \eqn{Z}, where \eqn{\hat e_t} are the OLS
 residuals. If \eqn{\widetilde\gamma} denotes this raw auxiliary estimate,
 the intercept is corrected as
@@ -144,8 +152,9 @@ do not support \code{\link[=logLik]{logLik()}}, \code{\link[=AIC]{AIC()}}, or \c
 
 \subsection{Maximum likelihood}{
 
-With the default \code{method = "ml"}, the corrected two-step estimate initializes
-BFGS optimization of the Gaussian log-likelihood. The joint log-likelihood
+With the default \code{estimator = "ml"}, the corrected two-step estimate
+initializes optimization of the Gaussian log-likelihood by the algorithm
+chosen with \code{method} (BFGS by default). The joint log-likelihood
 of the mean and dispersion blocks is
 
 \deqn{\ell(\beta,\gamma) =
@@ -155,10 +164,11 @@ of the mean and dispersion blocks is
 \exp(-z_t^\top\gamma)(y_t-x_t^\top\beta)^2.}
 
 For every trial value of \eqn{\gamma}, \eqn{\beta} is profiled out by
-weighted least squares, yielding \eqn{\widehat\beta(\gamma)}, and BFGS
-optimizes the resulting profile log-likelihood
-\eqn{\ell_p(\gamma) = \ell(\widehat\beta(\gamma),\gamma)} with its analytic
-gradient through \code{\link[stats:optim]{stats::optim()}}. The asymptotic expected information has
+weighted least squares, yielding \eqn{\widehat\beta(\gamma)}, and the chosen
+optimizer maximizes the resulting profile log-likelihood
+\eqn{\ell_p(\gamma) = \ell(\widehat\beta(\gamma),\gamma)} through
+\code{\link[stats:optim]{stats::optim()}}, using the analytic profile gradient when the algorithm is
+gradient based. The asymptotic expected information has
 zero cross-information between \eqn{\beta} and \eqn{\gamma}, with blocks
 
 \deqn{\mathcal I_{\beta\beta}=X^\top W X,\qquad
@@ -185,7 +195,7 @@ The reported mean covariance is model-based and relies on correct
 specification of the multiplicative variance model. It is not an HC
 sandwich covariance, and no robust GLS covariance is computed.
 
-For \code{method = "ml"}, a fit is accepted as a locally optimized stationary
+For \code{estimator = "ml"}, a fit is accepted as a locally optimized stationary
 solution only when \code{\link[stats:optim]{stats::optim()}} returns convergence code zero and the
 scale-invariant profile-score norm
 \eqn{\sqrt{s(\widehat\gamma)^\top (Z^\top Z)^{-1} s(\widehat\gamma)}}, where
@@ -221,8 +231,11 @@ logLik(result)
 AIC(result)
 BIC(result)
 
-two_step <- gls_mult(fit, method = "two_step")
+two_step <- gls_mult(fit, estimator = "two_step")
 coef(two_step)
+
+nelder_mead <- gls_mult(fit, method = "Nelder-Mead")
+coef(nelder_mead)
 
 }
 \references{

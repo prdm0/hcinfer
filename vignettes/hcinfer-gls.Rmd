@@ -129,9 +129,11 @@ fit
 
 ## Maximum likelihood fit
 
-With no `method` argument, `gls_mult()` fits the model by maximum likelihood,
-its default estimator. The printed object gives a compact view of the mean and
-dispersion coefficients together with the convergence diagnostics.
+With no `estimator` argument, `gls_mult()` fits the model by maximum
+likelihood, its default estimator, and optimizes the profile likelihood with
+the algorithm chosen by `method` (BFGS by default). The printed object gives a
+compact view of the mean and dispersion coefficients together with the
+convergence diagnostics.
 
 ```{r}
 gls_fit <- gls_mult(fit)
@@ -193,11 +195,11 @@ their relative scale affects those coefficients.
 
 ## Harvey two-step
 
-Setting `method = "two_step"` fits the same model with Harvey's non-iterative
+Setting `estimator = "two_step"` fits the same model with Harvey's non-iterative
 estimator.
 
 ```{r}
-two_step <- gls_mult(fit, method = "two_step")
+two_step <- gls_mult(fit, estimator = "two_step")
 coef(two_step)
 ```
 

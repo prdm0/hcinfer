@@ -16,7 +16,7 @@ gls_mult_validate_core <- function(
   y,
   X,
   Z,
-  method,
+  estimator,
   ols_residuals,
   control,
   call = rlang::caller_env()
@@ -129,13 +129,13 @@ gls_mult_validate_core <- function(
     )
   }
   if (
-    !is.character(method) ||
-      length(method) != 1L ||
-      !method %in% c("ml", "two_step")
+    !is.character(estimator) ||
+      length(estimator) != 1L ||
+      !estimator %in% c("ml", "two_step")
   ) {
     cli::cli_abort(
       c(
-        "Unknown fitting method {.val {method}}.",
+        "Unknown estimator {.val {estimator}}.",
         "i" = "Use {.val ml} or {.val two_step}."
       ),
       call = call
@@ -375,13 +375,13 @@ gls_mult_profile <- function(
   list(loglik = loglik, gradient = gradient, wls = wls)
 }
 
-gls_mult_fit <- function(y, X, Z, method, ols_residuals, control) {
+gls_mult_fit <- function(y, X, Z, estimator, method, ols_residuals, control) {
   call <- rlang::caller_env()
   core <- gls_mult_validate_core(
     y = y,
     X = X,
     Z = Z,
-    method = method,
+    estimator = estimator,
     ols_residuals = ols_residuals,
     control = control,
     call = call
@@ -401,7 +401,7 @@ gls_mult_fit <- function(y, X, Z, method, ols_residuals, control) {
 
   variance_vcov_two_step <- log_chisq1_variance * chol2inv(core$z_chol)
 
-  if (method == "two_step") {
+  if (estimator == "two_step") {
     final_profile <- gls_mult_weighted_solve(
       y = y,
       X = X,
@@ -449,7 +449,7 @@ gls_mult_fit <- function(y, X, Z, method, ols_residuals, control) {
         par = variance_coefficients_corrected,
         fn = neg_loglik,
         gr = neg_gradient,
-        method = "BFGS",
+        method = method,
         control = control
       ),
       error = identity
@@ -582,7 +582,7 @@ gls_mult_fit <- function(y, X, Z, method, ols_residuals, control) {
     weights = weights,
     eta = eta
   )
-  if (method == "ml") {
+  if (estimator == "ml") {
     result$loglik <- loglik
     result$convergence <- convergence
   }
@@ -830,7 +830,7 @@ gls_mult_variance_matrix <- function(
 #'
 #' ## Two-step estimator
 #'
-#' With `method = "two_step"`, the function first regresses
+#' With `estimator = "two_step"`, the function first regresses
 #' \eqn{\log(\hat e_t^2)} on \eqn{Z}, where \eqn{\hat e_t} are the OLS
 #' residuals. If \eqn{\widetilde\gamma} denotes this raw auxiliary estimate,
 #' the intercept is corrected as
@@ -870,8 +870,9 @@ gls_mult_variance_matrix <- function(
 #'
 #' ## Maximum likelihood
 #'
-#' With the default `method = "ml"`, the corrected two-step estimate initializes
-#' BFGS optimization of the Gaussian log-likelihood. The joint log-likelihood
+#' With the default `estimator = "ml"`, the corrected two-step estimate
+#' initializes optimization of the Gaussian log-likelihood by the algorithm
+#' chosen with `method` (BFGS by default). The joint log-likelihood
 #' of the mean and dispersion blocks is
 #'
 #' \deqn{\ell(\beta,\gamma) =
@@ -881,10 +882,11 @@ gls_mult_variance_matrix <- function(
 #' \exp(-z_t^\top\gamma)(y_t-x_t^\top\beta)^2.}
 #'
 #' For every trial value of \eqn{\gamma}, \eqn{\beta} is profiled out by
-#' weighted least squares, yielding \eqn{\widehat\beta(\gamma)}, and BFGS
-#' optimizes the resulting profile log-likelihood
-#' \eqn{\ell_p(\gamma) = \ell(\widehat\beta(\gamma),\gamma)} with its analytic
-#' gradient through [stats::optim()]. The asymptotic expected information has
+#' weighted least squares, yielding \eqn{\widehat\beta(\gamma)}, and the chosen
+#' optimizer maximizes the resulting profile log-likelihood
+#' \eqn{\ell_p(\gamma) = \ell(\widehat\beta(\gamma),\gamma)} through
+#' [stats::optim()], using the analytic profile gradient when the algorithm is
+#' gradient based. The asymptotic expected information has
 #' zero cross-information between \eqn{\beta} and \eqn{\gamma}, with blocks
 #'
 #' \deqn{\mathcal I_{\beta\beta}=X^\top W X,\qquad
@@ -910,7 +912,7 @@ gls_mult_variance_matrix <- function(
 #' specification of the multiplicative variance model. It is not an HC
 #' sandwich covariance, and no robust GLS covariance is computed.
 #'
-#' For `method = "ml"`, a fit is accepted as a locally optimized stationary
+#' For `estimator = "ml"`, a fit is accepted as a locally optimized stationary
 #' solution only when [stats::optim()] returns convergence code zero and the
 #' scale-invariant profile-score norm
 #' \eqn{\sqrt{s(\widehat\gamma)^\top (Z^\top Z)^{-1} s(\widehat\gamma)}}, where
@@ -933,9 +935,14 @@ gls_mult_variance_matrix <- function(
 #' @param variance `NULL` to use the mean model matrix for the dispersion model,
 #'   or a one-sided formula specifying the dispersion regressors. The formula
 #'   must generate exactly one all-ones intercept column.
-#' @param method Fitting method. `"ml"` locally optimizes the Gaussian profile
-#'   likelihood and is the default. `"two_step"` applies Harvey's corrected
-#'   auxiliary regression once.
+#' @param estimator Estimator. `"ml"` (default) locally optimizes the Gaussian
+#'   profile likelihood; `"two_step"` applies Harvey's corrected auxiliary
+#'   regression once.
+#' @param method Optimization algorithm passed to [stats::optim()] for the
+#'   `"ml"` estimator: one of `"BFGS"` (default), `"Nelder-Mead"`, `"CG"`, or
+#'   `"L-BFGS-B"`. It is ignored by `"two_step"`. `"BFGS"` uses the analytic
+#'   profile gradient and is recommended; whatever the algorithm, the accepted
+#'   fit must pass the stationarity check described in Details.
 #' @param alpha Significance level for normal Wald tests. The confidence level
 #'   is `1 - alpha`.
 #' @param null Null values for mean-coefficient tests. Use one value for all
@@ -946,7 +953,8 @@ gls_mult_variance_matrix <- function(
 #'   supplied `control$fnscale` must be one finite positive number. Negative
 #'   scaling is invalid because `gls_mult()` already minimizes the negative
 #'   profile log-likelihood. The accepted locally optimized stationary fit
-#'   must satisfy the scale-invariant score check described in Details.
+#'   must satisfy the scale-invariant score check described in Details. The
+#'   optimizer itself is chosen with `method`; `control$method` is rejected.
 #' @param ... Unused. Passing arguments raises an error.
 #'
 #' @return
@@ -1005,14 +1013,18 @@ gls_mult_variance_matrix <- function(
 #' AIC(result)
 #' BIC(result)
 #'
-#' two_step <- gls_mult(fit, method = "two_step")
+#' two_step <- gls_mult(fit, estimator = "two_step")
 #' coef(two_step)
+#'
+#' nelder_mead <- gls_mult(fit, method = "Nelder-Mead")
+#' coef(nelder_mead)
 #'
 #' @export
 gls_mult <- function(
   object,
   variance = NULL,
-  method = c("ml", "two_step"),
+  estimator = c("ml", "two_step"),
+  method = c("BFGS", "Nelder-Mead", "CG", "L-BFGS-B"),
   alpha = 0.05,
   null = 0,
   control = list(),
@@ -1029,12 +1041,29 @@ gls_mult <- function(
     )
   }
 
+  if (!missing(method) && length(method) == 1L && method %in% c("ml", "two_step")) {
+    cli::cli_abort(
+      c(
+        "`method` now selects the optimizer, not the estimator.",
+        "i" = "Use `estimator = \"{method}\"`; `method` must be one of \"BFGS\", \"Nelder-Mead\", \"CG\", or \"L-BFGS-B\"."
+      )
+    )
+  }
+  estimator <- match.arg(estimator)
   method <- match.arg(method)
   check_alpha(alpha)
   if (!is.list(control)) {
     abort_bad_argument(
       "control",
       "It must be a list of arguments for stats::optim()."
+    )
+  }
+  if (!is.null(control$method)) {
+    cli::cli_abort(
+      c(
+        "`control$method` is not a valid `stats::optim()` control element.",
+        "i" = "Choose the optimizer with the `method` argument; `control` only tunes it (e.g. `maxit`, `reltol`)."
+      )
     )
   }
   check_dots_empty(list(...))
@@ -1083,6 +1112,7 @@ gls_mult <- function(
     y = y,
     X = X,
     Z = Z,
+    estimator = estimator,
     method = method,
     ols_residuals = ols_residuals,
     control = control
@@ -1168,7 +1198,7 @@ gls_mult <- function(
     model_call = stats::getCall(object),
     model_formula = stats::formula(object),
     variance_formula = variance,
-    method = method,
+    estimator = estimator,
     vcov_type = "model",
     alpha = alpha,
     confidence_level = 1 - alpha,
@@ -1195,9 +1225,10 @@ gls_mult <- function(
     table = table,
     variance_table = variance_table
   )
-  if (method == "ml") {
+  if (estimator == "ml") {
     result$loglik <- fit$loglik
     result$convergence <- fit$convergence
+    result$method <- method
   }
 
   structure(result, class = c("gls_mult", "hcinfer_object"))
@@ -1356,11 +1387,11 @@ residuals.gls_mult <- function(object, ...) {
 #' @exportS3Method stats::logLik
 logLik.gls_mult <- function(object, ...) {
   check_dots_empty(list(...))
-  if (object$method != "ml") {
+  if (object$estimator != "ml") {
     cli::cli_abort(
       c(
         "Information criteria require the maximum likelihood fit.",
-        "i" = "Refit with {.code gls_mult(..., method = \"ml\")} to use {.fn logLik}, {.fn AIC}, and {.fn BIC}."
+        "i" = "Refit with {.code gls_mult(..., estimator = \"ml\")} to use {.fn logLik}, {.fn AIC}, and {.fn BIC}."
       )
     )
   }
@@ -1429,7 +1460,7 @@ summary.gls_mult <- function(object, ...) {
     model_call = object$model_call,
     model_formula = object$model_formula,
     variance_formula = object$variance_formula,
-    method = object$method,
+    estimator = object$estimator,
     vcov_type = object$vcov_type,
     alpha = object$alpha,
     confidence_level = object$confidence_level,
@@ -1445,11 +1476,12 @@ summary.gls_mult <- function(object, ...) {
       sqrt(object$fitted_variances)
     )
   )
-  if (object$method == "ml") {
+  if (object$estimator == "ml") {
     result$loglik <- as.numeric(stats::logLik(object))
     result$aic <- stats::AIC(object)
     result$bic <- stats::BIC(object)
     result$convergence <- object$convergence
+    result$method <- object$method
   }
 
   structure(result, class = "summary_gls_mult")
@@ -1460,8 +1492,8 @@ summary.gls_mult <- function(object, ...) {
 print.summary_gls_mult <- function(x, ...) {
   check_dots_empty(list(...))
 
-  method_label <- if (x$method == "ml") {
-    "Maximum likelihood"
+  method_label <- if (x$estimator == "ml") {
+    paste0("Maximum likelihood (", x$method, ")")
   } else {
     "Harvey two-step"
   }
@@ -1525,7 +1557,7 @@ print.summary_gls_mult <- function(x, ...) {
     width = Inf
   )
 
-  if (x$method == "ml") {
+  if (x$estimator == "ml") {
     evaluation_counts <- paste(
       paste0(
         names(x$convergence$iterations),
