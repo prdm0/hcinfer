@@ -884,3 +884,92 @@ test_that("maximum likelihood accepts a stable flat stationary fit", {
     tolerance = 1e-4
   )
 })
+
+test_that("maximum likelihood matches a full joint optimizer when q differs from p", {
+  n <- 60L
+  idx <- seq_len(n)
+  x1 <- seq(-1.2, 1.2, length.out = n)
+  x2 <- sin(idx)
+  eta_true <- 0.2 + 0.7 * x1
+  noise <- (sin(3 * idx) + cos(7 * idx)) / sqrt(2)
+  y <- 1 - 2 * x1 + 0.5 * x2 + exp(eta_true / 2) * noise
+  dat <- data.frame(y, x1, x2)
+  fit <- lm(y ~ x1 + x2, data = dat)
+
+  result <- gls_mult(
+    fit,
+    variance = ~x1,
+    estimator = "ml",
+    control = list(reltol = 1e-12, maxit = 10000)
+  )
+  X <- model.matrix(fit)
+  Z <- model.matrix(~x1, data = dat)
+  p <- ncol(X)
+  q <- ncol(Z)
+  k <- p + q
+
+  neg_joint <- function(par) {
+    beta <- par[seq_len(p)]
+    gamma <- par[p + seq_len(q)]
+    eta <- drop(Z %*% gamma)
+    residuals <- y - drop(X %*% beta)
+    0.5 * sum(eta) +
+      0.5 * sum(residuals^2 * exp(-eta)) +
+      n / 2 * log(2 * pi)
+  }
+  start <- c(coef(fit), log(mean(residuals(fit)^2)), 0)
+  oracle <- optim(
+    start,
+    neg_joint,
+    method = "BFGS",
+    control = list(reltol = 1e-14, maxit = 20000)
+  )
+  oracle_loglik <- -oracle$value
+
+  expect_identical(p, 3L)
+  expect_identical(q, 2L)
+  expect_identical(attr(logLik(result), "df"), k)
+  expect_identical(nobs(result), nrow(dat))
+  expect_equal(as.numeric(logLik(result)), oracle_loglik, tolerance = 1e-6)
+  expect_equal(
+    unname(coef(result)),
+    unname(oracle$par[seq_len(p)]),
+    tolerance = 1e-6
+  )
+  expect_equal(
+    unname(result$variance_coefficients),
+    unname(oracle$par[p + seq_len(q)]),
+    tolerance = 1e-6
+  )
+  expect_equal(AIC(result), -2 * oracle_loglik + 2 * k, tolerance = 1e-6)
+  expect_equal(BIC(result), -2 * oracle_loglik + log(n) * k, tolerance = 1e-6)
+})
+
+test_that("the reported log-likelihood is consistent with the returned fit", {
+  public_fit <- lm(expenditure ~ income, data = PublicSchools)
+  homoskedastic <- gls_mult(public_fit, variance = ~1, estimator = "ml")
+  full <- gls_mult(public_fit, estimator = "ml")
+
+  schools <- transform(PublicSchools2, income_scaled = income / 10000)
+  custom_fit <- lm(expenditure ~ income_scaled + south, data = schools)
+  custom <- gls_mult(
+    custom_fit,
+    variance = ~income_scaled,
+    estimator = "ml",
+    control = list(reltol = 1e-13, maxit = 10000)
+  )
+
+  for (result in list(homoskedastic, full, custom)) {
+    n <- result$nobs
+    reconstructed <- -n / 2 * log(2 * pi) -
+      0.5 * sum(result$eta) -
+      0.5 * sum(result$residuals^2 / result$fitted_variances)
+    expect_equal(as.numeric(logLik(result)), reconstructed, tolerance = 1e-10)
+    expect_equal(AIC(result), -2 * reconstructed + 2 * result$df, tolerance = 1e-8)
+    expect_equal(
+      BIC(result),
+      -2 * reconstructed + log(n) * result$df,
+      tolerance = 1e-8
+    )
+  }
+})

@@ -50,6 +50,8 @@
   [`summary(`*`<gls_mult>`*`)`](https://prdm0.github.io/hcinfer/reference/gls_mult-methods.md)
   [`print(`*`<summary_gls_mult>`*`)`](https://prdm0.github.io/hcinfer/reference/gls_mult-methods.md)
   : Methods for multiplicative heteroskedasticity GLS fits
+- [`plot(`*`<gls_mult>`*`)`](https://prdm0.github.io/hcinfer/reference/plot.gls_mult.md)
+  : Plot multiplicative heteroskedasticity FGLS confidence intervals
 
 ## Data
 
