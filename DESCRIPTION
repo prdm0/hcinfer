@@ -18,7 +18,8 @@ Description: Performs heteroskedasticity-consistent inferences in linear
     <doi:10.1016/0304-4076(85)90158-7>, Cribari-Neto (2004)
     <doi:10.1016/S0167-9473(02)00366-3>, Cribari-Neto and da Silva (2011)
     <doi:10.1007/s10182-010-0141-2>, Cribari-Neto et al. (2007)
-    <doi:10.1080/03610920601126589>, and Li et al. (2016)
+    <doi:10.1080/03610920601126589> with its erratum
+    <doi:10.1080/03610920802109210>, and Li et al. (2016)
     <doi:10.1080/00949655.2016.1198906>. The package also includes HCbeta, a
     new estimator proposed by the package authors. It additionally provides
     feasible generalized least squares estimation under multiplicative

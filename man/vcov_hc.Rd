@@ -47,6 +47,14 @@ method-specific arguments.
 \code{a_max = 10000}, and \code{b_max = 10000}.
 }
 
+The HC5 adjustment factor follows the corrected expression published in the
+erratum to Cribari-Neto, Souza and Vasconcellos (2007), that is,
+\eqn{g_t = (1 - h_t)^{-\delta_t / 2}} with
+\eqn{\delta_t = \min\{h_t / \bar h, \max\{4, k h_{\max} / \bar h\}\}}, where
+\eqn{\bar h = p / n} and \eqn{h_{\max} = \max_t h_t}. HC5m follows Li,
+Zhang, Zhang and Wang (2016) and applies its own exponent \eqn{\delta_t}
+without the factor \eqn{1/2}.
+
 For \code{"hc5"} and \code{"hc5m"}, \code{k}, \code{k1}, \code{k2}, and \code{k3} must be nonnegative,
 while \code{gamma1} and \code{gamma2} must be positive. For \code{"hcbeta"}, \code{c1} must be
 nonnegative, \code{c2} must be positive, and \code{lower} and \code{upper} must lie in
@@ -119,6 +127,12 @@ Cribari-Neto, F., Souza, T. C., and Vasconcellos, K. L. P. (2007).
 Inference under heteroskedasticity and leveraged data. \emph{Communications in
 Statistics - Theory and Methods}, 36(10), 1877-1888.
 \doi{10.1080/03610920601126589}
+
+Cribari-Neto, F., Souza, T. C., and Vasconcellos, K. L. P. (2008). Errata:
+Inference under heteroskedasticity and leveraged data, Communications in
+Statistics, Theory and Methods, 36, 1877-1888, 2007. \emph{Communications in
+Statistics - Theory and Methods}, 37(20), 3329-3330.
+\doi{10.1080/03610920802109210}
 
 Li, S., Zhang, N., Zhang, X., and Wang, G. (2016). A new
 heteroskedasticity-consistent covariance matrix estimator and inference

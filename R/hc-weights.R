@@ -160,8 +160,10 @@ compute_hc_weights <- function(type, leverage, n, p, dots,
       list(weights = u^(-delta), params = list())
     },
     hc5 = {
+      # Erratum to Cribari-Neto, Souza and Vasconcellos (2007): the adjustment
+      # factor is (1 - h_t)^(-delta_t / 2), not (1 - h_t)^(-delta_t).
       delta <- pmin(ratio, max(4, args$k * h_max / h_bar))
-      list(weights = u^(-delta), params = args)
+      list(weights = u^(-delta / 2), params = args)
     },
     hc5m = {
       delta <- args$k1 * pmin(args$gamma1, ratio) +
