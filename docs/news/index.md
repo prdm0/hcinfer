@@ -1,6 +1,6 @@
 # Changelog
 
-## hcinfer (development version)
+## hcinfer 0.3.0
 
 - Added
   [`gls_mult()`](https://prdm0.github.io/hcinfer/reference/gls_mult.md)
@@ -28,6 +28,30 @@
   fits. The package `Description` now also covers feasible generalized
   least squares following Harvey (1976) and Cribari-Neto and Pereira
   (2019).
+- Corrected the HC5 adjustment factor, which now follows the erratum to
+  Cribari-Neto, Souza and Vasconcellos (2007).
+  [`vcov_hc()`](https://prdm0.github.io/hcinfer/reference/vcov_hc.md)
+  and
+  [`hcinfer()`](https://prdm0.github.io/hcinfer/reference/hcinfer.md)
+  compute `g_t = (1 - h_t)^(-delta_t / 2)` instead of the expression
+  `g_t = (1 - h_t)^(-delta_t)` printed in Section 3 of the original
+  article, keeping
+  `delta_t = min(h_t / h_bar, max(4, k * h_max / h_bar))` and the
+  default `k = 0.7` unchanged. HC5 adjustment factors are therefore
+  smaller, and HC5 standard errors, Wald statistics, p-values, and
+  confidence intervals differ from those returned by earlier versions.
+  HC5m is unaffected because it follows Li, Zhang, Zhang and Wang (2016)
+  and applies its own exponent without the factor 1/2, so
+  `type = "hc5m"` with `k1 = 0`, `k2 = 0`, and `k3 = 1` no longer
+  reproduces `type = "hc5"` and instead squares its adjustment factor.
+- Documented the corrected HC5 expression in the
+  [`vcov_hc()`](https://prdm0.github.io/hcinfer/reference/vcov_hc.md)
+  help page and in the methodology vignette, and added the 2008 erratum
+  to the references of
+  [`hcinfer()`](https://prdm0.github.io/hcinfer/reference/hcinfer.md),
+  [`vcov_hc()`](https://prdm0.github.io/hcinfer/reference/vcov_hc.md),
+  [`tests()`](https://prdm0.github.io/hcinfer/reference/tests.md), the
+  methodology vignette, and the package `Description`.
 
 ## hcinfer 0.2.0
 

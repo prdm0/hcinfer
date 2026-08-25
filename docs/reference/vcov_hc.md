@@ -60,6 +60,14 @@ Additional arguments in `...` are method-specific. The defaults are:
 - `"hcbeta"`: `c1 = 7`, `c2 = 0.75`, `lower = 0.01`, `upper = 0.99`,
   `a_max = 10000`, and `b_max = 10000`.
 
+The HC5 adjustment factor follows the corrected expression published in
+the erratum to Cribari-Neto, Souza and Vasconcellos (2007), that is,
+\\g_t = (1 - h_t)^{-\delta_t / 2}\\ with \\\delta_t = \min\\h_t / \bar
+h, \max\\4, k h\_{\max} / \bar h\\\\\\, where \\\bar h = p / n\\ and
+\\h\_{\max} = \max_t h_t\\. HC5m follows Li, Zhang, Zhang and Wang
+(2016) and applies its own exponent \\\delta_t\\ without the factor
+\\1/2\\.
+
 For `"hc5"` and `"hc5m"`, `k`, `k1`, `k2`, and `k3` must be nonnegative,
 while `gamma1` and `gamma2` must be positive. For `"hcbeta"`, `c1` must
 be nonnegative, `c2` must be positive, and `lower` and `upper` must lie
@@ -115,6 +123,12 @@ Inference under heteroskedasticity and leveraged data. *Communications
 in Statistics - Theory and Methods*, 36(10), 1877-1888.
 [doi:10.1080/03610920601126589](https://doi.org/10.1080/03610920601126589)
 
+Cribari-Neto, F., Souza, T. C., and Vasconcellos, K. L. P. (2008).
+Errata: Inference under heteroskedasticity and leveraged data,
+Communications in Statistics, Theory and Methods, 36, 1877-1888, 2007.
+*Communications in Statistics - Theory and Methods*, 37(20), 3329-3330.
+[doi:10.1080/03610920802109210](https://doi.org/10.1080/03610920802109210)
+
 Li, S., Zhang, N., Zhang, X., and Wang, G. (2016). A new
 heteroskedasticity-consistent covariance matrix estimator and inference
 under heteroskedasticity. *Journal of Statistical Computation and
@@ -168,7 +182,7 @@ vcov_hc(fit, type = "hc5", k = 0.7)
 #> Observations: 50
 #> Parameters: 3
 #> 🎯 Maximum leverage: 0.6508
-#> ⚖️ Maximum robust weight: 2946.7866
+#> ⚖️ Maximum robust weight: 54.2843
 #> Use `vcov()` to extract the stored covariance matrix.
 vcov_hc(fit, type = "hc5m", k = 0.7, k1 = 1, k2 = 0, k3 = 1)
 #> 

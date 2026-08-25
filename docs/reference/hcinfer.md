@@ -100,6 +100,12 @@ Inference under heteroskedasticity and leveraged data. *Communications
 in Statistics - Theory and Methods*, 36(10), 1877-1888.
 [doi:10.1080/03610920601126589](https://doi.org/10.1080/03610920601126589)
 
+Cribari-Neto, F., Souza, T. C., and Vasconcellos, K. L. P. (2008).
+Errata: Inference under heteroskedasticity and leveraged data,
+Communications in Statistics, Theory and Methods, 36, 1877-1888, 2007.
+*Communications in Statistics - Theory and Methods*, 37(20), 3329-3330.
+[doi:10.1080/03610920802109210](https://doi.org/10.1080/03610920802109210)
+
 Li, S., Zhang, N., Zhang, X., and Wang, G. (2016). A new
 heteroskedasticity-consistent covariance matrix estimator and inference
 under heteroskedasticity. *Journal of Statistical Computation and

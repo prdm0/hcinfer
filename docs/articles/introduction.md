@@ -100,7 +100,7 @@ covariance objects.
 
 You can also choose another estimator and pass its method constants.
 
-`cov_hc5`` ``<-`` `[`vcov_hc`](https://prdm0.github.io/hcinfer/reference/vcov_hc.md)`(``fit``, type ``=`` ``"hc5"``, k ``=`` ``0.7``)`` ``cov_hc5`` ``#> `` ``#> ``──`` ``HC5 robust covariance`` ``───────────────────────────────────────────────────────`` ``` #> Model: `expenditure ~ income_scaled + income_scaled_sq` ``` ``#> Dimension: 3 x 3`` ``#> Observations: 50`` ``#> Parameters: 3`` ``#> Maximum leverage: 0.6508`` ``#> Maximum robust weight: 2946.7866`` ``` #> Use `vcov()` to extract the stored covariance matrix. ``
+`cov_hc5`` ``<-`` `[`vcov_hc`](https://prdm0.github.io/hcinfer/reference/vcov_hc.md)`(``fit``, type ``=`` ``"hc5"``, k ``=`` ``0.7``)`` ``cov_hc5`` ``#> `` ``#> ``──`` ``HC5 robust covariance`` ``───────────────────────────────────────────────────────`` ``` #> Model: `expenditure ~ income_scaled + income_scaled_sq` ``` ``#> Dimension: 3 x 3`` ``#> Observations: 50`` ``#> Parameters: 3`` ``#> Maximum leverage: 0.6508`` ``#> Maximum robust weight: 54.2843`` ``` #> Use `vcov()` to extract the stored covariance matrix. ``
 
 ## Plots
 

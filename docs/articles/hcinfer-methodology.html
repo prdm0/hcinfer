@@ -26,7 +26,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">hcinfer</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.3.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -248,9 +248,11 @@ its average.</p>
 <h2 id="hc5-and-hc5m">HC5 and HC5m<a class="anchor" aria-label="anchor" href="#hc5-and-hc5m"></a>
 </h2>
 <p>HC5 and HC5m target high leverage designs more directly. In
-<code>hcinfer</code>, the HC5 adjustment is</p>
+<code>hcinfer</code>, the HC5 adjustment follows the corrected
+expression given in the erratum to Cribari-Neto, Souza and Vasconcellos
+(2007),</p>
 <p><span class="math display">
-g_t = (1 - h_t)^{-\delta_t},
+g_t = (1 - h_t)^{-\delta_t / 2},
 \qquad
 \delta_t = \min\left(
   \frac{h_t}{\bar h},
@@ -258,8 +260,8 @@ g_t = (1 - h_t)^{-\delta_t},
 \right),
 \qquad k = 0.7.
 </span></p>
-<p>The HC5m adjustment combines the HC4m structure with the HC5
-term:</p>
+<p>The HC5m adjustment combines the HC4m structure with the HC5 term and
+applies the resulting exponent without the factor <span class="math inline">1/2</span>:</p>
 <p><span class="math display">
 \begin{aligned}
 g_t &amp;= (1 - h_t)^{-\delta_t}, \\
@@ -462,6 +464,11 @@ regression model. <em>AStA Advances in Statistical Analysis</em>, 95(2),
 Inference under heteroskedasticity and leveraged data.
 <em>Communications in Statistics - Theory and Methods</em>, 36(10),
 1877-1888. <a href="https://doi.org/10.1080/03610920601126589" class="external-link">doi:10.1080/03610920601126589</a>.</p>
+<p>Cribari-Neto, F., Souza, T. C., and Vasconcellos, K. L. P. (2008).
+Errata: Inference under heteroskedasticity and leveraged data,
+Communications in Statistics, Theory and Methods, 36, 1877-1888, 2007.
+<em>Communications in Statistics - Theory and Methods</em>, 37(20),
+3329-3330. <a href="https://doi.org/10.1080/03610920802109210" class="external-link">doi:10.1080/03610920802109210</a>.</p>
 <p>Li, S., Zhang, N., Zhang, X., and Wang, G. (2016). A new
 heteroskedasticity-consistent covariance matrix estimator and inference
 under heteroskedasticity. <em>Journal of Statistical Computation and
