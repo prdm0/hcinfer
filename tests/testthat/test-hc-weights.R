@@ -35,7 +35,7 @@ test_that("HC5 and HC5m weights match their formulas", {
   k <- 0.7
 
   hc5_delta <- pmin(ratio, max(4, k * h_max / h_bar))
-  expect_equal(vcov_hc(fit, "hc5")$weights, u^(-hc5_delta), ignore_attr = TRUE)
+  expect_equal(vcov_hc(fit, "hc5")$weights, u^(-hc5_delta / 2), ignore_attr = TRUE)
 
   hc5m_delta <- pmin(1, ratio) + pmin(ratio, max(4, k * h_max / h_bar))
   expect_equal(vcov_hc(fit, "hc5m")$weights, u^(-hc5m_delta), ignore_attr = TRUE)
@@ -50,15 +50,19 @@ test_that("HC5m preserves documented special cases", {
     ignore_attr = TRUE
   )
 
+  # HC5m applies the HC5 exponent without the erratum factor 1/2, so isolating
+  # its third term squares the HC5 adjustment factor.
   expect_equal(
     vcov_hc(fit, "hc5m", k1 = 0, k2 = 0, k3 = 1)$weights,
-    vcov_hc(fit, "hc5")$weights,
+    vcov_hc(fit, "hc5")$weights^2,
     ignore_attr = TRUE
   )
 
+  # The cap max(4, k h_max / h_bar) resolves to 4 for this design, so the HC5
+  # exponent is the HC4 exponent halved.
   expect_equal(
     vcov_hc(fit, "hc5")$weights,
-    vcov_hc(fit, "hc4")$weights,
+    sqrt(vcov_hc(fit, "hc4")$weights),
     ignore_attr = TRUE
   )
 })

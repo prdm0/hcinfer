@@ -204,10 +204,11 @@ exponent to the leverage relative to its average.
 ## HC5 and HC5m
 
 HC5 and HC5m target high leverage designs more directly. In `hcinfer`, the HC5
-adjustment is
+adjustment follows the corrected expression given in the erratum to
+Cribari-Neto, Souza and Vasconcellos (2007),
 
 $$
-g_t = (1 - h_t)^{-\delta_t},
+g_t = (1 - h_t)^{-\delta_t / 2},
 \qquad
 \delta_t = \min\left(
   \frac{h_t}{\bar h},
@@ -216,7 +217,8 @@ g_t = (1 - h_t)^{-\delta_t},
 \qquad k = 0.7.
 $$
 
-The HC5m adjustment combines the HC4m structure with the HC5 term:
+The HC5m adjustment combines the HC4m structure with the HC5 term and applies
+the resulting exponent without the factor $1/2$:
 
 $$
 \begin{aligned}
@@ -428,6 +430,12 @@ Cribari-Neto, F., Souza, T. C., and Vasconcellos, K. L. P. (2007). Inference
 under heteroskedasticity and leveraged data. *Communications in Statistics -
 Theory and Methods*, 36(10), 1877-1888.
 [doi:10.1080/03610920601126589](https://doi.org/10.1080/03610920601126589).
+
+Cribari-Neto, F., Souza, T. C., and Vasconcellos, K. L. P. (2008). Errata:
+Inference under heteroskedasticity and leveraged data, Communications in
+Statistics, Theory and Methods, 36, 1877-1888, 2007. *Communications in
+Statistics - Theory and Methods*, 37(20), 3329-3330.
+[doi:10.1080/03610920802109210](https://doi.org/10.1080/03610920802109210).
 
 Li, S., Zhang, N., Zhang, X., and Wang, G. (2016). A new
 heteroskedasticity-consistent covariance matrix estimator and inference under

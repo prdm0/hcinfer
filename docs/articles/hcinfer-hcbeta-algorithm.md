@@ -134,33 +134,7 @@ underflows. Finally, the exponent -(c_1/n^{c_2})\log F_B(w_t; \tilde a,
 In the public-schools model shown here, the default caps A\_{\max} =
 B\_{\max} = 10000 are far from binding.
 
-``` r
-
-library(hcinfer)
-
-schools <- transform(
-  PublicSchools,
-  income_scaled = income / 10000,
-  income_scaled_sq = (income / 10000)^2
-)
-fit <- lm(expenditure ~ income_scaled + income_scaled_sq, data = schools)
-cov <- vcov_hc(fit, type = "hcbeta")
-
-cov$method_params[c("a_tilde", "b_tilde", "a_max", "b_max")]
-#> $a_tilde
-#> [1] 3.147193
-#> 
-#> $b_tilde
-#> [1] 0.6689698
-#> 
-#> $a_max
-#> [1] 10000
-#> 
-#> $b_max
-#> [1] 10000
-max(cov$weights)
-#> [1] 4.580723
-```
+[`library`](https://rdrr.io/r/base/library.html)`(`[`hcinfer`](https://prdm0.github.io/hcinfer/)`)`` `` ``schools`` ``<-`` `[`transform`](https://rdrr.io/r/base/transform.html)`(`` `` ``PublicSchools``,`` `` income_scaled ``=`` ``income`` ``/`` ``10000``,`` `` income_scaled_sq ``=`` ``(``income`` ``/`` ``10000``)``^``2`` ``)`` ``fit`` ``<-`` `[`lm`](https://rdrr.io/r/stats/lm.html)`(``expenditure`` ``~`` ``income_scaled`` ``+`` ``income_scaled_sq``, data ``=`` ``schools``)`` ``cov`` ``<-`` `[`vcov_hc`](https://prdm0.github.io/hcinfer/reference/vcov_hc.md)`(``fit``, type ``=`` ``"hcbeta"``)`` `` ``cov``$``method_params``[`[`c`](https://rdrr.io/r/base/c.html)`(``"a_tilde"``, ``"b_tilde"``, ``"a_max"``, ``"b_max"``)``]`` ``#> $a_tilde`` ``#> [1] 3.147193`` ``#> `` ``#> $b_tilde`` ``#> [1] 0.6689698`` ``#> `` ``#> $a_max`` ``#> [1] 10000`` ``#> `` ``#> $b_max`` ``#> [1] 10000`` `[`max`](https://rdrr.io/r/base/Extremes.html)`(``cov``$``weights``)`` ``#> [1] 4.580723`
 
 The adjusted shape parameters are well below the caps, and the largest
 adjustment factor matches the value reported for this model. By
@@ -168,11 +142,4 @@ construction each factor is at least the HC1 scale n/(n - p), because
 the capped exponent is nonnegative and the leading factor is exactly
 n/(n - p). The code below verifies this lower-bound property.
 
-``` r
-
-n <- cov$n
-p <- cov$p
-
-all(cov$weights >= n / (n - p))
-#> [1] TRUE
-```
+`n`` ``<-`` ``cov``$``n`` ``p`` ``<-`` ``cov``$``p`` `` `[`all`](https://rdrr.io/r/base/all.html)`(``cov``$``weights`` ``>=`` ``n`` ``/`` ``(``n`` ``-`` ``p``)``)`` ``#> [1] TRUE`

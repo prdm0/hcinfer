@@ -10,6 +10,11 @@
 - [Using
   HCbeta](https://prdm0.github.io/hcinfer/articles/hcinfer-hcbeta.md):
 
+### Feasible generalized least squares
+
+- [Feasible GLS under multiplicative
+  heteroskedasticity](https://prdm0.github.io/hcinfer/articles/hcinfer-gls.md):
+
 ### Methodology
 
 - [HC Estimator

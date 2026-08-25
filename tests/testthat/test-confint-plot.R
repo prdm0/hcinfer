@@ -109,3 +109,22 @@ test_that("public-schools article model reproduces reference values", {
   expect_equal(max(cov$weights), 4.5807, tolerance = 1e-4)
   expect_equal(result$table$std_error[[3]], 1547.4583, tolerance = 1e-4)
 })
+
+test_that("plot() returns a ggplot for gls_mult fits", {
+  result <- gls_mult(lm(expenditure ~ income, data = PublicSchools))
+  p <- plot(result)
+  expect_s3_class(p, "ggplot")
+  expect_true("decision" %in% names(p$data))
+  expect_true(all(p$data$decision %in% c("reject H0", "do not reject H0")))
+  expect_true(all(grepl("^p-value", p$data$p_label)))
+})
+
+test_that("plot() selects gls_mult coefficients via parm", {
+  result <- gls_mult(lm(expenditure ~ income, data = PublicSchools))
+  by_name <- plot(result, parm = "income")
+  expect_s3_class(by_name, "ggplot")
+  expect_equal(nrow(by_name$data), 1L)
+  expect_equal(as.character(by_name$data$term[[1]]), "income")
+  expect_equal(nrow(plot(result, parm = 1L)$data), 1L)
+  expect_error(plot(result, parm = "nonexistent"), "Unknown coefficient")
+})

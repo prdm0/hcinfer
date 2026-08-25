@@ -20,6 +20,10 @@ articles:
     navbar: ~
     contents:
       - hcinfer-hcbeta
+  - title: Feasible generalized least squares
+    navbar: ~
+    contents:
+      - hcinfer-gls
   - title: Methodology
     navbar: ~
     contents:
@@ -35,7 +39,8 @@ home:
   title: Heteroskedasticity-consistent inference for linear models
   description: |
     Normal Wald inference with heteroskedasticity-consistent covariance
-    estimators for ordinary least squares models.
+    estimators, plus feasible generalized least squares under multiplicative
+    heteroskedasticity, for linear regression models.
 
 reference:
   - title: Inference
@@ -55,6 +60,11 @@ reference:
       - vcov_hc
       - plot.hcinfer_vcov
       - hc_methods
+  - title: Feasible generalized least squares
+    contents:
+      - gls_mult
+      - gls_mult-methods
+      - plot.gls_mult
   - title: Data
     contents:
       - PublicSchools

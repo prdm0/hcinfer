@@ -13,107 +13,7 @@ It assumes the introduction
 Fit an OLS model and request HCbeta explicitly. This is equivalent to
 the default `hcinfer(fit)` call.
 
-``` r
-
-library(hcinfer)
-
-fit <- lm(murder ~ hs_grad + poverty + single, data = Crime2009)
-result <- hcinfer(fit, type = "hcbeta")
-
-summary(result)
-#> 
-#> ── HCbeta robust inference summary ─────────────────────────────────────────────
-#> 
-#> ── Model ──
-#> 
-#> Formula: `murder ~ hs_grad + poverty + single`
-#> Observations: 51 | Parameters: 4 | Residual df: 47
-#> 
-#> ── Robust covariance ──
-#> 
-#> Estimator: HCbeta
-#> Confidence level: 95.0% | Normal critical value: 1.9600
-#> Tests are two-sided normal Wald tests, one coefficient at a time.
-#> Test results use alpha = 0.050.
-#> 
-#> ── Leverage diagnostics ──
-#> 
-#> # A tibble: 6 × 2
-#>   statistic value  
-#>   <chr>     <chr>  
-#> 1 minimum   0.02162
-#> 2 q1        0.04061
-#> 3 median    0.0603 
-#> 4 mean      0.07843
-#> 5 q3        0.08221
-#> 6 maximum   0.7365
-#> Maximum leverage: observation 9 (index 9), value 0.7365
-#> Average leverage: 0.0784
-#> Concentration: 9.39 x average leverage
-#> 
-#> ── Robust weights ──
-#> 
-#> # A tibble: 6 × 2
-#>   statistic value
-#>   <chr>     <chr>
-#> 1 minimum   1.151
-#> 2 q1        1.197
-#> 3 median    1.242
-#> 4 mean      1.366
-#> 5 q3        1.292
-#> 6 maximum   6.944
-#> Maximum weight: observation 9 (index 9), value 6.9442
-#> Median weight: 1.2419
-#> Concentration: 5.59 x median weight
-#> 
-#> ── Method parameters ──
-#> 
-#> # A tibble: 14 × 3
-#>    parameter value    role              
-#>    <chr>     <chr>    <chr>             
-#>  1 c1        7        method constant   
-#>  2 c2        0.75     method constant   
-#>  3 lower     0.01     method constant   
-#>  4 upper     0.99     method constant   
-#>  5 a_max     1e+04    method constant   
-#>  6 b_max     1e+04    method constant   
-#>  7 mu_hat    0.9216   estimated quantity
-#>  8 s2_w      0.009906 estimated quantity
-#>  9 phi_hat   6.297    estimated quantity
-#> 10 a_hat     5.803    estimated quantity
-#> 11 b_hat     0.4939   estimated quantity
-#> 12 zeta      0.505    estimated quantity
-#> 13 a_tilde   3.425    estimated quantity
-#> 14 b_tilde   0.7444   estimated quantity
-#> 
-#> ── Coefficient tests ──
-#> 
-#> # A tibble: 4 × 9
-#>   term        estimate robust_se z      p_value alpha test_result     
-#>   <chr>       <chr>    <chr>     <chr>  <chr>   <chr> <chr>           
-#> 1 (Intercept) -40.65   25.39     -1.601 0.109   0.050 do not reject H0
-#> 2 hs_grad     0.2755   0.2253    1.223  0.222   0.050 do not reject H0
-#> 3 poverty     0.353    0.1589    2.222  0.026   0.050 reject H0       
-#> 4 single      0.6642   0.19      3.495  <0.001  0.050 reject H0       
-#>   ci                ci_relation  
-#>   <chr>             <chr>        
-#> 1 [-90.42, 9.115]   includes null
-#> 2 [-0.1662, 0.7171] includes null
-#> 3 [0.04157, 0.6645] excludes null
-#> 4 [0.2917, 1.037]   excludes null
-#> 
-#> ── Confidence intervals ──
-#> 
-#> # A tibble: 4 × 4
-#>   term        null_value interval          interpretation
-#>   <chr>       <chr>      <chr>             <chr>         
-#> 1 (Intercept) 0          [-90.42, 9.115]   includes null 
-#> 2 hs_grad     0          [-0.1662, 0.7171] includes null 
-#> 3 poverty     0          [0.04157, 0.6645] excludes null 
-#> 4 single      0          [0.2917, 1.037]   excludes null
-#> test_result is based on p_value < alpha. Do not reject H0 does not mean that H0
-#> is true.
-```
+[`library`](https://rdrr.io/r/base/library.html)`(`[`hcinfer`](https://prdm0.github.io/hcinfer/)`)`` `` ``fit`` ``<-`` `[`lm`](https://rdrr.io/r/stats/lm.html)`(``murder`` ``~`` ``hs_grad`` ``+`` ``poverty`` ``+`` ``single``, data ``=`` ``Crime2009``)`` ``result`` ``<-`` `[`hcinfer`](https://prdm0.github.io/hcinfer/reference/hcinfer.md)`(``fit``, type ``=`` ``"hcbeta"``)`` `` `[`summary`](https://rdrr.io/r/base/summary.html)`(``result``)`` ``#> `` ``#> ``──`` ``HCbeta robust inference summary`` ``─────────────────────────────────────────────`` ``#> `` ``#> ── ``Model`` ──`` ``#> `` ``` #> Formula: `murder ~ hs_grad + poverty + single` ``` ``#> Observations: 51 | Parameters: 4 | Residual df: 47`` ``#> `` ``#> ── ``Robust covariance`` ──`` ``#> `` ``#> Estimator: HCbeta`` ``#> Confidence level: 95.0% | Normal critical value: 1.9600`` ``#> Tests are two-sided normal Wald tests, one coefficient at a time.`` ``#> Test results use alpha = 0.050.`` ``#> `` ``#> ── ``Leverage diagnostics`` ──`` ``#> `` ``#> ``# A tibble: 6 × 2`` ``#> statistic value `` ``#> ``<chr>`` ``<chr>`` `` ``#> ``1`` minimum 0.02162`` ``#> ``2`` q1 0.04061`` ``#> ``3`` median 0.0603 `` ``#> ``4`` mean 0.07843`` ``#> ``5`` q3 0.08221`` ``#> ``6`` maximum 0.7365`` ``#> Maximum leverage: observation 9 (index 9), value 0.7365`` ``#> Average leverage: 0.0784`` ``#> Concentration: 9.39 x average leverage`` ``#> `` ``#> ── ``Robust weights`` ──`` ``#> `` ``#> ``# A tibble: 6 × 2`` ``#> statistic value`` ``#> ``<chr>`` ``<chr>`` ``#> ``1`` minimum 1.151`` ``#> ``2`` q1 1.197`` ``#> ``3`` median 1.242`` ``#> ``4`` mean 1.366`` ``#> ``5`` q3 1.292`` ``#> ``6`` maximum 6.944`` ``#> Maximum weight: observation 9 (index 9), value 6.9442`` ``#> Median weight: 1.2419`` ``#> Concentration: 5.59 x median weight`` ``#> `` ``#> ── ``Method parameters`` ──`` ``#> `` ``#> ``# A tibble: 14 × 3`` ``#> parameter value role `` ``#> ``<chr>`` ``<chr>`` ``<chr>`` `` ``#> `` 1`` c1 7 method constant `` ``#> `` 2`` c2 0.75 method constant `` ``#> `` 3`` lower 0.01 method constant `` ``#> `` 4`` upper 0.99 method constant `` ``#> `` 5`` a_max 1e+04 method constant `` ``#> `` 6`` b_max 1e+04 method constant `` ``#> `` 7`` mu_hat 0.9216 estimated quantity`` ``#> `` 8`` s2_w 0.009906 estimated quantity`` ``#> `` 9`` phi_hat 6.297 estimated quantity`` ``#> ``10`` a_hat 5.803 estimated quantity`` ``#> ``11`` b_hat 0.4939 estimated quantity`` ``#> ``12`` zeta 0.505 estimated quantity`` ``#> ``13`` a_tilde 3.425 estimated quantity`` ``#> ``14`` b_tilde 0.7444 estimated quantity`` ``#> `` ``#> ── ``Coefficient tests`` ──`` ``#> `` ``#> ``# A tibble: 4 × 9`` ``#> term estimate robust_se z p_value alpha test_result `` ``#> ``<chr>`` ``<chr>`` ``<chr>`` ``<chr>`` ``<chr>`` ``<chr>`` ``<chr>`` `` ``#> ``1`` (Intercept) -40.65 25.39 -1.601 0.109 0.050 do not reject H0`` ``#> ``2`` hs_grad 0.2755 0.2253 1.223 0.222 0.050 do not reject H0`` ``#> ``3`` poverty 0.353 0.1589 2.222 0.026 0.050 reject H0 `` ``#> ``4`` single 0.6642 0.19 3.495 <0.001 0.050 reject H0 `` ``#> ci ci_relation `` ``#> ``<chr>`` ``<chr>`` `` ``#> ``1`` [-90.42, 9.115] includes null`` ``#> ``2`` [-0.1662, 0.7171] includes null`` ``#> ``3`` [0.04157, 0.6645] excludes null`` ``#> ``4`` [0.2917, 1.037] excludes null`` ``#> `` ``#> ── ``Confidence intervals`` ──`` ``#> `` ``#> ``# A tibble: 4 × 4`` ``#> term null_value interval interpretation`` ``#> ``<chr>`` ``<chr>`` ``<chr>`` ``<chr>`` `` ``#> ``1`` (Intercept) 0 [-90.42, 9.115] includes null `` ``#> ``2`` hs_grad 0 [-0.1662, 0.7171] includes null `` ``#> ``3`` poverty 0 [0.04157, 0.6645] excludes null `` ``#> ``4`` single 0 [0.2917, 1.037] excludes null`` ``#> test_result is based on p_value < alpha. Do not reject H0 does not mean that H0`` ``#> is true.`
 
 ## Inspect HCbeta parameters
 
@@ -122,51 +22,7 @@ quantities in `method_params`. The adjustable controls are `c1`, `c2`,
 `lower`, `upper`, `a_max`, and `b_max`. The remaining entries are
 computed from the fitted design by method of moments and shrinkage.
 
-``` r
-
-result$method_params
-#> $c1
-#> [1] 7
-#> 
-#> $c2
-#> [1] 0.75
-#> 
-#> $lower
-#> [1] 0.01
-#> 
-#> $upper
-#> [1] 0.99
-#> 
-#> $a_max
-#> [1] 10000
-#> 
-#> $b_max
-#> [1] 10000
-#> 
-#> $mu_hat
-#> [1] 0.9215686
-#> 
-#> $s2_w
-#> [1] 0.009905943
-#> 
-#> $phi_hat
-#> [1] 6.296619
-#> 
-#> $a_hat
-#> [1] 5.802766
-#> 
-#> $b_hat
-#> [1] 0.4938524
-#> 
-#> $zeta
-#> [1] 0.5049505
-#> 
-#> $a_tilde
-#> [1] 3.425159
-#> 
-#> $b_tilde
-#> [1] 0.7444205
-```
+`result``$``method_params`` ``#> $c1`` ``#> [1] 7`` ``#> `` ``#> $c2`` ``#> [1] 0.75`` ``#> `` ``#> $lower`` ``#> [1] 0.01`` ``#> `` ``#> $upper`` ``#> [1] 0.99`` ``#> `` ``#> $a_max`` ``#> [1] 10000`` ``#> `` ``#> $b_max`` ``#> [1] 10000`` ``#> `` ``#> $mu_hat`` ``#> [1] 0.9215686`` ``#> `` ``#> $s2_w`` ``#> [1] 0.009905943`` ``#> `` ``#> $phi_hat`` ``#> [1] 6.296619`` ``#> `` ``#> $a_hat`` ``#> [1] 5.802766`` ``#> `` ``#> $b_hat`` ``#> [1] 0.4938524`` ``#> `` ``#> $zeta`` ``#> [1] 0.5049505`` ``#> `` ``#> $a_tilde`` ``#> [1] 3.425159`` ``#> `` ``#> $b_tilde`` ``#> [1] 0.7444205`
 
 The table below maps every printed name to its role and, where
 applicable, to the corresponding mathematical symbol.
@@ -200,45 +56,17 @@ CDF is evaluated.
 HCbeta, like the other estimators, stores leverage values and robust
 weights. This table shows the observations with the largest leverages.
 
-``` r
-
-diagnostics <- data.frame(
-  state = Crime2009$state[as.integer(result$observation)],
-  leverage = unname(result$leverage),
-  weight = unname(result$weights),
-  residual = unname(result$residuals)
-)
-
-head(diagnostics[order(-diagnostics$leverage), ], 5)
-#>                   state  leverage   weight    residual
-#> 9  District of Columbia 0.7365246 6.944205  2.48177695
-#> 5            California 0.1628906 1.490903  0.37175507
-#> 25          Mississippi 0.1563654 1.473719 -4.11250663
-#> 27             Montana  0.1277709 1.401047  0.02550751
-#> 44                Texas 0.1242825 1.392448 -0.36169694
-```
+`diagnostics`` ``<-`` `[`data.frame`](https://rdrr.io/r/base/data.frame.html)`(`` `` state ``=`` ``Crime2009``$``state``[`[`as.integer`](https://rdrr.io/r/base/integer.html)`(``result``$``observation``)``]``,`` `` leverage ``=`` `[`unname`](https://rdrr.io/r/base/unname.html)`(``result``$``leverage``)``,`` `` weight ``=`` `[`unname`](https://rdrr.io/r/base/unname.html)`(``result``$``weights``)``,`` `` residual ``=`` `[`unname`](https://rdrr.io/r/base/unname.html)`(``result``$``residuals``)`` ``)`` `` `[`head`](https://rdrr.io/r/utils/head.html)`(``diagnostics``[`[`order`](https://rdrr.io/r/base/order.html)`(``-``diagnostics``$``leverage``)``, ``]``, ``5``)`` ``#> state leverage weight residual`` ``#> 9 District of Columbia 0.7365246 6.944205 2.48177695`` ``#> 5 California 0.1628906 1.490903 0.37175507`` ``#> 25 Mississippi 0.1563654 1.473719 -4.11250663`` ``#> 27 Montana 0.1277709 1.401047 0.02550751`` ``#> 44 Texas 0.1242825 1.392448 -0.36169694`
 
 You can also sort by robust weight to see which observations contribute
 most to the variance estimate.
 
-``` r
-
-head(diagnostics[order(-diagnostics$weight), ], 5)
-#>                   state  leverage   weight    residual
-#> 9  District of Columbia 0.7365246 6.944205  2.48177695
-#> 5            California 0.1628906 1.490903  0.37175507
-#> 25          Mississippi 0.1563654 1.473719 -4.11250663
-#> 27             Montana  0.1277709 1.401047  0.02550751
-#> 44                Texas 0.1242825 1.392448 -0.36169694
-```
+[`head`](https://rdrr.io/r/utils/head.html)`(``diagnostics``[`[`order`](https://rdrr.io/r/base/order.html)`(``-``diagnostics``$``weight``)``, ``]``, ``5``)`` ``#> state leverage weight residual`` ``#> 9 District of Columbia 0.7365246 6.944205 2.48177695`` ``#> 5 California 0.1628906 1.490903 0.37175507`` ``#> 25 Mississippi 0.1563654 1.473719 -4.11250663`` ``#> 27 Montana 0.1277709 1.401047 0.02550751`` ``#> 44 Texas 0.1242825 1.392448 -0.36169694`
 
 The covariance object can be plotted directly to display adjustment
 factors against leverages.
 
-``` r
-
-plot(vcov_hc(fit, type = "hcbeta"))
-```
+[`plot`](https://rdrr.io/r/graphics/plot.default.html)`(`[`vcov_hc`](https://prdm0.github.io/hcinfer/reference/vcov_hc.md)`(``fit``, type ``=`` ``"hcbeta"``)``)`
 
 ![Scatterplot of HCbeta adjustment factors against leverage values for
 the Crime2009
@@ -253,38 +81,7 @@ interpretation remains tied to HCbeta. For every setting it reports the
 robust standard error, p-value, and confidence interval for the focus
 coefficient `single`, together with the largest adjustment factor.
 
-``` r
-
-settings <- list(
-  default            = list(),
-  stronger_exponent  = list(c1 = 10),
-  faster_decay       = list(c2 = 1.0),
-  tighter_truncation = list(lower = 0.05, upper = 0.90),
-  capped_shapes      = list(a_max = 50, b_max = 50)
-)
-
-sensitivity <- lapply(names(settings), function(setting) {
-  res <- do.call(hcinfer, c(list(fit, type = "hcbeta"), settings[[setting]]))
-  row <- tests(res, parm = "single")
-  ci <- confint(res, parm = "single")
-  data.frame(
-    setting = setting,
-    std_error = row$std_error,
-    p_value = row$p_value,
-    conf_low = ci$conf_low,
-    conf_high = ci$conf_high,
-    max_weight = max(res$weights)
-  )
-})
-sensitivity <- do.call(rbind, sensitivity)
-sensitivity
-#>              setting std_error      p_value  conf_low conf_high max_weight
-#> 1            default 0.1900290 4.737318e-04 0.2917367 1.0366368   6.944205
-#> 2  stronger_exponent 0.2789529 1.726573e-02 0.1174491 1.2109244  15.385636
-#> 3       faster_decay 0.1115023 2.573687e-09 0.4456462 0.8827272   2.173383
-#> 4 tighter_truncation 0.2829160 1.889245e-02 0.1096816 1.2186919  15.860502
-#> 5      capped_shapes 0.1900290 4.737318e-04 0.2917367 1.0366368   6.944205
-```
+`settings`` ``<-`` `[`list`](https://rdrr.io/r/base/list.html)`(`` `` default ``=`` `[`list`](https://rdrr.io/r/base/list.html)`(``)``,`` `` stronger_exponent ``=`` `[`list`](https://rdrr.io/r/base/list.html)`(``c1 ``=`` ``10``)``,`` `` faster_decay ``=`` `[`list`](https://rdrr.io/r/base/list.html)`(``c2 ``=`` ``1.0``)``,`` `` tighter_truncation ``=`` `[`list`](https://rdrr.io/r/base/list.html)`(``lower ``=`` ``0.05``, upper ``=`` ``0.90``)``,`` `` capped_shapes ``=`` `[`list`](https://rdrr.io/r/base/list.html)`(``a_max ``=`` ``50``, b_max ``=`` ``50``)`` ``)`` `` ``sensitivity`` ``<-`` `[`lapply`](https://rdrr.io/r/base/lapply.html)`(`[`names`](https://rdrr.io/r/base/names.html)`(``settings``)``, ``function``(``setting``)`` ``{`` `` ``res`` ``<-`` `[`do.call`](https://rdrr.io/r/base/do.call.html)`(``hcinfer``, `[`c`](https://rdrr.io/r/base/c.html)`(`[`list`](https://rdrr.io/r/base/list.html)`(``fit``, type ``=`` ``"hcbeta"``)``, ``settings``[[``setting``]``]``)``)`` `` ``row`` ``<-`` `[`tests`](https://prdm0.github.io/hcinfer/reference/tests.md)`(``res``, parm ``=`` ``"single"``)`` `` ``ci`` ``<-`` `[`confint`](https://rdrr.io/r/stats/confint.html)`(``res``, parm ``=`` ``"single"``)`` `` `[`data.frame`](https://rdrr.io/r/base/data.frame.html)`(`` `` setting ``=`` ``setting``,`` `` std_error ``=`` ``row``$``std_error``,`` `` p_value ``=`` ``row``$``p_value``,`` `` conf_low ``=`` ``ci``$``conf_low``,`` `` conf_high ``=`` ``ci``$``conf_high``,`` `` max_weight ``=`` `[`max`](https://rdrr.io/r/base/Extremes.html)`(``res``$``weights``)`` `` ``)`` ``}``)`` ``sensitivity`` ``<-`` `[`do.call`](https://rdrr.io/r/base/do.call.html)`(``rbind``, ``sensitivity``)`` ``sensitivity`` ``#> setting std_error p_value conf_low conf_high max_weight`` ``#> 1 default 0.1900290 4.737318e-04 0.2917367 1.0366368 6.944205`` ``#> 2 stronger_exponent 0.2789529 1.726573e-02 0.1174491 1.2109244 15.385636`` ``#> 3 faster_decay 0.1115023 2.573687e-09 0.4456462 0.8827272 2.173383`` ``#> 4 tighter_truncation 0.2829160 1.889245e-02 0.1096816 1.2186919 15.860502`` ``#> 5 capped_shapes 0.1900290 4.737318e-04 0.2917367 1.0366368 6.944205`
 
 In this model the exponent constants `c1` and `c2` and the truncation
 window drive the HCbeta correction: raising `c1` to 10 pushes the robust

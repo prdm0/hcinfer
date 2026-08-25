@@ -53,132 +53,48 @@ plot.hcinfer <- function(x, parm, ...) {
     }
   }
 
-  plot_data$term <- factor(plot_data$term, levels = rev(plot_data$term))
-  plot_data$decision <- ifelse(
-    plot_data$p_value < x$alpha,
-    "reject H0",
-    "do not reject H0"
-  )
-  plot_data$p_label <- format_p_label(plot_data$p_value)
-
-  pal <- c(
-    "reject H0"        = "#c0392b",
-    "do not reject H0" = "#2c5f8a"
-  )
-
-  null_vals   <- unique(x$null[names(x$null) %in% as.character(plot_data$term)])
-  single_null <- length(null_vals) == 1
-
-  p <- ggplot2::ggplot(
+  build_wald_interval_plot(
+    x,
     plot_data,
-    ggplot2::aes(y = .data$term, color = .data$decision)
-  ) +
-    ggplot2::geom_segment(
-      ggplot2::aes(
-        x    = .data$conf_low,
-        xend = .data$conf_high,
-        yend = .data$term
-      ),
-      linewidth = 1
-    ) +
-    ggplot2::geom_point(
-      ggplot2::aes(x = .data$estimate),
-      size  = 3.2,
-      shape = 19
-    ) +
-    ggplot2::geom_text(
-      ggplot2::aes(x = .data$conf_high, label = .data$p_label),
-      hjust       = -0.12,
-      size        = 3.1,
-      fontface    = "italic",
-      show.legend = FALSE
-    ) +
-    ggplot2::scale_color_manual(
-      name   = NULL,
-      values = pal,
-      breaks = c("do not reject H0", "reject H0"),
-      labels = c(
-        expression("do not reject" ~ H[0]),
-        expression("reject" ~ H[0])
-      ),
-      guide  = ggplot2::guide_legend(
-        override.aes = list(shape = 19, linewidth = 2),
-        reverse      = FALSE
-      )
-    ) +
-    ggplot2::scale_x_continuous(
-      expand = ggplot2::expansion(mult = c(0.05, 0.28))
-    ) +
-    ggplot2::labs(
-      title    = paste0(x$label, " robust confidence intervals"),
-      subtitle = paste0(format_percent(x$confidence_level), " normal Wald intervals"),
-      caption  = build_plot_caption(x),
-      x        = "Coefficient estimate",
-      y        = NULL
-    ) +
-    ggplot2::theme_minimal(base_size = 12) +
-    ggplot2::theme(
-      plot.title              = ggplot2::element_text(
-        face = "bold", size = 13
-      ),
-      plot.subtitle           = ggplot2::element_text(
-        color  = "grey40",
-        margin = ggplot2::margin(b = 4)
-      ),
-      plot.caption            = ggplot2::element_text(
-        color = "grey50", size = 8, hjust = 0
-      ),
-      plot.title.position     = "plot",
-      plot.caption.position   = "plot",
-      axis.text.y             = ggplot2::element_text(face = "bold", size = 10.5),
-      axis.text.x             = ggplot2::element_text(color = "grey40", size = 9),
-      panel.grid.major.y      = ggplot2::element_blank(),
-      panel.grid.minor        = ggplot2::element_blank(),
-      panel.grid.major.x      = ggplot2::element_line(
-        color     = "grey90",
-        linewidth = 0.4
-      ),
-      legend.position         = "bottom",
-      legend.text             = ggplot2::element_text(size = 9),
-      legend.key.width        = ggplot2::unit(2, "cm"),
-      legend.margin           = ggplot2::margin(t = 2)
-    )
+    paste0(x$label, " robust confidence intervals")
+  )
+}
 
-  if (single_null) {
-    p <- p +
-      ggplot2::geom_vline(
-        xintercept = null_vals,
-        linewidth  = 0.35,
-        linetype   = "dashed",
-        color      = "#c0392b"
-      ) +
-      ggplot2::annotate(
-        "text",
-        x     = null_vals,
-        y     = Inf,
-        label = paste0(
-          'paste(H[0], ": ", beta[j], " = ", beta[j]^"(0)", " = ", "',
-          format_number(null_vals),
-          '")'
-        ),
-        parse = TRUE,
-        hjust = -0.12,
-        vjust = 1.6,
-        size  = 2.9,
-        color = "grey50"
-      )
-  } else {
-    p <- p +
-      ggplot2::geom_point(
-        ggplot2::aes(x = .data$null_value),
-        shape  = 4,
-        size   = 2.5,
-        color  = "grey55",
-        stroke = 0.9
-      )
+#' Plot multiplicative heteroskedasticity FGLS confidence intervals
+#'
+#' @description
+#' Plots the normal Wald confidence intervals for the mean coefficients of a
+#' [gls_mult()] fit, color-coded by the test decision at the stored significance
+#' level, matching [plot.hcinfer()]. Only the mean block is shown, consistent
+#' with [confint.gls_mult()] and [tests.gls_mult()].
+#'
+#' @param x An object returned by [gls_mult()].
+#' @param parm Optional coefficient names or integer positions. Selection
+#'   follows the same rules as [confint.gls_mult()] and [tests.gls_mult()].
+#' @param ... Unused. Passing named arguments raises an error.
+#'
+#' @return A [ggplot2::ggplot()] object.
+#'
+#' @seealso [gls_mult()], [confint.gls_mult()], [tests.gls_mult()]
+#'
+#' @examples
+#' fit <- lm(expenditure ~ income, data = PublicSchools)
+#' result <- gls_mult(fit)
+#' plot(result)
+#' plot(result, parm = "income")
+#'
+#' @export
+plot.gls_mult <- function(x, parm, ...) {
+  check_dots_empty(list(...))
+  plot_data <- x$table
+  if (!missing(parm)) {
+    plot_data <- gls_mult_select_table(plot_data, parm)
   }
-
-  p
+  build_wald_interval_plot(
+    x,
+    plot_data,
+    "Multiplicative heteroskedasticity FGLS confidence intervals"
+  )
 }
 
 #' Plot HC adjustment factors against leverages
@@ -454,6 +370,135 @@ build_plot_caption <- function(x) {
       )
     )
   }
+}
+
+build_wald_interval_plot <- function(x, plot_data, title) {
+  plot_data$term <- factor(plot_data$term, levels = rev(plot_data$term))
+  plot_data$decision <- ifelse(
+    plot_data$p_value < x$alpha,
+    "reject H0",
+    "do not reject H0"
+  )
+  plot_data$p_label <- format_p_label(plot_data$p_value)
+
+  pal <- c(
+    "reject H0"        = "#c0392b",
+    "do not reject H0" = "#2c5f8a"
+  )
+
+  null_vals   <- unique(x$null[names(x$null) %in% as.character(plot_data$term)])
+  single_null <- length(null_vals) == 1
+
+  p <- ggplot2::ggplot(
+    plot_data,
+    ggplot2::aes(y = .data$term, color = .data$decision)
+  ) +
+    ggplot2::geom_segment(
+      ggplot2::aes(
+        x    = .data$conf_low,
+        xend = .data$conf_high,
+        yend = .data$term
+      ),
+      linewidth = 1
+    ) +
+    ggplot2::geom_point(
+      ggplot2::aes(x = .data$estimate),
+      size  = 3.2,
+      shape = 19
+    ) +
+    ggplot2::geom_text(
+      ggplot2::aes(x = .data$conf_high, label = .data$p_label),
+      hjust       = -0.12,
+      size        = 3.1,
+      fontface    = "italic",
+      show.legend = FALSE
+    ) +
+    ggplot2::scale_color_manual(
+      name   = NULL,
+      values = pal,
+      breaks = c("do not reject H0", "reject H0"),
+      labels = c(
+        expression("do not reject" ~ H[0]),
+        expression("reject" ~ H[0])
+      ),
+      guide  = ggplot2::guide_legend(
+        override.aes = list(shape = 19, linewidth = 2),
+        reverse      = FALSE
+      )
+    ) +
+    ggplot2::scale_x_continuous(
+      expand = ggplot2::expansion(mult = c(0.05, 0.28))
+    ) +
+    ggplot2::labs(
+      title    = title,
+      subtitle = paste0(format_percent(x$confidence_level), " normal Wald intervals"),
+      caption  = build_plot_caption(x),
+      x        = "Coefficient estimate",
+      y        = NULL
+    ) +
+    ggplot2::theme_minimal(base_size = 12) +
+    ggplot2::theme(
+      plot.title              = ggplot2::element_text(
+        face = "bold", size = 13
+      ),
+      plot.subtitle           = ggplot2::element_text(
+        color  = "grey40",
+        margin = ggplot2::margin(b = 4)
+      ),
+      plot.caption            = ggplot2::element_text(
+        color = "grey50", size = 8, hjust = 0
+      ),
+      plot.title.position     = "plot",
+      plot.caption.position   = "plot",
+      axis.text.y             = ggplot2::element_text(face = "bold", size = 10.5),
+      axis.text.x             = ggplot2::element_text(color = "grey40", size = 9),
+      panel.grid.major.y      = ggplot2::element_blank(),
+      panel.grid.minor        = ggplot2::element_blank(),
+      panel.grid.major.x      = ggplot2::element_line(
+        color     = "grey90",
+        linewidth = 0.4
+      ),
+      legend.position         = "bottom",
+      legend.text             = ggplot2::element_text(size = 9),
+      legend.key.width        = ggplot2::unit(2, "cm"),
+      legend.margin           = ggplot2::margin(t = 2)
+    )
+
+  if (single_null) {
+    p <- p +
+      ggplot2::geom_vline(
+        xintercept = null_vals,
+        linewidth  = 0.35,
+        linetype   = "dashed",
+        color      = "#c0392b"
+      ) +
+      ggplot2::annotate(
+        "text",
+        x     = null_vals,
+        y     = Inf,
+        label = paste0(
+          'paste(H[0], ": ", beta[j], " = ", beta[j]^"(0)", " = ", "',
+          format_number(null_vals),
+          '")'
+        ),
+        parse = TRUE,
+        hjust = -0.12,
+        vjust = 1.6,
+        size  = 2.9,
+        color = "grey50"
+      )
+  } else {
+    p <- p +
+      ggplot2::geom_point(
+        ggplot2::aes(x = .data$null_value),
+        shape  = 4,
+        size   = 2.5,
+        color  = "grey55",
+        stroke = 0.9
+      )
+  }
+
+  p
 }
 
 build_weight_plot_caption <- function(x, threshold) {

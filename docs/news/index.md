@@ -1,5 +1,34 @@
 # Changelog
 
+## hcinfer (development version)
+
+- Added
+  [`gls_mult()`](https://prdm0.github.io/hcinfer/reference/gls_mult.md)
+  for feasible generalized least squares estimation under multiplicative
+  heteroskedasticity. The `estimator` argument chooses the fit, either
+  `"ml"` (default, Gaussian maximum likelihood) or `"two_step"`
+  (Harvey’s corrected auxiliary regression), and for maximum likelihood
+  the `method` argument selects the
+  [`stats::optim()`](https://rdrr.io/r/stats/optim.html) algorithm:
+  `"BFGS"` (default), `"Nelder-Mead"`, `"CG"`, or `"L-BFGS-B"`. New
+  [`coef()`](https://rdrr.io/r/stats/coef.html) and
+  [`vcov()`](https://rdrr.io/r/stats/vcov.html) methods access the mean
+  and dispersion coefficients via `model =`, and
+  [`confint()`](https://rdrr.io/r/stats/confint.html),
+  [`tests()`](https://prdm0.github.io/hcinfer/reference/tests.md),
+  [`summary()`](https://rdrr.io/r/base/summary.html),
+  [`print()`](https://rdrr.io/r/base/print.html),
+  [`fitted()`](https://rdrr.io/r/stats/fitted.values.html), and
+  [`residuals()`](https://rdrr.io/r/stats/residuals.html) methods
+  support applied inference, while
+  [`logLik()`](https://rdrr.io/r/stats/logLik.html) and
+  [`nobs()`](https://rdrr.io/r/stats/nobs.html) enable
+  [`AIC()`](https://rdrr.io/r/stats/AIC.html) and
+  [`BIC()`](https://rdrr.io/r/stats/AIC.html) for maximum likelihood
+  fits. The package `Description` now also covers feasible generalized
+  least squares following Harvey (1976) and Cribari-Neto and Pereira
+  (2019).
+
 ## hcinfer 0.2.0
 
 CRAN release: 2026-08-04

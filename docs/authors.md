@@ -20,10 +20,7 @@ Marinho P, Cribari-Neto F, Oliveira Cunha M (2026). *hcinfer:
 Heteroskedasticity-Consistent Inference for Linear Models*. R package
 version 0.2.0, <https://prdm0.github.io/hcinfer/>.
 
-    @Manual{,
-      title = {hcinfer: Heteroskedasticity-Consistent Inference for Linear Models},
-      author = {Pedro Rafael D. Marinho and Francisco Cribari-Neto and Marina {Oliveira Cunha}},
-      year = {2026},
-      note = {R package version 0.2.0},
-      url = {https://prdm0.github.io/hcinfer/},
-    }
+@Manual{, title = {hcinfer: Heteroskedasticity-Consistent Inference for
+Linear Models}, author = {Pedro Rafael D. Marinho and Francisco
+Cribari-Neto and Marina {Oliveira Cunha}}, year = {2026}, note = {R
+package version 0.2.0}, url = {https://prdm0.github.io/hcinfer/}, }
