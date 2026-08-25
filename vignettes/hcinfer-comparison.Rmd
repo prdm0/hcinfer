@@ -1,5 +1,6 @@
 ---
 title: "Comparing HC Estimators"
+output: rmarkdown::html_vignette
 vignette: >
   %\VignetteIndexEntry{Comparing HC Estimators}
   %\VignetteEngine{knitr::rmarkdown}

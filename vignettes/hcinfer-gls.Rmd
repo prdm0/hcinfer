@@ -1,5 +1,6 @@
 ---
 title: "Feasible GLS under multiplicative heteroskedasticity"
+output: rmarkdown::html_vignette
 vignette: >
   %\VignetteIndexEntry{Feasible GLS under multiplicative heteroskedasticity}
   %\VignetteEngine{knitr::rmarkdown}

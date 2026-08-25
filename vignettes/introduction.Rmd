@@ -1,5 +1,6 @@
 ---
 title: "Introduction to hcinfer"
+output: rmarkdown::html_vignette
 vignette: >
   %\VignetteIndexEntry{Introduction to hcinfer}
   %\VignetteEngine{knitr::rmarkdown}

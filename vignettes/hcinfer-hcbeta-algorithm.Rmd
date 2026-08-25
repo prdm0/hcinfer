@@ -1,5 +1,6 @@
 ---
 title: "The HCbeta algorithm and its consistency"
+output: rmarkdown::html_vignette
 vignette: >
   %\VignetteIndexEntry{The HCbeta algorithm and its consistency}
   %\VignetteEngine{knitr::rmarkdown}

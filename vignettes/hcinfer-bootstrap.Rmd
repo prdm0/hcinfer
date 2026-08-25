@@ -1,5 +1,6 @@
 ---
 title: "Pairs bootstrap inference with hcinfer"
+output: rmarkdown::html_vignette
 vignette: >
   %\VignetteIndexEntry{Pairs bootstrap inference with hcinfer}
   %\VignetteEngine{knitr::rmarkdown}

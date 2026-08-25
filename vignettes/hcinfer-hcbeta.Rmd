@@ -1,5 +1,6 @@
 ---
 title: "Using HCbeta"
+output: rmarkdown::html_vignette
 vignette: >
   %\VignetteIndexEntry{Using HCbeta}
   %\VignetteEngine{knitr::rmarkdown}
